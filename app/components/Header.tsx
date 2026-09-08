@@ -5,7 +5,7 @@ import {
 } from '@shopify/hydrogen';
 import {Menu} from 'lucide-react';
 import {AnimatePresence, motion} from 'motion/react';
-import {Suspense, useEffect, useState} from 'react';
+import {Fragment, Suspense, useEffect, useState} from 'react';
 import {Await, NavLink, useAsyncValue, useLocation} from 'react-router';
 import type {
   CartApiQueryFragment,
@@ -69,11 +69,13 @@ export function HeaderMenu({
   primaryDomainUrl,
   viewport,
   publicStoreDomain,
+  isLoggedIn,
 }: {
   menu: HeaderProps['header']['menu'];
   primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
+  isLoggedIn?: HeaderProps['isLoggedIn'];
 }) {
   const {close} = useAside();
 
@@ -96,25 +98,46 @@ export function HeaderMenu({
             ? new URL(item.url).pathname
             : item.url;
         return (
-          <NavLink
-            className="header-menu-item"
-            end
-            key={item.id}
-            onClick={close}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {viewport === 'desktop' ? (
-              <Button size="sm" variant="glass-default">
-                {item.title}
-              </Button>
-            ) : (
-              <Button size="lg" variant="link">
-                <p className="typo-display-l capitalize">{item.title}</p>
-              </Button>
+          <Fragment key={item.id}>
+            <NavLink
+              className="header-menu-item"
+              end
+              onClick={close}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+            >
+              {viewport === 'desktop' ? (
+                <Button size="sm" variant="glass-default">
+                  {item.title}
+                </Button>
+              ) : (
+                <Button size="lg" variant="link">
+                  <p className="typo-display-l capitalize">{item.title}</p>
+                </Button>
+              )}
+            </NavLink>
+            {viewport === 'mobile' && item.title.toLowerCase() === 'shop' && (
+              <NavLink
+                className="header-menu-item"
+                end
+                onClick={close}
+                prefetch="intent"
+                style={activeLinkStyle}
+                to="/account"
+              >
+                <Button size="lg" variant="link">
+                  <p className="typo-display-l capitalize">
+                    <Suspense fallback="Sign in">
+                      <Await resolve={isLoggedIn} errorElement="Sign in">
+                        {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
+                      </Await>
+                    </Suspense>
+                  </p>
+                </Button>
+              </NavLink>
             )}
-          </NavLink>
+          </Fragment>
         );
       })}
       {viewport === 'mobile' && (
@@ -271,6 +294,7 @@ export function HeaderMobile({
                       viewport="mobile"
                       primaryDomainUrl={header.shop.primaryDomain.url}
                       publicStoreDomain={publicStoreDomain}
+                      isLoggedIn={isLoggedIn}
                     />
                   </motion.div>
                 )}

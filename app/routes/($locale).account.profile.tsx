@@ -161,7 +161,7 @@ export default function AccountProfile() {
             />
           </div>
           <div className="space-y-2">
-            <p className={labelClassName}>Address (Default)</p>
+            <p className={labelClassName}>Address(Default)</p>
             <div className={inputClassName}>
               {customer.defaultAddress?.formatted ? (
                 customer.defaultAddress.formatted.map((line, index) => (

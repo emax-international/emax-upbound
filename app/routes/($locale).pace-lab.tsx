@@ -35,6 +35,12 @@ export async function loader(args: LoaderFunctionArgs) {
 async function loadCriticalData({ context }: LoaderFunctionArgs) {
     const { paceLabPage } = await context.storefront.query(LAB_PAGE_CMS_QUERY);
 
+    // If the page is unpublished/draft (or doesn't exist), the Storefront API
+    // returns null. Return a 404 instead of rendering the page with fallback values.
+    if (!paceLabPage) {
+        throw new Response('Not found', { status: 404 });
+    }
+
     return {
         paceLabPage,
     };
