@@ -67,6 +67,12 @@ export async function action({request, context}: ActionFunctionArgs) {
       return new Response(
         JSON.stringify({
           error: 'Failed to subscribe to newsletter',
+          // TEMP: debug details, remove once fixed
+          details: {
+            message: errors.message,
+            networkStatusCode: errors.networkStatusCode,
+            graphQLErrors: errors.graphQLErrors,
+          },
         }),
         {
           status: 500,
