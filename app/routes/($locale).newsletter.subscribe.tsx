@@ -63,7 +63,7 @@ export async function action({request, context}: ActionFunctionArgs) {
 
     // Check for GraphQL errors
     if (errors) {
-      console.error('GraphQL errors:', errors);
+      console.error('GraphQL errors:', JSON.stringify(errors, null, 2));
       return new Response(
         JSON.stringify({
           error: 'Failed to subscribe to newsletter',
