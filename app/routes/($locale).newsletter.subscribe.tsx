@@ -7,7 +7,10 @@ import {
   adminCustomerByEmailQuery,
   adminCustomerCreateMutation,
   adminCustomerUpdateMarketingMutation,
+  adminTagsAddMutation,
 } from '~/graphql/admin/CustomerEmailMarketing';
+
+const NEWSLETTER_TAG = 'newsletter_subscriber';
 
 /**
  * Action function to handle newsletter subscription form submissions
@@ -151,6 +154,20 @@ export async function action({request, context}: ActionFunctionArgs) {
         );
         throw new Error('Failed to update marketing consent');
       }
+    }
+
+    // Tag the customer as a newsletter form subscriber (no-op if already tagged).
+    // Don't fail the subscription if tagging fails.
+    const {data: tagsData, errors: tagsErrors} =
+      await context.adminApiClient.request(adminTagsAddMutation, {
+        variables: {id: customerId, tags: [NEWSLETTER_TAG]},
+      });
+
+    if (tagsErrors || tagsData?.tagsAdd?.userErrors?.length > 0) {
+      console.error(
+        'Tags add errors:',
+        JSON.stringify(tagsErrors ?? tagsData.tagsAdd.userErrors, null, 2),
+      );
     }
 
     // Success - always return JSON for fetcher
