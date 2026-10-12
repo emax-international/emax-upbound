@@ -18,7 +18,6 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import { SearchResultsPredictive } from '~/components/SearchResultsPredictive';
-import { useCooldown } from '~/lib/hooks/useCooldown';
 import { cn } from '~/lib/utils';
 import Banner from './cms/Banner';
 import NewsletterPopup from './cms/NewsletterPopup';
@@ -35,11 +34,6 @@ interface PageLayoutProps {
   children?: React.ReactNode;
 }
 
-// Unique key for this component in localStorage
-const STORAGE_KEY = 'promo_banner';
-// Cooldown period in minutes (10 minutes)
-const COOLDOWN_MINUTES = 10;
-
 export function PageLayout({
   cart,
   children = null,
@@ -50,8 +44,8 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
-  const [isVisible, _] = useCooldown(STORAGE_KEY, COOLDOWN_MINUTES);
-  const [isBannerOpened, setIsBannerOpened] = useState(isVisible);
+  // Set by <Banner> once it is actually on screen
+  const [isBannerOpened, setIsBannerOpened] = useState(false);
 
   return (
     <Aside.Provider>

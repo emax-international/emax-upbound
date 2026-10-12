@@ -41,7 +41,7 @@ export default {
       },
     },
     admin: {
-      schema: 'https://shopify.dev/admin-graphql-direct-proxy/2025-10',
+      schema: 'https://shopify.dev/admin-graphql-direct-proxy/2026-07',
       documents: ['./app/graphql/admin/*.{ts,tsx,js,jsx}'],
       extensions: {
         codegen: {
