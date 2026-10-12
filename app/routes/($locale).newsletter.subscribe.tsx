@@ -3,7 +3,11 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from '@shopify/remix-oxygen';
-import {adminCustomerCreateMutation} from '~/graphql/admin/CustomerEmailMarketing';
+import {
+  adminCustomerByEmailQuery,
+  adminCustomerCreateMutation,
+  adminCustomerUpdateMarketingMutation,
+} from '~/graphql/admin/CustomerEmailMarketing';
 
 /**
  * Action function to handle newsletter subscription form submissions
@@ -67,12 +71,6 @@ export async function action({request, context}: ActionFunctionArgs) {
       return new Response(
         JSON.stringify({
           error: 'Failed to subscribe to newsletter',
-          // TEMP: debug details, remove once fixed
-          details: {
-            message: errors.message,
-            networkStatusCode: errors.networkStatusCode,
-            graphQLErrors: errors.graphQLErrors,
-          },
         }),
         {
           status: 500,
@@ -94,9 +92,51 @@ export async function action({request, context}: ActionFunctionArgs) {
       );
 
       if (emailTakenError) {
-        // This is not really an error - the customer is already in the system
-        // We could implement a separate mutation to update their marketing preferences
-        // For now, we'll just return success
+        // Customer already exists - subscribe them to email marketing if they
+        // aren't already, so Shopify fires the "subscribed" event for Flow/Shopify Email
+        const {data: customerData, errors: customerErrors} =
+          await context.adminApiClient.request(adminCustomerByEmailQuery, {
+            variables: {query: `email:"${email.replace(/"/g, '')}"`},
+          });
+
+        if (customerErrors) {
+          console.error('GraphQL errors:', JSON.stringify(customerErrors, null, 2));
+          throw new Error('Failed to look up existing customer');
+        }
+
+        const customer = customerData?.customers?.nodes?.[0];
+
+        if (
+          customer &&
+          customer.emailMarketingConsent?.marketingState !== 'SUBSCRIBED'
+        ) {
+          const {data: consentData, errors: consentErrors} =
+            await context.adminApiClient.request(
+              adminCustomerUpdateMarketingMutation,
+              {
+                variables: {
+                  input: {
+                    customerId: customer.id,
+                    emailMarketingConsent: {
+                      marketingState: 'SUBSCRIBED',
+                      marketingOptInLevel: 'SINGLE_OPT_IN',
+                    },
+                  },
+                },
+              },
+            );
+
+          const consentUserErrors =
+            consentData?.customerEmailMarketingConsentUpdate?.userErrors;
+          if (consentErrors || consentUserErrors?.length > 0) {
+            console.error(
+              'Consent update errors:',
+              JSON.stringify(consentErrors ?? consentUserErrors, null, 2),
+            );
+            throw new Error('Failed to update marketing consent');
+          }
+        }
+
         return new Response(
           JSON.stringify({ success: true }),
           {

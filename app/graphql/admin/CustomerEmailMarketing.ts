@@ -13,18 +13,31 @@ export const adminCustomerCreateMutation = `#graphql
   }
 `;
 
-// export const adminCustomerUpdateMarketingMutation = `#graphql
-//   mutation customerEmailMarketingConsentUpdate(
-//     $input: CustomerEmailMarketingConsentUpdateInput!
-//   ) {
-//     customerEmailMarketingConsentUpdate(input: $input) {
-//       customer {
-//         id
-//       }
-//       userErrors {
-//         field
-//         message
-//       }
-//     }
-//   }
-// `;
+export const adminCustomerByEmailQuery = `#graphql
+  query customerByEmail($query: String!) {
+    customers(first: 1, query: $query) {
+      nodes {
+        id
+        emailMarketingConsent {
+          marketingState
+        }
+      }
+    }
+  }
+`;
+
+export const adminCustomerUpdateMarketingMutation = `#graphql
+  mutation customerEmailMarketingConsentUpdate(
+    $input: CustomerEmailMarketingConsentUpdateInput!
+  ) {
+    customerEmailMarketingConsentUpdate(input: $input) {
+      customer {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
