@@ -49,18 +49,14 @@ export async function action({request, context}: ActionFunctionArgs) {
       );
     }
 
-    // Create a customer with the provided email
+    // Create the customer without marketing consent. Consent is set in a
+    // separate update below so Shopify fires the "Customer subscribed to
+    // email marketing" event (used by Flow) for new and existing customers.
     const {data, errors} = await context.adminApiClient.request(
       adminCustomerCreateMutation,
       {
         variables: {
-          input: {
-            email,
-            emailMarketingConsent: {
-              marketingState: 'SUBSCRIBED',
-              marketingOptInLevel: 'SINGLE_OPT_IN',
-            },
-          },
+          input: {email},
         },
       },
     );
@@ -81,66 +77,26 @@ export async function action({request, context}: ActionFunctionArgs) {
       );
     }
 
+    let customerId: string | undefined = data?.customerCreate?.customer?.id;
+    let marketingState: string | undefined;
+
     // Check for user errors from the mutation
     if (data?.customerCreate?.userErrors?.length > 0) {
       const userErrors = data.customerCreate.userErrors;
-      console.error('User errors:', userErrors);
 
       // Check if the error is because the customer already exists
       const emailTakenError = userErrors.find((error: {field?: string; message?: string}) =>
         error.message?.includes('Email has already been taken'),
       );
 
-      if (emailTakenError) {
-        // Customer already exists - subscribe them to email marketing if they
-        // aren't already, so Shopify fires the "subscribed" event for Flow/Shopify Email
-        const {data: customerData, errors: customerErrors} =
-          await context.adminApiClient.request(adminCustomerByEmailQuery, {
-            variables: {query: `email:"${email.replace(/"/g, '')}"`},
-          });
-
-        if (customerErrors) {
-          console.error('GraphQL errors:', JSON.stringify(customerErrors, null, 2));
-          throw new Error('Failed to look up existing customer');
-        }
-
-        const customer = customerData?.customers?.nodes?.[0];
-
-        if (
-          customer &&
-          customer.emailMarketingConsent?.marketingState !== 'SUBSCRIBED'
-        ) {
-          const {data: consentData, errors: consentErrors} =
-            await context.adminApiClient.request(
-              adminCustomerUpdateMarketingMutation,
-              {
-                variables: {
-                  input: {
-                    customerId: customer.id,
-                    emailMarketingConsent: {
-                      marketingState: 'SUBSCRIBED',
-                      marketingOptInLevel: 'SINGLE_OPT_IN',
-                    },
-                  },
-                },
-              },
-            );
-
-          const consentUserErrors =
-            consentData?.customerEmailMarketingConsentUpdate?.userErrors;
-          if (consentErrors || consentUserErrors?.length > 0) {
-            console.error(
-              'Consent update errors:',
-              JSON.stringify(consentErrors ?? consentUserErrors, null, 2),
-            );
-            throw new Error('Failed to update marketing consent');
-          }
-        }
-
+      if (!emailTakenError) {
+        console.error('User errors:', userErrors);
         return new Response(
-          JSON.stringify({ success: true }),
+          JSON.stringify({
+            error: userErrors[0].message || 'Failed to subscribe to newsletter',
+          }),
           {
-            status: 200,
+            status: 400,
             headers: {
               'Content-Type': 'application/json',
             },
@@ -148,17 +104,53 @@ export async function action({request, context}: ActionFunctionArgs) {
         );
       }
 
-      return new Response(
-        JSON.stringify({
-          error: userErrors[0].message || 'Failed to subscribe to newsletter',
-        }),
-        {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
+      // Customer already exists - look them up
+      const {data: customerData, errors: customerErrors} =
+        await context.adminApiClient.request(adminCustomerByEmailQuery, {
+          variables: {query: `email:"${email.replace(/"/g, '')}"`},
+        });
+
+      if (customerErrors) {
+        console.error('GraphQL errors:', JSON.stringify(customerErrors, null, 2));
+        throw new Error('Failed to look up existing customer');
+      }
+
+      const customer = customerData?.customers?.nodes?.[0];
+      customerId = customer?.id;
+      marketingState = customer?.emailMarketingConsent?.marketingState;
+    }
+
+    if (!customerId) {
+      throw new Error('Customer not found after create/lookup');
+    }
+
+    // Subscribe to email marketing unless already subscribed
+    if (marketingState !== 'SUBSCRIBED') {
+      const {data: consentData, errors: consentErrors} =
+        await context.adminApiClient.request(
+          adminCustomerUpdateMarketingMutation,
+          {
+            variables: {
+              input: {
+                customerId,
+                emailMarketingConsent: {
+                  marketingState: 'SUBSCRIBED',
+                  marketingOptInLevel: 'SINGLE_OPT_IN',
+                },
+              },
+            },
           },
-        },
-      );
+        );
+
+      const consentUserErrors =
+        consentData?.customerEmailMarketingConsentUpdate?.userErrors;
+      if (consentErrors || consentUserErrors?.length > 0) {
+        console.error(
+          'Consent update errors:',
+          JSON.stringify(consentErrors ?? consentUserErrors, null, 2),
+        );
+        throw new Error('Failed to update marketing consent');
+      }
     }
 
     // Success - always return JSON for fetcher
