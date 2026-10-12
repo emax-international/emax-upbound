@@ -16,10 +16,9 @@ export default function FooterNewsletterForm() {
   return (
     <div className="space-y-5 my-[60px]">
       <div>
-        <p className="typo-body-l">Step into the circle</p>
+        <p className="typo-body-l">Join the Upbound Club</p>
         <p>
-          Fuel your inbox with access to what&apos;s new from Upbound before
-          anyone else.
+          Get FREE shipping on your first order (West Malaysia only). Plus, be the first to know about our events, partnerships, and next product drop.
         </p>
       </div>
 
