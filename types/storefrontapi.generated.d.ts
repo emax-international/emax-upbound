@@ -218,16 +218,18 @@ export type GlobalBannerCmsQueryVariables = StorefrontAPI.Exact<{
 }>;
 
 export type GlobalBannerCmsQuery = {
-  globalBanner?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Metaobject, 'id' | 'handle'> & {
-      display?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, 'value'>
-      >;
-      content?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, 'value'>
-      >;
-    }
-  >;
+  globalBanners: {
+    nodes: Array<
+      Pick<StorefrontAPI.Metaobject, 'id' | 'handle'> & {
+        display?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        content?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+      }
+    >;
+  };
 };
 
 export type GlobalNewsletterPopupCmsQueryVariables = StorefrontAPI.Exact<{
@@ -3772,7 +3774,7 @@ interface GeneratedQueryTypes {
     return: FooterMenuCmsQuery;
     variables: FooterMenuCmsQueryVariables;
   };
-  '#graphql\n  query GlobalBannerCms {\n    globalBanner: metaobject(handle: {handle: "global-banner", type: "global_banner"}) {\n      id\n      handle\n      display: field(key: "display") {\n        value\n      }\n      content: field(key: "content") {\n        value\n      }\n    }\n  }\n': {
+  '#graphql\n  query GlobalBannerCms {\n    globalBanners: metaobjects(type: "global_banner", first: 10) {\n      nodes {\n        id\n        handle\n        display: field(key: "display") {\n          value\n        }\n        content: field(key: "content") {\n          value\n        }\n      }\n    }\n  }\n': {
     return: GlobalBannerCmsQuery;
     variables: GlobalBannerCmsQueryVariables;
   };
