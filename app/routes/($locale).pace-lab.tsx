@@ -164,7 +164,7 @@ export default function LabPage() {
 
 
             <div >
-                <h1 className="typo-header mb-12 text-center">Any questions? We got you!</h1>
+                <h1 className="typo-header mb-12 text-center">Any questions? We got you</h1>
                 <ModuleRenderer
                     modules={questionModules}
                     accordionClassName="mb-6 mt-0"
