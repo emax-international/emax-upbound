@@ -36,6 +36,18 @@ export default async function handleRequest(
       'https://googleads.g.doubleclick.net',
       // Google Ads consent-mode pings
       'https://ad.doubleclick.net',
+      // GTM preview (Tag Assistant) badge icon
+      'https://fonts.gstatic.com',
+    ],
+    // GTM preview (Tag Assistant) badge styles and fonts
+    styleSrc: ['https://www.googletagmanager.com', 'https://fonts.googleapis.com'],
+    // Hydrogen's default-src values are repeated because setting font-src
+    // stops the fallback to default-src
+    fontSrc: [
+      "'self'",
+      'https://cdn.shopify.com',
+      'https://shopify.com',
+      'https://fonts.gstatic.com',
     ],
     // Hydrogen's default-src values are repeated here because setting
     // frame-src stops the fallback to default-src
