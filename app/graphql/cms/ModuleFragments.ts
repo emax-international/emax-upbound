@@ -816,3 +816,74 @@ fragment BannerSteps on Metaobject {
 `;
 
 
+
+export const CAROUSEL_FRAGMENT = `#graphql
+fragment Carousel on Metaobject {
+  id
+  type
+  title: field(key: "title") {
+    value
+  }
+  header: field(key: "header") {
+    value
+  }
+  label: field(key: "label") {
+    value
+  }
+  layout: field(key: "layout") {
+    value
+  }
+  slides: field(key: "slides") {
+    references(first: 20) {
+      nodes {
+        ... on Metaobject {
+          id
+          title: field(key: "title") { value }
+          show_overlay: field(key: "show_overlay") { value }
+          overlay_color: field(key: "overlay_color") { value }
+          overlay_opacity: field(key: "overlay_opacity") { value }
+          video_title: field(key: "video_title") { value }
+          video_label: field(key: "video_label") { value }
+          logo: field(key: "logo") {
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+          media: field(key: "media") {
+            references(first: 5) {
+              nodes {
+                __typename
+                ... on MediaImage {
+                  image {
+                    url
+                    altText
+                    width
+                    height
+                  }
+                }
+                ... on Video {
+                  previewImage {
+                    url
+                    altText
+                  }
+                  sources {
+                    url
+                    mimeType
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;

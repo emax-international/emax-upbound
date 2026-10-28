@@ -3,6 +3,229 @@
 /* eslint-disable */
 import type * as StorefrontAPI from '@shopify/hydrogen/storefront-api-types';
 
+export type AbTestingPageCmsQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type AbTestingPageCmsQuery = {
+  abTestingPage?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Metaobject, 'id' | 'handle'> & {
+      title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+      gallery?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+            title?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            header?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            label?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            layout?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            slides?: StorefrontAPI.Maybe<{
+              references?: StorefrontAPI.Maybe<{
+                nodes: Array<
+                  Pick<StorefrontAPI.Metaobject, 'id'> & {
+                    title?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    show_overlay?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    overlay_color?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    overlay_opacity?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    video_title?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    video_label?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    logo?: StorefrontAPI.Maybe<{
+                      reference?: StorefrontAPI.Maybe<{
+                        image?: StorefrontAPI.Maybe<
+                          Pick<
+                            StorefrontAPI.Image,
+                            'url' | 'altText' | 'width' | 'height'
+                          >
+                        >;
+                      }>;
+                    }>;
+                    media?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          | {
+                              __typename:
+                                | 'Collection'
+                                | 'GenericFile'
+                                | 'Metaobject'
+                                | 'Model3d'
+                                | 'Page'
+                                | 'Product'
+                                | 'ProductVariant';
+                            }
+                          | ({__typename: 'MediaImage'} & {
+                              image?: StorefrontAPI.Maybe<
+                                Pick<
+                                  StorefrontAPI.Image,
+                                  'url' | 'altText' | 'width' | 'height'
+                                >
+                              >;
+                            })
+                          | ({__typename: 'Video'} & {
+                              previewImage?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.Image, 'url' | 'altText'>
+                              >;
+                              sources: Array<
+                                Pick<
+                                  StorefrontAPI.VideoSource,
+                                  'url' | 'mimeType'
+                                >
+                              >;
+                            })
+                        >;
+                      }>;
+                    }>;
+                  }
+                >;
+              }>;
+            }>;
+          }
+        >;
+      }>;
+      review?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+            title?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            header?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            label?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            layout?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            slides?: StorefrontAPI.Maybe<{
+              references?: StorefrontAPI.Maybe<{
+                nodes: Array<
+                  Pick<StorefrontAPI.Metaobject, 'id'> & {
+                    title?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    show_overlay?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    overlay_color?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    overlay_opacity?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    video_title?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    video_label?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    logo?: StorefrontAPI.Maybe<{
+                      reference?: StorefrontAPI.Maybe<{
+                        image?: StorefrontAPI.Maybe<
+                          Pick<
+                            StorefrontAPI.Image,
+                            'url' | 'altText' | 'width' | 'height'
+                          >
+                        >;
+                      }>;
+                    }>;
+                    media?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          | {
+                              __typename:
+                                | 'Collection'
+                                | 'GenericFile'
+                                | 'Metaobject'
+                                | 'Model3d'
+                                | 'Page'
+                                | 'Product'
+                                | 'ProductVariant';
+                            }
+                          | ({__typename: 'MediaImage'} & {
+                              image?: StorefrontAPI.Maybe<
+                                Pick<
+                                  StorefrontAPI.Image,
+                                  'url' | 'altText' | 'width' | 'height'
+                                >
+                              >;
+                            })
+                          | ({__typename: 'Video'} & {
+                              previewImage?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.Image, 'url' | 'altText'>
+                              >;
+                              sources: Array<
+                                Pick<
+                                  StorefrontAPI.VideoSource,
+                                  'url' | 'mimeType'
+                                >
+                              >;
+                            })
+                        >;
+                      }>;
+                    }>;
+                  }
+                >;
+              }>;
+            }>;
+          }
+        >;
+      }>;
+      faq?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+            title?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            collapsible?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            iconVariant?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            numberedContent?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            variant?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            content?: StorefrontAPI.Maybe<{
+              references?: StorefrontAPI.Maybe<{
+                nodes: Array<{
+                  title?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  description?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                }>;
+              }>;
+            }>;
+          }
+        >;
+      }>;
+    }
+  >;
+};
+
 export type AccountPageCmsQueryVariables = StorefrontAPI.Exact<{
   [key: string]: never;
 }>;
@@ -1621,6 +1844,81 @@ export type BannerStepsFragment = Pick<
           Pick<StorefrontAPI.MetaobjectField, 'value'>
         >;
       }>;
+    }>;
+  }>;
+};
+
+export type CarouselFragment = Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+  title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  header?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  label?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  layout?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  slides?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.Metaobject, 'id'> & {
+          title?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          show_overlay?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          overlay_color?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          overlay_opacity?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          video_title?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          video_label?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          logo?: StorefrontAPI.Maybe<{
+            reference?: StorefrontAPI.Maybe<{
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+            }>;
+          }>;
+          media?: StorefrontAPI.Maybe<{
+            references?: StorefrontAPI.Maybe<{
+              nodes: Array<
+                | {
+                    __typename:
+                      | 'Collection'
+                      | 'GenericFile'
+                      | 'Metaobject'
+                      | 'Model3d'
+                      | 'Page'
+                      | 'Product'
+                      | 'ProductVariant';
+                  }
+                | ({__typename: 'MediaImage'} & {
+                    image?: StorefrontAPI.Maybe<
+                      Pick<
+                        StorefrontAPI.Image,
+                        'url' | 'altText' | 'width' | 'height'
+                      >
+                    >;
+                  })
+                | ({__typename: 'Video'} & {
+                    previewImage?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Image, 'url' | 'altText'>
+                    >;
+                    sources: Array<
+                      Pick<StorefrontAPI.VideoSource, 'url' | 'mimeType'>
+                    >;
+                  })
+              >;
+            }>;
+          }>;
+        }
+      >;
     }>;
   }>;
 };
@@ -3750,6 +4048,10 @@ export type StoreRobotsQueryVariables = StorefrontAPI.Exact<{
 export type StoreRobotsQuery = {shop: Pick<StorefrontAPI.Shop, 'id'>};
 
 interface GeneratedQueryTypes {
+  '#graphql\n  #graphql\n  fragment Accordion on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    collapsible: field(key: "collapsible") {\n      value\n    }\n    iconVariant: field(key: "icon_variant") {\n      value\n    }\n    numberedContent: field(key: "numbered_content") {\n      value\n    }\n    variant: field(key: "variant") {\n      value\n    }\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            title: field(key: "title") {\n              value\n            }\n            description: field(key: "description") {\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\nfragment Carousel on Metaobject {\n  id\n  type\n  title: field(key: "title") {\n    value\n  }\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  layout: field(key: "layout") {\n    value\n  }\n  slides: field(key: "slides") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          title: field(key: "title") { value }\n          show_overlay: field(key: "show_overlay") { value }\n          overlay_color: field(key: "overlay_color") { value }\n          overlay_opacity: field(key: "overlay_opacity") { value }\n          video_title: field(key: "video_title") { value }\n          video_label: field(key: "video_label") { value }\n          logo: field(key: "logo") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          media: field(key: "media") {\n            references(first: 5) {\n              nodes {\n                __typename\n                ... on MediaImage {\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n                ... on Video {\n                  previewImage {\n                    url\n                    altText\n                  }\n                  sources {\n                    url\n                    mimeType\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\n\n  query AbTestingPageCms($handle: String!) {\n    abTestingPage: metaobject(\n      handle: {type: "ab_testing_page", handle: $handle}\n    ) {\n      id\n      handle\n\n      title: field(key: "title") { value }\n\n      gallery: field(key: "gallery") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      review: field(key: "review") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      faq: field(key: "faq") {\n        reference {\n          ... on Metaobject {\n            ...Accordion\n          }\n        }\n      }\n    }\n  }\n': {
+    return: AbTestingPageCmsQuery;
+    variables: AbTestingPageCmsQueryVariables;
+  };
   '#graphql\n  #graphql\n  fragment AccountHero on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    hero_image: field(key: "hero_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n  }\n\n\n  query AccountPageCms {\n    accountHero: metaobject(handle: {handle: "account-page", type: "account_page"}) {\n      id\n      handle\n\n      ... on Metaobject {\n        ...AccountHero\n      }\n    }\n  }\n': {
     return: AccountPageCmsQuery;
     variables: AccountPageCmsQueryVariables;
