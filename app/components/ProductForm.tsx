@@ -33,6 +33,8 @@ function parseGiftValue(raw: string): string[] {
 }
 
 export function ProductForm({
+  productId,
+  productTitle,
   productOptions,
   selectedVariant,
   sellingPlanGroups,
@@ -41,6 +43,8 @@ export function ProductForm({
   setPurchaseType,
   giftImages = {},
 }: {
+  productId: string;
+  productTitle: string;
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
   selectedSellingPlan: SellingPlanFragment | null;
@@ -103,6 +107,13 @@ export function ProductForm({
           variantId: id,
         }))
       : [];
+
+  // Unit price used for tracking: the selected selling plan's price when subscribing
+  const activeAllocationPrice = selectedVariant?.sellingPlanAllocations?.nodes?.find(
+    (node) => node.sellingPlan.id === activeSellingPlanId,
+  )?.priceAdjustments?.[0]?.price;
+  const trackingPrice =
+    isSubscription && activeAllocationPrice ? activeAllocationPrice : selectedVariant?.price;
 
   const freeGiftSelectedVariant = giftVariantId
     ? ({
@@ -244,6 +255,19 @@ export function ProductForm({
           }
           buttonClassName="rounded-none w-full"
           containerClassName="flex-1"
+          quantity={quantity}
+          page="Product Page"
+          trackingItem={
+            selectedVariant
+              ? {
+                  id: productId,
+                  name: productTitle,
+                  variant: selectedVariant.title,
+                  price: parseFloat(trackingPrice?.amount ?? '0'),
+                  currency: trackingPrice?.currencyCode ?? 'MYR',
+                }
+              : undefined
+          }
         >
           {selectedVariant?.availableForSale
             ? purchaseType === 'subscription'
