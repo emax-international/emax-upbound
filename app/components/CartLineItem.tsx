@@ -6,12 +6,38 @@ import { FetcherWithComponents, Link } from 'react-router';
 import type { CartApiQueryFragment } from 'types/storefrontapi.generated';
 import type { CartLayout } from '~/components/CartMain';
 import { useVariantUrl } from '~/lib/variants';
+import { pushCartEvent } from '~/lib/tracking';
 import { useAside } from './Aside';
 import { useCartLine } from './CartLineContext';
 import { ProductPrice } from './ProductPrice';
 import { Button } from './ui/button';
 
 type CartLine = OptimisticCartLine<CartApiQueryFragment>;
+
+/** Pushes add_to_cart / remove_from_cart for a cart line (skips free gifts). */
+function trackLine(
+  event: 'add_to_cart' | 'remove_from_cart',
+  line: CartLine,
+  quantity: number,
+  layout: CartLayout,
+) {
+  const isGift = line.attributes?.some((a) => a.key === '_is_free_gift' && a.value === 'true');
+  if (isGift) return;
+  // amountPerQuantity already includes the subscription discount
+  const unit = line.cost?.amountPerQuantity;
+  pushCartEvent(
+    event,
+    {
+      id: line.merchandise.product.id,
+      name: line.merchandise.product.title,
+      variant: line.merchandise.title,
+      price: parseFloat(unit?.amount ?? '0'),
+      quantity,
+      currency: unit?.currencyCode ?? 'MYR',
+    },
+    layout === 'aside' ? 'Cart Drawer' : 'Cart Page',
+  );
+}
 
 
 /**
@@ -79,7 +105,11 @@ export function CartLineItem({
             ))}
           </ul>
         </div>
-        <CartLineRemoveButton lineIds={giftLineId ? [id, giftLineId] : [id]} disabled={!!isOptimistic} />
+        <CartLineRemoveButton
+          lineIds={giftLineId ? [id, giftLineId] : [id]}
+          disabled={!!isOptimistic}
+          onRemove={() => trackLine('remove_from_cart', line, line.quantity, layout)}
+        />
         {isGift ? (
           <div className="col-span-2 flex items-center justify-between">
             <span className="text-xs text-gray-400">Included in your order</span>
@@ -89,7 +119,7 @@ export function CartLineItem({
           </div>
         ) : (
           <>
-            <CartLineQuantity line={line} giftLineId={giftLineId} />
+            <CartLineQuantity line={line} giftLineId={giftLineId} layout={layout} />
             <ProductPrice
               price={line?.cost?.totalAmount}
               className="self-end"
@@ -107,7 +137,15 @@ export function CartLineItem({
  * These controls are disabled when the line item is new, and the server
  * hasn't yet responded that it was successfully added to the cart.
  */
-function CartLineQuantity({ line, giftLineId }: { line: CartLine; giftLineId?: string }) {
+function CartLineQuantity({
+  line,
+  giftLineId,
+  layout,
+}: {
+  line: CartLine;
+  giftLineId?: string;
+  layout: CartLayout;
+}) {
   if (!line || typeof line?.quantity === 'undefined') return null;
   const { id: lineId, quantity, isOptimistic } = line;
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
@@ -130,6 +168,7 @@ function CartLineQuantity({ line, giftLineId }: { line: CartLine; giftLineId?: s
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
+          onClick={() => trackLine('remove_from_cart', line, 1, layout)}
           className="!h-fit !p-2 md:!p-4 rounded-none bg-transparent"
         >
           <MinusIcon />
@@ -143,6 +182,7 @@ function CartLineQuantity({ line, giftLineId }: { line: CartLine; giftLineId?: s
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
+          onClick={() => trackLine('add_to_cart', line, 1, layout)}
           disabled={!!isOptimistic}
           className="!h-fit !p-2 md:!p-4 rounded-none bg-transparent"
         >
@@ -161,9 +201,11 @@ function CartLineQuantity({ line, giftLineId }: { line: CartLine; giftLineId?: s
 function CartLineRemoveButton({
   lineIds,
   disabled,
+  onRemove,
 }: {
   lineIds: string[];
   disabled: boolean;
+  onRemove?: () => void;
 }) {
   return (
     <div className="w-fit justify-self-end">
@@ -173,7 +215,7 @@ function CartLineRemoveButton({
         action={CartForm.ACTIONS.LinesRemove}
         inputs={{ lineIds }}
       >
-        <Button disabled={disabled} type="submit" variant="ghost" size="icon">
+        <Button disabled={disabled} type="submit" variant="ghost" size="icon" onClick={onRemove}>
           <Trash />
         </Button>
       </CartForm>
