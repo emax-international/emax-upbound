@@ -30,6 +30,8 @@ export function pushCartEvent(
   window.dataLayer = window.dataLayer || [];
 
   const price = round(item.price);
+  // Line total: unit price × quantity
+  const value = round(item.price * item.quantity);
 
   // GA4 recommends clearing the previous ecommerce object first
   window.dataLayer.push({ecommerce: null});
@@ -44,13 +46,16 @@ export function pushCartEvent(
       price: price.toFixed(2),
       quantity: item.quantity,
       currency: item.currency,
+      value,
     },
     product_id: item.id,
     currency: item.currency,
     quantity: item.quantity,
+    value,
     // GA4 ecommerce shape
     ecommerce: {
       currency: item.currency,
+      value,
       items: [
         {
           item_id: item.id,

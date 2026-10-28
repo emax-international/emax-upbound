@@ -108,6 +108,13 @@ export function ProductForm({
         }))
       : [];
 
+  // Unit price used for tracking: the selected selling plan's price when subscribing
+  const activeAllocationPrice = selectedVariant?.sellingPlanAllocations?.nodes?.find(
+    (node) => node.sellingPlan.id === activeSellingPlanId,
+  )?.priceAdjustments?.[0]?.price;
+  const trackingPrice =
+    isSubscription && activeAllocationPrice ? activeAllocationPrice : selectedVariant?.price;
+
   const freeGiftSelectedVariant = giftVariantId
     ? ({
         id: giftVariantId,
@@ -256,8 +263,8 @@ export function ProductForm({
                   id: productId,
                   name: productTitle,
                   variant: selectedVariant.title,
-                  price: parseFloat(selectedVariant.price.amount),
-                  currency: selectedVariant.price.currencyCode,
+                  price: parseFloat(trackingPrice?.amount ?? '0'),
+                  currency: trackingPrice?.currencyCode ?? 'MYR',
                 }
               : undefined
           }
