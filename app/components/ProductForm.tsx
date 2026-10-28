@@ -33,6 +33,8 @@ function parseGiftValue(raw: string): string[] {
 }
 
 export function ProductForm({
+  productId,
+  productTitle,
   productOptions,
   selectedVariant,
   sellingPlanGroups,
@@ -41,6 +43,8 @@ export function ProductForm({
   setPurchaseType,
   giftImages = {},
 }: {
+  productId: string;
+  productTitle: string;
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
   selectedSellingPlan: SellingPlanFragment | null;
@@ -244,6 +248,19 @@ export function ProductForm({
           }
           buttonClassName="rounded-none w-full"
           containerClassName="flex-1"
+          quantity={quantity}
+          page="Product Page"
+          trackingItem={
+            selectedVariant
+              ? {
+                  id: productId,
+                  name: productTitle,
+                  variant: selectedVariant.title,
+                  price: parseFloat(selectedVariant.price.amount),
+                  currency: selectedVariant.price.currencyCode,
+                }
+              : undefined
+          }
         >
           {selectedVariant?.availableForSale
             ? purchaseType === 'subscription'
