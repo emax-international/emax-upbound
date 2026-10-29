@@ -57,6 +57,7 @@ export function AddToCartButton({
         {(fetcher: FetcherWithComponents<any>) => (
           <CartFormInner
             fetcher={fetcher}
+            lines={lines}
             analytics={analytics}
             disabled={disabled}
             buttonClassName={buttonClassName}
@@ -82,6 +83,7 @@ export function AddToCartButton({
 
 function CartFormInner({
   fetcher,
+  lines,
   analytics,
   disabled,
   buttonClassName,
@@ -99,6 +101,7 @@ function CartFormInner({
   children,
 }: {
   fetcher: FetcherWithComponents<any>;
+  lines: Array<OptimisticCartLineInput>;
   analytics?: unknown;
   disabled?: boolean;
   buttonClassName?: string;
@@ -120,8 +123,9 @@ function CartFormInner({
   useEffect(() => {
     if (previousFetcherState.current !== 'idle' && fetcher.state === 'idle') {
       const qty = quantity ?? productData?.quantity ?? 1;
+      const lineQuantity = cartQuantityOf(lines, fetcher.data?.cart);
       if (trackingItem) {
-        pushCartEvent('add_to_cart', {...trackingItem, quantity: qty}, page);
+        pushCartEvent('add_to_cart', {...trackingItem, quantity: qty, lineQuantity}, page);
       } else if (productData) {
         const variant = productData.selectedOrFirstAvailableVariant;
         const price = variant?.price ?? productData.price ?? productData.priceRange?.minVariantPrice;
@@ -134,6 +138,7 @@ function CartFormInner({
             price: parseFloat(price?.amount ?? '0'),
             quantity: qty,
             currency: price?.currencyCode ?? currencyCode,
+            lineQuantity,
           },
           page,
         );
@@ -172,4 +177,25 @@ function CartFormInner({
       </Button>
     </div>
   );
+}
+
+const isGiftAttr = (attrs?: Array<{key: string; value?: string | null}> | null) =>
+  !!attrs?.some((a) => a.key === '_is_free_gift' && a.value === 'true');
+
+/**
+ * Quantity of the added item in the updated cart (same variant and same
+ * subscription plan, free gifts excluded). Undefined if the cart isn't returned.
+ */
+function cartQuantityOf(lines: Array<OptimisticCartLineInput>, cart: any): number | undefined {
+  const added = lines.find((l) => !isGiftAttr(l.attributes));
+  const cartLines: any[] | undefined = cart?.lines?.nodes;
+  if (!added || !cartLines) return undefined;
+  return cartLines
+    .filter(
+      (l) =>
+        l.merchandise?.id === added.merchandiseId &&
+        (l.sellingPlanAllocation?.sellingPlan?.id ?? null) === (added.sellingPlanId ?? null) &&
+        !isGiftAttr(l.attributes),
+    )
+    .reduce((sum, l) => sum + l.quantity, 0);
 }

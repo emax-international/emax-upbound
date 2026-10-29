@@ -19,6 +19,7 @@ function trackLine(
   event: 'add_to_cart' | 'remove_from_cart',
   line: CartLine,
   quantity: number,
+  lineQuantity: number,
   layout: CartLayout,
 ) {
   const isGift = line.attributes?.some((a) => a.key === '_is_free_gift' && a.value === 'true');
@@ -34,6 +35,7 @@ function trackLine(
       price: parseFloat(unit?.amount ?? '0'),
       quantity,
       currency: unit?.currencyCode ?? 'MYR',
+      lineQuantity,
     },
     layout === 'aside' ? 'Cart Drawer' : 'Cart Page',
   );
@@ -108,7 +110,7 @@ export function CartLineItem({
         <CartLineRemoveButton
           lineIds={giftLineId ? [id, giftLineId] : [id]}
           disabled={!!isOptimistic}
-          onRemove={() => trackLine('remove_from_cart', line, line.quantity, layout)}
+          onRemove={() => trackLine('remove_from_cart', line, line.quantity, 0, layout)}
         />
         {isGift ? (
           <div className="col-span-2 flex items-center justify-between">
@@ -168,7 +170,7 @@ function CartLineQuantity({
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
-          onClick={() => trackLine('remove_from_cart', line, 1, layout)}
+          onClick={() => trackLine('remove_from_cart', line, 1, line.quantity - 1, layout)}
           className="!h-fit !p-2 md:!p-4 rounded-none bg-transparent"
         >
           <MinusIcon />
@@ -182,7 +184,7 @@ function CartLineQuantity({
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
-          onClick={() => trackLine('add_to_cart', line, 1, layout)}
+          onClick={() => trackLine('add_to_cart', line, 1, line.quantity + 1, layout)}
           disabled={!!isOptimistic}
           className="!h-fit !p-2 md:!p-4 rounded-none bg-transparent"
         >

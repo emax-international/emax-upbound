@@ -19,6 +19,8 @@ export type TrackedItem = {
   price: number;
   quantity: number;
   currency: string;
+  /** This item's quantity in the cart after the action */
+  lineQuantity?: number;
 };
 
 export function pushCartEvent(
@@ -32,6 +34,11 @@ export function pushCartEvent(
   const price = round(item.price);
   // Line total: unit price × quantity
   const value = round(item.price * item.quantity);
+  // Total for this item in the cart after the action (only when known)
+  const line =
+    item.lineQuantity === undefined
+      ? {}
+      : {line_quantity: item.lineQuantity, line_value: round(item.price * item.lineQuantity)};
 
   // GA4 recommends clearing the previous ecommerce object first
   window.dataLayer.push({ecommerce: null});
@@ -47,11 +54,13 @@ export function pushCartEvent(
       quantity: item.quantity,
       currency: item.currency,
       value,
+      ...line,
     },
     product_id: item.id,
     currency: item.currency,
     quantity: item.quantity,
     value,
+    ...line,
     // GA4 ecommerce shape
     ecommerce: {
       currency: item.currency,
