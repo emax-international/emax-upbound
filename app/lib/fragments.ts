@@ -56,7 +56,8 @@ export const CART_QUERY_FRAGMENT = `#graphql
     }
     sellingPlanAllocation {
       sellingPlan {
-         name
+        id
+        name
       }
     }
   }
@@ -111,7 +112,8 @@ export const CART_QUERY_FRAGMENT = `#graphql
     }
     sellingPlanAllocation {
       sellingPlan {
-         name
+        id
+        name
       }
     }
   }
@@ -240,4 +242,33 @@ export const FOOTER_QUERY = `#graphql
     }
   }
   ${MENU_FRAGMENT}
+` as const;
+
+// Returned after cart changes. Hydrogen's default only has id, totalQuantity and
+// checkoutUrl; the lines let tracking report each item's quantity in the cart.
+export const CART_MUTATE_FRAGMENT = `#graphql
+  fragment CartApiMutation on Cart {
+    id
+    totalQuantity
+    checkoutUrl
+    lines(first: 100) {
+      nodes {
+        quantity
+        attributes {
+          key
+          value
+        }
+        merchandise {
+          ... on ProductVariant {
+            id
+          }
+        }
+        sellingPlanAllocation {
+          sellingPlan {
+            id
+          }
+        }
+      }
+    }
+  }
 ` as const;

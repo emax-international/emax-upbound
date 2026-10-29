@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { cn } from '~/lib/utils';
 import { Button, buttonVariants } from './ui/button';
 import { useAside } from './Aside';
+import { pushCartEvent, type TrackedItem } from '~/lib/tracking';
 import type { AsideType } from './Aside';
 
 
@@ -21,6 +22,7 @@ export function AddToCartButton({
   size,
   openCartOnSubmit = true,
   productData,
+  trackingItem,
   quantity,
   page,
   onSuccess,
@@ -34,6 +36,7 @@ export function AddToCartButton({
   containerClassName?: string;
   openCartOnSubmit?: boolean;
   productData?: Record<string, any>;
+  trackingItem?: Omit<TrackedItem, 'quantity'>;
   quantity?: number;
   page?: string;
   onSuccess?: () => void;
@@ -54,6 +57,7 @@ export function AddToCartButton({
         {(fetcher: FetcherWithComponents<any>) => (
           <CartFormInner
             fetcher={fetcher}
+            lines={lines}
             analytics={analytics}
             disabled={disabled}
             buttonClassName={buttonClassName}
@@ -61,6 +65,7 @@ export function AddToCartButton({
             size={size}
             openCartOnSubmit={openCartOnSubmit}
             productData={productData}
+            trackingItem={trackingItem}
             quantity={quantity}
             page={page}
             currencyCode={currencyCode}
@@ -78,6 +83,7 @@ export function AddToCartButton({
 
 function CartFormInner({
   fetcher,
+  lines,
   analytics,
   disabled,
   buttonClassName,
@@ -85,6 +91,7 @@ function CartFormInner({
   size,
   openCartOnSubmit,
   productData,
+  trackingItem,
   quantity,
   page,
   currencyCode,
@@ -94,6 +101,7 @@ function CartFormInner({
   children,
 }: {
   fetcher: FetcherWithComponents<any>;
+  lines: Array<OptimisticCartLineInput>;
   analytics?: unknown;
   disabled?: boolean;
   buttonClassName?: string;
@@ -101,6 +109,7 @@ function CartFormInner({
   size?: any;
   openCartOnSubmit?: boolean;
   productData?: Record<string, any>;
+  trackingItem?: Omit<TrackedItem, 'quantity'>;
   quantity?: number;
   page?: string;
   currencyCode: string;
@@ -113,24 +122,26 @@ function CartFormInner({
 
   useEffect(() => {
     if (previousFetcherState.current !== 'idle' && fetcher.state === 'idle') {
-      if (typeof window !== 'undefined' && window.dataLayer) {
-        const info = {
-          id: productData?.id ?? 0,
-          name: productData?.name ?? productData?.product?.title ?? productData?.title ?? '',
-          variant: productData?.variant ?? productData?.productType ?? productData?.title ?? productData?.sku ?? '',
-          price: productData?.selectedOrFirstAvailableVariant?.price?.amount ?? productData?.price?.amount ?? productData?.priceRange?.minVariantPrice?.amount ?? '0',
-          quantity: quantity ?? productData?.quantity ?? 1,
-          currency: productData?.price?.currencyCode ?? currencyCode ?? 'MYR',
-        };
-
-        window.dataLayer.push({
-          event: 'add_to_cart',
-          eventPage: page ?? 'unknown',
-          details: info,
-          product_id: info.id,
-          currency: info.currency,
-          quantity: info.quantity,
-        });
+      const qty = quantity ?? productData?.quantity ?? 1;
+      const lineQuantity = cartQuantityOf(lines, fetcher.data?.cart);
+      if (trackingItem) {
+        pushCartEvent('add_to_cart', {...trackingItem, quantity: qty, lineQuantity}, page);
+      } else if (productData) {
+        const variant = productData.selectedOrFirstAvailableVariant;
+        const price = variant?.price ?? productData.price ?? productData.priceRange?.minVariantPrice;
+        pushCartEvent(
+          'add_to_cart',
+          {
+            id: productData.id ?? '',
+            name: productData.title ?? productData.product?.title ?? '',
+            variant: variant?.title ?? '',
+            price: parseFloat(price?.amount ?? '0'),
+            quantity: qty,
+            currency: price?.currencyCode ?? currencyCode,
+            lineQuantity,
+          },
+          page,
+        );
       }
 
       if (openCartOnSubmit) open('cart');
@@ -166,4 +177,25 @@ function CartFormInner({
       </Button>
     </div>
   );
+}
+
+const isGiftAttr = (attrs?: Array<{key: string; value?: string | null}> | null) =>
+  !!attrs?.some((a) => a.key === '_is_free_gift' && a.value === 'true');
+
+/**
+ * Quantity of the added item in the updated cart (same variant and same
+ * subscription plan, free gifts excluded). Undefined if the cart isn't returned.
+ */
+function cartQuantityOf(lines: Array<OptimisticCartLineInput>, cart: any): number | undefined {
+  const added = lines.find((l) => !isGiftAttr(l.attributes));
+  const cartLines: any[] | undefined = cart?.lines?.nodes;
+  if (!added || !cartLines) return undefined;
+  return cartLines
+    .filter(
+      (l) =>
+        l.merchandise?.id === added.merchandiseId &&
+        (l.sellingPlanAllocation?.sellingPlan?.id ?? null) === (added.sellingPlanId ?? null) &&
+        !isGiftAttr(l.attributes),
+    )
+    .reduce((sum, l) => sum + l.quantity, 0);
 }

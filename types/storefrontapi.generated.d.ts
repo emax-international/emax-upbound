@@ -2201,7 +2201,7 @@ export type CartLineFragment = Pick<
     >;
   };
   sellingPlanAllocation?: StorefrontAPI.Maybe<{
-    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
   }>;
 };
 
@@ -2234,7 +2234,7 @@ export type CartLineComponentFragment = Pick<
     >;
   };
   sellingPlanAllocation?: StorefrontAPI.Maybe<{
-    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
   }>;
 };
 
@@ -2295,7 +2295,7 @@ export type CartApiQueryFragment = Pick<
             >;
           };
           sellingPlanAllocation?: StorefrontAPI.Maybe<{
-            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
           }>;
         })
       | (Pick<StorefrontAPI.ComponentizableCartLine, 'id' | 'quantity'> & {
@@ -2333,7 +2333,7 @@ export type CartApiQueryFragment = Pick<
             >;
           };
           sellingPlanAllocation?: StorefrontAPI.Maybe<{
-            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
           }>;
         })
     >;
@@ -2464,6 +2464,30 @@ export type FooterQuery = {
   >;
 };
 
+export type CartApiMutationFragment = Pick<
+  StorefrontAPI.Cart,
+  'id' | 'totalQuantity' | 'checkoutUrl'
+> & {
+  lines: {
+    nodes: Array<
+      | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
+          attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+          sellingPlanAllocation?: StorefrontAPI.Maybe<{
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          }>;
+        })
+      | (Pick<StorefrontAPI.ComponentizableCartLine, 'quantity'> & {
+          attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+          sellingPlanAllocation?: StorefrontAPI.Maybe<{
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          }>;
+        })
+    >;
+  };
+};
+
 export type MoneyProductItemFragment = Pick<
   StorefrontAPI.MoneyV2,
   'amount' | 'currencyCode'
@@ -2485,7 +2509,8 @@ export type ProductItemFragment = Pick<
     maxVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
   };
   selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
+    Pick<StorefrontAPI.ProductVariant, 'id' | 'title' | 'availableForSale'> & {
+      price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
       freeGift?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
     }
   >;
@@ -2544,7 +2569,11 @@ export type CollectionQuery = {
               >;
             };
             selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
-              Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
+              Pick<
+                StorefrontAPI.ProductVariant,
+                'id' | 'title' | 'availableForSale'
+              > & {
+                price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
                 freeGift?: StorefrontAPI.Maybe<
                   Pick<StorefrontAPI.Metafield, 'value'>
                 >;
@@ -2623,7 +2652,8 @@ export type CollectionItemFragment = Pick<
     maxVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
   };
   selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
+    Pick<StorefrontAPI.ProductVariant, 'id' | 'title' | 'availableForSale'> & {
+      price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
       freeGift?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
     }
   >;
@@ -2676,7 +2706,11 @@ export type CatalogQuery = {
           >;
         };
         selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
+          Pick<
+            StorefrontAPI.ProductVariant,
+            'id' | 'title' | 'availableForSale'
+          > & {
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
             freeGift?: StorefrontAPI.Maybe<
               Pick<StorefrontAPI.Metafield, 'value'>
             >;
@@ -4116,7 +4150,7 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  '#graphql\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {\n      id\n      availableForSale\n      freeGift: metafield(key: "free_gift", namespace: "custom") {\n        value\n      }\n    }\n    productType\n    totalInventory\n  }\n\n  query Collection(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      products(\n        first: $first,\n        last: $last,\n        before: $startCursor,\n        after: $endCursor\n      ) {\n        nodes {\n          ...ProductItem\n        }\n        pageInfo {\n          hasPreviousPage\n          hasNextPage\n          endCursor\n          startCursor\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {\n      id\n      title\n      availableForSale\n      price {\n        amount\n        currencyCode\n      }\n      freeGift: metafield(key: "free_gift", namespace: "custom") {\n        value\n      }\n    }\n    productType\n    totalInventory\n  }\n\n  query Collection(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      products(\n        first: $first,\n        last: $last,\n        before: $startCursor,\n        after: $endCursor\n      ) {\n        nodes {\n          ...ProductItem\n        }\n        pageInfo {\n          hasPreviousPage\n          hasNextPage\n          endCursor\n          startCursor\n        }\n      }\n    }\n  }\n': {
     return: CollectionQuery;
     variables: CollectionQueryVariables;
   };
@@ -4124,7 +4158,7 @@ interface GeneratedQueryTypes {
     return: StoreCollectionsQuery;
     variables: StoreCollectionsQueryVariables;
   };
-  '#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {\n      id\n      availableForSale\n      freeGift: metafield(key: "free_gift", namespace: "custom") {\n        value\n      }\n    }\n    productType\n  }\n\n': {
+  '#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {\n      id\n      title\n      availableForSale\n      price {\n        amount\n        currencyCode\n      }\n      freeGift: metafield(key: "free_gift", namespace: "custom") {\n        value\n      }\n    }\n    productType\n  }\n\n': {
     return: CatalogQuery;
     variables: CatalogQueryVariables;
   };
