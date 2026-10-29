@@ -208,7 +208,12 @@ const COLLECTION_ITEM_FRAGMENT = `#graphql
     }
     selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {
       id
+      title
       availableForSale
+      price {
+        amount
+        currencyCode
+      }
       freeGift: metafield(key: "free_gift", namespace: "custom") {
         value
       }

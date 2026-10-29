@@ -313,10 +313,9 @@ export default function Product() {
           />
           <div className="product-main space-y-6 col-span-6">
             <h2>{title}</h2>
-            <p className="typo-p-small text-mid-grey">{variantType}
-              <span><p className="typo-p-small text-black">Hydration + focus support without the energy drink crash</p>
-              </span>
-            </p>
+            <div className="typo-p-small text-mid-grey">{variantType}
+              <p className="typo-p-small text-black">Hydration + focus support without the energy drink crash</p>
+            </div>
             <ProductPrice
               price={selectedVariant?.price}
               compareAtPrice={selectedVariant?.compareAtPrice}
@@ -328,6 +327,8 @@ export default function Product() {
               unitCount={Number((selectedVariant as any)?.unitsPerPack?.value) || undefined}
             />
             <ProductForm
+              productId={product.id}
+              productTitle={title}
               productOptions={productOptions}
               selectedVariant={selectedVariant}
               selectedSellingPlan={selectedSellingPlan}
