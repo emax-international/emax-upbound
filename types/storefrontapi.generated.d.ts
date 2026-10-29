@@ -1903,7 +1903,7 @@ export type CartLineFragment = Pick<
     >;
   };
   sellingPlanAllocation?: StorefrontAPI.Maybe<{
-    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
   }>;
 };
 
@@ -1936,7 +1936,7 @@ export type CartLineComponentFragment = Pick<
     >;
   };
   sellingPlanAllocation?: StorefrontAPI.Maybe<{
-    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+    sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
   }>;
 };
 
@@ -1997,7 +1997,7 @@ export type CartApiQueryFragment = Pick<
             >;
           };
           sellingPlanAllocation?: StorefrontAPI.Maybe<{
-            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
           }>;
         })
       | (Pick<StorefrontAPI.ComponentizableCartLine, 'id' | 'quantity'> & {
@@ -2035,7 +2035,7 @@ export type CartApiQueryFragment = Pick<
             >;
           };
           sellingPlanAllocation?: StorefrontAPI.Maybe<{
-            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'name'>;
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id' | 'name'>;
           }>;
         })
     >;
@@ -2164,6 +2164,30 @@ export type FooterQuery = {
       >;
     }
   >;
+};
+
+export type CartApiMutationFragment = Pick<
+  StorefrontAPI.Cart,
+  'id' | 'totalQuantity' | 'checkoutUrl'
+> & {
+  lines: {
+    nodes: Array<
+      | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
+          attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+          sellingPlanAllocation?: StorefrontAPI.Maybe<{
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          }>;
+        })
+      | (Pick<StorefrontAPI.ComponentizableCartLine, 'quantity'> & {
+          attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
+          merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+          sellingPlanAllocation?: StorefrontAPI.Maybe<{
+            sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          }>;
+        })
+    >;
+  };
 };
 
 export type MoneyProductItemFragment = Pick<
