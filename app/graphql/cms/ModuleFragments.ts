@@ -821,7 +821,10 @@ export const CAROUSEL_FRAGMENT = `#graphql
 fragment Carousel on Metaobject {
   id
   type
-  title: field(key: "title") {
+  top_heading: field(key: "top_heading") {
+    value
+  }
+  caption: field(key: "caption") {
     value
   }
   header: field(key: "header") {
@@ -882,6 +885,79 @@ fragment Carousel on Metaobject {
             }
           }
         }
+      }
+    }
+  }
+}
+`;
+
+export const COMPARISON_TABLE_FRAGMENT = `#graphql
+fragment ComparisonTable on Metaobject {
+  id
+  type
+  header: field(key: "header") {
+    value
+  }
+  label: field(key: "label") {
+    value
+  }
+  background_image: field(key: "background_image") {
+    reference {
+      ... on MediaImage {
+        image {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+  table_header: field(key: "table_header") {
+    references(first: 10) {
+      nodes {
+        ... on Metaobject {
+          id
+          text: field(key: "text") { value }
+          highlight: field(key: "highlight") { value }
+          image: field(key: "image") {
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  rows: field(key: "rows") {
+    references(first: 20) {
+      nodes {
+        ... on Metaobject {
+          id
+          label: field(key: "label") { value }
+          values: field(key: "values") { value }
+        }
+      }
+    }
+  }
+  footnote: field(key: "footnote") {
+    value
+  }
+  cta: field(key: "cta") {
+    reference {
+      ... on Metaobject {
+        type
+        label: field(key: "label") { value }
+        internalUrl: field(key: "internal_url") { value }
+        externalUrl: field(key: "external_url") { value }
+        iconVariant: field(key: "icon_variant") { value }
       }
     }
   }

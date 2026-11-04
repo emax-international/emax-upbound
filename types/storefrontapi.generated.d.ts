@@ -5,16 +5,615 @@ import type * as StorefrontAPI from '@shopify/hydrogen/storefront-api-types';
 
 export type AbTestingPageCmsQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
+  selectedOptions:
+    | Array<StorefrontAPI.SelectedOptionInput>
+    | StorefrontAPI.SelectedOptionInput;
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
 }>;
 
 export type AbTestingPageCmsQuery = {
   abTestingPage?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Metaobject, 'id' | 'handle'> & {
       title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
-      gallery?: StorefrontAPI.Maybe<{
+      hero?: StorefrontAPI.Maybe<{
         reference?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
             title?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            description?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            desktopImage?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    'height' | 'width' | 'url' | 'altText'
+                  >
+                >;
+              }>;
+            }>;
+            mobileImage?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    'height' | 'width' | 'url' | 'altText'
+                  >
+                >;
+              }>;
+            }>;
+            cta?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metaobject, 'type'> & {
+                  label?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  internalUrl?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  externalUrl?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  iconVariant?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                }
+              >;
+            }>;
+          }
+        >;
+      }>;
+      productSection?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<{
+          product?: StorefrontAPI.Maybe<{
+            reference?: StorefrontAPI.Maybe<
+              Pick<
+                StorefrontAPI.Product,
+                | 'id'
+                | 'handle'
+                | 'title'
+                | 'vendor'
+                | 'encodedVariantExistence'
+                | 'encodedVariantAvailability'
+              > & {
+                images: {
+                  nodes: Array<
+                    Pick<
+                      StorefrontAPI.Image,
+                      'id' | 'url' | 'altText' | 'width' | 'height'
+                    >
+                  >;
+                };
+                options: Array<
+                  Pick<StorefrontAPI.ProductOption, 'name'> & {
+                    optionValues: Array<
+                      Pick<StorefrontAPI.ProductOptionValue, 'name'> & {
+                        firstSelectableVariant?: StorefrontAPI.Maybe<
+                          Pick<
+                            StorefrontAPI.ProductVariant,
+                            'availableForSale' | 'id' | 'title' | 'sku'
+                          > & {
+                            price: Pick<
+                              StorefrontAPI.MoneyV2,
+                              'amount' | 'currencyCode'
+                            >;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            unitPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            image?: StorefrontAPI.Maybe<
+                              {__typename: 'Image'} & Pick<
+                                StorefrontAPI.Image,
+                                'id' | 'url' | 'altText' | 'width' | 'height'
+                              >
+                            >;
+                            product: Pick<
+                              StorefrontAPI.Product,
+                              'title' | 'handle'
+                            >;
+                            selectedOptions: Array<
+                              Pick<
+                                StorefrontAPI.SelectedOption,
+                                'name' | 'value'
+                              >
+                            >;
+                            unitsPerPack?: StorefrontAPI.Maybe<
+                              Pick<StorefrontAPI.Metafield, 'value'>
+                            >;
+                            freeGift?: StorefrontAPI.Maybe<{
+                              references?: StorefrontAPI.Maybe<{
+                                nodes: Array<
+                                  Pick<
+                                    StorefrontAPI.ProductVariant,
+                                    'id' | 'title'
+                                  > & {
+                                    price: Pick<
+                                      StorefrontAPI.MoneyV2,
+                                      'amount' | 'currencyCode'
+                                    >;
+                                    compareAtPrice?: StorefrontAPI.Maybe<
+                                      Pick<
+                                        StorefrontAPI.MoneyV2,
+                                        'amount' | 'currencyCode'
+                                      >
+                                    >;
+                                    image?: StorefrontAPI.Maybe<
+                                      Pick<
+                                        StorefrontAPI.Image,
+                                        'url' | 'altText' | 'width' | 'height'
+                                      >
+                                    >;
+                                    selectedOptions: Array<
+                                      Pick<
+                                        StorefrontAPI.SelectedOption,
+                                        'name' | 'value'
+                                      >
+                                    >;
+                                    product: Pick<
+                                      StorefrontAPI.Product,
+                                      'title'
+                                    > & {
+                                      sizeChart?: StorefrontAPI.Maybe<{
+                                        reference?: StorefrontAPI.Maybe<{
+                                          image?: StorefrontAPI.Maybe<
+                                            Pick<StorefrontAPI.Image, 'url'>
+                                          >;
+                                        }>;
+                                      }>;
+                                    };
+                                  }
+                                >;
+                              }>;
+                            }>;
+                            freeGiftSubscription?: StorefrontAPI.Maybe<{
+                              references?: StorefrontAPI.Maybe<{
+                                nodes: Array<
+                                  Pick<
+                                    StorefrontAPI.ProductVariant,
+                                    'id' | 'title'
+                                  > & {
+                                    price: Pick<
+                                      StorefrontAPI.MoneyV2,
+                                      'amount' | 'currencyCode'
+                                    >;
+                                    compareAtPrice?: StorefrontAPI.Maybe<
+                                      Pick<
+                                        StorefrontAPI.MoneyV2,
+                                        'amount' | 'currencyCode'
+                                      >
+                                    >;
+                                    image?: StorefrontAPI.Maybe<
+                                      Pick<
+                                        StorefrontAPI.Image,
+                                        'url' | 'altText' | 'width' | 'height'
+                                      >
+                                    >;
+                                    selectedOptions: Array<
+                                      Pick<
+                                        StorefrontAPI.SelectedOption,
+                                        'name' | 'value'
+                                      >
+                                    >;
+                                    product: Pick<
+                                      StorefrontAPI.Product,
+                                      'title'
+                                    > & {
+                                      sizeChart?: StorefrontAPI.Maybe<{
+                                        reference?: StorefrontAPI.Maybe<{
+                                          image?: StorefrontAPI.Maybe<
+                                            Pick<StorefrontAPI.Image, 'url'>
+                                          >;
+                                        }>;
+                                      }>;
+                                    };
+                                  }
+                                >;
+                              }>;
+                            }>;
+                            sellingPlanAllocations: {
+                              nodes: Array<{
+                                sellingPlan: Pick<
+                                  StorefrontAPI.SellingPlan,
+                                  'id'
+                                >;
+                                priceAdjustments: Array<{
+                                  compareAtPrice: Pick<
+                                    StorefrontAPI.MoneyV2,
+                                    'amount' | 'currencyCode'
+                                  >;
+                                  price: Pick<
+                                    StorefrontAPI.MoneyV2,
+                                    'amount' | 'currencyCode'
+                                  >;
+                                  perDeliveryPrice: Pick<
+                                    StorefrontAPI.MoneyV2,
+                                    'amount' | 'currencyCode'
+                                  >;
+                                }>;
+                              }>;
+                            };
+                          }
+                        >;
+                        swatch?: StorefrontAPI.Maybe<
+                          Pick<
+                            StorefrontAPI.ProductOptionValueSwatch,
+                            'color'
+                          > & {
+                            image?: StorefrontAPI.Maybe<{
+                              previewImage?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.Image, 'url'>
+                              >;
+                            }>;
+                          }
+                        >;
+                      }
+                    >;
+                  }
+                >;
+                selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.ProductVariant,
+                    'availableForSale' | 'id' | 'title' | 'sku'
+                  > & {
+                    price: Pick<
+                      StorefrontAPI.MoneyV2,
+                      'amount' | 'currencyCode'
+                    >;
+                    compareAtPrice?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                    >;
+                    unitPrice?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                    >;
+                    image?: StorefrontAPI.Maybe<
+                      {__typename: 'Image'} & Pick<
+                        StorefrontAPI.Image,
+                        'id' | 'url' | 'altText' | 'width' | 'height'
+                      >
+                    >;
+                    product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+                    selectedOptions: Array<
+                      Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+                    >;
+                    unitsPerPack?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Metafield, 'value'>
+                    >;
+                    freeGift?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                            price: Pick<
+                              StorefrontAPI.MoneyV2,
+                              'amount' | 'currencyCode'
+                            >;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            image?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.Image,
+                                'url' | 'altText' | 'width' | 'height'
+                              >
+                            >;
+                            selectedOptions: Array<
+                              Pick<
+                                StorefrontAPI.SelectedOption,
+                                'name' | 'value'
+                              >
+                            >;
+                            product: Pick<StorefrontAPI.Product, 'title'> & {
+                              sizeChart?: StorefrontAPI.Maybe<{
+                                reference?: StorefrontAPI.Maybe<{
+                                  image?: StorefrontAPI.Maybe<
+                                    Pick<StorefrontAPI.Image, 'url'>
+                                  >;
+                                }>;
+                              }>;
+                            };
+                          }
+                        >;
+                      }>;
+                    }>;
+                    freeGiftSubscription?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                            price: Pick<
+                              StorefrontAPI.MoneyV2,
+                              'amount' | 'currencyCode'
+                            >;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            image?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.Image,
+                                'url' | 'altText' | 'width' | 'height'
+                              >
+                            >;
+                            selectedOptions: Array<
+                              Pick<
+                                StorefrontAPI.SelectedOption,
+                                'name' | 'value'
+                              >
+                            >;
+                            product: Pick<StorefrontAPI.Product, 'title'> & {
+                              sizeChart?: StorefrontAPI.Maybe<{
+                                reference?: StorefrontAPI.Maybe<{
+                                  image?: StorefrontAPI.Maybe<
+                                    Pick<StorefrontAPI.Image, 'url'>
+                                  >;
+                                }>;
+                              }>;
+                            };
+                          }
+                        >;
+                      }>;
+                    }>;
+                    sellingPlanAllocations: {
+                      nodes: Array<{
+                        sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                        priceAdjustments: Array<{
+                          compareAtPrice: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                          price: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                          perDeliveryPrice: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                        }>;
+                      }>;
+                    };
+                  }
+                >;
+                adjacentVariants: Array<
+                  Pick<
+                    StorefrontAPI.ProductVariant,
+                    'availableForSale' | 'id' | 'title' | 'sku'
+                  > & {
+                    price: Pick<
+                      StorefrontAPI.MoneyV2,
+                      'amount' | 'currencyCode'
+                    >;
+                    compareAtPrice?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                    >;
+                    unitPrice?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                    >;
+                    image?: StorefrontAPI.Maybe<
+                      {__typename: 'Image'} & Pick<
+                        StorefrontAPI.Image,
+                        'id' | 'url' | 'altText' | 'width' | 'height'
+                      >
+                    >;
+                    product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+                    selectedOptions: Array<
+                      Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+                    >;
+                    unitsPerPack?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Metafield, 'value'>
+                    >;
+                    freeGift?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                            price: Pick<
+                              StorefrontAPI.MoneyV2,
+                              'amount' | 'currencyCode'
+                            >;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            image?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.Image,
+                                'url' | 'altText' | 'width' | 'height'
+                              >
+                            >;
+                            selectedOptions: Array<
+                              Pick<
+                                StorefrontAPI.SelectedOption,
+                                'name' | 'value'
+                              >
+                            >;
+                            product: Pick<StorefrontAPI.Product, 'title'> & {
+                              sizeChart?: StorefrontAPI.Maybe<{
+                                reference?: StorefrontAPI.Maybe<{
+                                  image?: StorefrontAPI.Maybe<
+                                    Pick<StorefrontAPI.Image, 'url'>
+                                  >;
+                                }>;
+                              }>;
+                            };
+                          }
+                        >;
+                      }>;
+                    }>;
+                    freeGiftSubscription?: StorefrontAPI.Maybe<{
+                      references?: StorefrontAPI.Maybe<{
+                        nodes: Array<
+                          Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                            price: Pick<
+                              StorefrontAPI.MoneyV2,
+                              'amount' | 'currencyCode'
+                            >;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.MoneyV2,
+                                'amount' | 'currencyCode'
+                              >
+                            >;
+                            image?: StorefrontAPI.Maybe<
+                              Pick<
+                                StorefrontAPI.Image,
+                                'url' | 'altText' | 'width' | 'height'
+                              >
+                            >;
+                            selectedOptions: Array<
+                              Pick<
+                                StorefrontAPI.SelectedOption,
+                                'name' | 'value'
+                              >
+                            >;
+                            product: Pick<StorefrontAPI.Product, 'title'> & {
+                              sizeChart?: StorefrontAPI.Maybe<{
+                                reference?: StorefrontAPI.Maybe<{
+                                  image?: StorefrontAPI.Maybe<
+                                    Pick<StorefrontAPI.Image, 'url'>
+                                  >;
+                                }>;
+                              }>;
+                            };
+                          }
+                        >;
+                      }>;
+                    }>;
+                    sellingPlanAllocations: {
+                      nodes: Array<{
+                        sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                        priceAdjustments: Array<{
+                          compareAtPrice: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                          price: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                          perDeliveryPrice: Pick<
+                            StorefrontAPI.MoneyV2,
+                            'amount' | 'currencyCode'
+                          >;
+                        }>;
+                      }>;
+                    };
+                  }
+                >;
+                variants: {
+                  nodes: Array<
+                    Pick<StorefrontAPI.ProductVariant, 'id'> & {
+                      selectedOptions: Array<
+                        Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+                      >;
+                      sellingPlanAllocations: {
+                        nodes: Array<{
+                          sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                        }>;
+                      };
+                    }
+                  >;
+                };
+              }
+            >;
+          }>;
+          subtitle?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          highlights?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          info?: StorefrontAPI.Maybe<{
+            reference?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Metaobject, 'id'> & {
+                content?: StorefrontAPI.Maybe<{
+                  references?: StorefrontAPI.Maybe<{
+                    nodes: Array<
+                      Pick<StorefrontAPI.Metaobject, 'id'> & {
+                        title?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.MetaobjectField, 'value'>
+                        >;
+                        description?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.MetaobjectField, 'value'>
+                        >;
+                        tags?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.MetaobjectField, 'value'>
+                        >;
+                        note?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.MetaobjectField, 'value'>
+                        >;
+                        points?: StorefrontAPI.Maybe<{
+                          references?: StorefrontAPI.Maybe<{
+                            nodes: Array<
+                              Pick<StorefrontAPI.Metaobject, 'id'> & {
+                                step?: StorefrontAPI.Maybe<
+                                  Pick<StorefrontAPI.MetaobjectField, 'value'>
+                                >;
+                                description?: StorefrontAPI.Maybe<
+                                  Pick<StorefrontAPI.MetaobjectField, 'value'>
+                                >;
+                              }
+                            >;
+                          }>;
+                        }>;
+                        ingredients?: StorefrontAPI.Maybe<{
+                          references?: StorefrontAPI.Maybe<{
+                            nodes: Array<
+                              Pick<StorefrontAPI.Metaobject, 'id'> & {
+                                text?: StorefrontAPI.Maybe<
+                                  Pick<StorefrontAPI.MetaobjectField, 'value'>
+                                >;
+                                description?: StorefrontAPI.Maybe<
+                                  Pick<StorefrontAPI.MetaobjectField, 'value'>
+                                >;
+                                amount?: StorefrontAPI.Maybe<
+                                  Pick<StorefrontAPI.MetaobjectField, 'value'>
+                                >;
+                                image?: StorefrontAPI.Maybe<{
+                                  reference?: StorefrontAPI.Maybe<{
+                                    image?: StorefrontAPI.Maybe<
+                                      Pick<
+                                        StorefrontAPI.Image,
+                                        'url' | 'altText' | 'width' | 'height'
+                                      >
+                                    >;
+                                  }>;
+                                }>;
+                              }
+                            >;
+                          }>;
+                        }>;
+                      }
+                    >;
+                  }>;
+                }>;
+              }
+            >;
+          }>;
+        }>;
+      }>;
+      gallery?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+            top_heading?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            caption?: StorefrontAPI.Maybe<
               Pick<StorefrontAPI.MetaobjectField, 'value'>
             >;
             header?: StorefrontAPI.Maybe<
@@ -100,10 +699,94 @@ export type AbTestingPageCmsQuery = {
           }
         >;
       }>;
+      comparison?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
+            header?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            label?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            background_image?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    'url' | 'altText' | 'width' | 'height'
+                  >
+                >;
+              }>;
+            }>;
+            table_header?: StorefrontAPI.Maybe<{
+              references?: StorefrontAPI.Maybe<{
+                nodes: Array<
+                  Pick<StorefrontAPI.Metaobject, 'id'> & {
+                    text?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    highlight?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    image?: StorefrontAPI.Maybe<{
+                      reference?: StorefrontAPI.Maybe<{
+                        image?: StorefrontAPI.Maybe<
+                          Pick<
+                            StorefrontAPI.Image,
+                            'url' | 'altText' | 'width' | 'height'
+                          >
+                        >;
+                      }>;
+                    }>;
+                  }
+                >;
+              }>;
+            }>;
+            rows?: StorefrontAPI.Maybe<{
+              references?: StorefrontAPI.Maybe<{
+                nodes: Array<
+                  Pick<StorefrontAPI.Metaobject, 'id'> & {
+                    label?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                    values?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.MetaobjectField, 'value'>
+                    >;
+                  }
+                >;
+              }>;
+            }>;
+            footnote?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            cta?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metaobject, 'type'> & {
+                  label?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  internalUrl?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  externalUrl?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  iconVariant?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                }
+              >;
+            }>;
+          }
+        >;
+      }>;
       review?: StorefrontAPI.Maybe<{
         reference?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
-            title?: StorefrontAPI.Maybe<
+            top_heading?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            caption?: StorefrontAPI.Maybe<
               Pick<StorefrontAPI.MetaobjectField, 'value'>
             >;
             header?: StorefrontAPI.Maybe<
@@ -221,6 +904,13 @@ export type AbTestingPageCmsQuery = {
             }>;
           }
         >;
+      }>;
+      footerImage?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<{
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+          >;
+        }>;
       }>;
     }
   >;
@@ -1184,6 +1874,539 @@ export type LabPageCmsQuery = {
   >;
 };
 
+export type LandingGiftVariantFragment = Pick<
+  StorefrontAPI.ProductVariant,
+  'id' | 'title'
+> & {
+  price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+  compareAtPrice?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+  >;
+  image?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+  >;
+  selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>>;
+  product: Pick<StorefrontAPI.Product, 'title'> & {
+    sizeChart?: StorefrontAPI.Maybe<{
+      reference?: StorefrontAPI.Maybe<{
+        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+      }>;
+    }>;
+  };
+};
+
+export type LandingProductVariantFragment = Pick<
+  StorefrontAPI.ProductVariant,
+  'availableForSale' | 'id' | 'title' | 'sku'
+> & {
+  price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+  compareAtPrice?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+  >;
+  unitPrice?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+  >;
+  image?: StorefrontAPI.Maybe<
+    {__typename: 'Image'} & Pick<
+      StorefrontAPI.Image,
+      'id' | 'url' | 'altText' | 'width' | 'height'
+    >
+  >;
+  product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+  selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>>;
+  unitsPerPack?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+  freeGift?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+          price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+          compareAtPrice?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+          >;
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+          >;
+          selectedOptions: Array<
+            Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+          >;
+          product: Pick<StorefrontAPI.Product, 'title'> & {
+            sizeChart?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+              }>;
+            }>;
+          };
+        }
+      >;
+    }>;
+  }>;
+  freeGiftSubscription?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+          price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+          compareAtPrice?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+          >;
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+          >;
+          selectedOptions: Array<
+            Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+          >;
+          product: Pick<StorefrontAPI.Product, 'title'> & {
+            sizeChart?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+              }>;
+            }>;
+          };
+        }
+      >;
+    }>;
+  }>;
+  sellingPlanAllocations: {
+    nodes: Array<{
+      sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+      priceAdjustments: Array<{
+        compareAtPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+        price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+        perDeliveryPrice: Pick<
+          StorefrontAPI.MoneyV2,
+          'amount' | 'currencyCode'
+        >;
+      }>;
+    }>;
+  };
+};
+
+export type LandingProductFragment = Pick<
+  StorefrontAPI.Product,
+  | 'id'
+  | 'handle'
+  | 'title'
+  | 'vendor'
+  | 'encodedVariantExistence'
+  | 'encodedVariantAvailability'
+> & {
+  images: {
+    nodes: Array<
+      Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
+    >;
+  };
+  options: Array<
+    Pick<StorefrontAPI.ProductOption, 'name'> & {
+      optionValues: Array<
+        Pick<StorefrontAPI.ProductOptionValue, 'name'> & {
+          firstSelectableVariant?: StorefrontAPI.Maybe<
+            Pick<
+              StorefrontAPI.ProductVariant,
+              'availableForSale' | 'id' | 'title' | 'sku'
+            > & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              unitPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              image?: StorefrontAPI.Maybe<
+                {__typename: 'Image'} & Pick<
+                  StorefrontAPI.Image,
+                  'id' | 'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+              product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              unitsPerPack?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
+              freeGift?: StorefrontAPI.Maybe<{
+                references?: StorefrontAPI.Maybe<{
+                  nodes: Array<
+                    Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                      price: Pick<
+                        StorefrontAPI.MoneyV2,
+                        'amount' | 'currencyCode'
+                      >;
+                      compareAtPrice?: StorefrontAPI.Maybe<
+                        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                      >;
+                      image?: StorefrontAPI.Maybe<
+                        Pick<
+                          StorefrontAPI.Image,
+                          'url' | 'altText' | 'width' | 'height'
+                        >
+                      >;
+                      selectedOptions: Array<
+                        Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+                      >;
+                      product: Pick<StorefrontAPI.Product, 'title'> & {
+                        sizeChart?: StorefrontAPI.Maybe<{
+                          reference?: StorefrontAPI.Maybe<{
+                            image?: StorefrontAPI.Maybe<
+                              Pick<StorefrontAPI.Image, 'url'>
+                            >;
+                          }>;
+                        }>;
+                      };
+                    }
+                  >;
+                }>;
+              }>;
+              freeGiftSubscription?: StorefrontAPI.Maybe<{
+                references?: StorefrontAPI.Maybe<{
+                  nodes: Array<
+                    Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+                      price: Pick<
+                        StorefrontAPI.MoneyV2,
+                        'amount' | 'currencyCode'
+                      >;
+                      compareAtPrice?: StorefrontAPI.Maybe<
+                        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+                      >;
+                      image?: StorefrontAPI.Maybe<
+                        Pick<
+                          StorefrontAPI.Image,
+                          'url' | 'altText' | 'width' | 'height'
+                        >
+                      >;
+                      selectedOptions: Array<
+                        Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+                      >;
+                      product: Pick<StorefrontAPI.Product, 'title'> & {
+                        sizeChart?: StorefrontAPI.Maybe<{
+                          reference?: StorefrontAPI.Maybe<{
+                            image?: StorefrontAPI.Maybe<
+                              Pick<StorefrontAPI.Image, 'url'>
+                            >;
+                          }>;
+                        }>;
+                      };
+                    }
+                  >;
+                }>;
+              }>;
+              sellingPlanAllocations: {
+                nodes: Array<{
+                  sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                  priceAdjustments: Array<{
+                    compareAtPrice: Pick<
+                      StorefrontAPI.MoneyV2,
+                      'amount' | 'currencyCode'
+                    >;
+                    price: Pick<
+                      StorefrontAPI.MoneyV2,
+                      'amount' | 'currencyCode'
+                    >;
+                    perDeliveryPrice: Pick<
+                      StorefrontAPI.MoneyV2,
+                      'amount' | 'currencyCode'
+                    >;
+                  }>;
+                }>;
+              };
+            }
+          >;
+          swatch?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.ProductOptionValueSwatch, 'color'> & {
+              image?: StorefrontAPI.Maybe<{
+                previewImage?: StorefrontAPI.Maybe<
+                  Pick<StorefrontAPI.Image, 'url'>
+                >;
+              }>;
+            }
+          >;
+        }
+      >;
+    }
+  >;
+  selectedOrFirstAvailableVariant?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.ProductVariant,
+      'availableForSale' | 'id' | 'title' | 'sku'
+    > & {
+      price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+      compareAtPrice?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+      >;
+      unitPrice?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+      >;
+      image?: StorefrontAPI.Maybe<
+        {__typename: 'Image'} & Pick<
+          StorefrontAPI.Image,
+          'id' | 'url' | 'altText' | 'width' | 'height'
+        >
+      >;
+      product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+      selectedOptions: Array<
+        Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+      >;
+      unitsPerPack?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Metafield, 'value'>
+      >;
+      freeGift?: StorefrontAPI.Maybe<{
+        references?: StorefrontAPI.Maybe<{
+          nodes: Array<
+            Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              product: Pick<StorefrontAPI.Product, 'title'> & {
+                sizeChart?: StorefrontAPI.Maybe<{
+                  reference?: StorefrontAPI.Maybe<{
+                    image?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Image, 'url'>
+                    >;
+                  }>;
+                }>;
+              };
+            }
+          >;
+        }>;
+      }>;
+      freeGiftSubscription?: StorefrontAPI.Maybe<{
+        references?: StorefrontAPI.Maybe<{
+          nodes: Array<
+            Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              product: Pick<StorefrontAPI.Product, 'title'> & {
+                sizeChart?: StorefrontAPI.Maybe<{
+                  reference?: StorefrontAPI.Maybe<{
+                    image?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Image, 'url'>
+                    >;
+                  }>;
+                }>;
+              };
+            }
+          >;
+        }>;
+      }>;
+      sellingPlanAllocations: {
+        nodes: Array<{
+          sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          priceAdjustments: Array<{
+            compareAtPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'amount' | 'currencyCode'
+            >;
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+            perDeliveryPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'amount' | 'currencyCode'
+            >;
+          }>;
+        }>;
+      };
+    }
+  >;
+  adjacentVariants: Array<
+    Pick<
+      StorefrontAPI.ProductVariant,
+      'availableForSale' | 'id' | 'title' | 'sku'
+    > & {
+      price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+      compareAtPrice?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+      >;
+      unitPrice?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+      >;
+      image?: StorefrontAPI.Maybe<
+        {__typename: 'Image'} & Pick<
+          StorefrontAPI.Image,
+          'id' | 'url' | 'altText' | 'width' | 'height'
+        >
+      >;
+      product: Pick<StorefrontAPI.Product, 'title' | 'handle'>;
+      selectedOptions: Array<
+        Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+      >;
+      unitsPerPack?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Metafield, 'value'>
+      >;
+      freeGift?: StorefrontAPI.Maybe<{
+        references?: StorefrontAPI.Maybe<{
+          nodes: Array<
+            Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              product: Pick<StorefrontAPI.Product, 'title'> & {
+                sizeChart?: StorefrontAPI.Maybe<{
+                  reference?: StorefrontAPI.Maybe<{
+                    image?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Image, 'url'>
+                    >;
+                  }>;
+                }>;
+              };
+            }
+          >;
+        }>;
+      }>;
+      freeGiftSubscription?: StorefrontAPI.Maybe<{
+        references?: StorefrontAPI.Maybe<{
+          nodes: Array<
+            Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
+              >;
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              product: Pick<StorefrontAPI.Product, 'title'> & {
+                sizeChart?: StorefrontAPI.Maybe<{
+                  reference?: StorefrontAPI.Maybe<{
+                    image?: StorefrontAPI.Maybe<
+                      Pick<StorefrontAPI.Image, 'url'>
+                    >;
+                  }>;
+                }>;
+              };
+            }
+          >;
+        }>;
+      }>;
+      sellingPlanAllocations: {
+        nodes: Array<{
+          sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+          priceAdjustments: Array<{
+            compareAtPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'amount' | 'currencyCode'
+            >;
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+            perDeliveryPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'amount' | 'currencyCode'
+            >;
+          }>;
+        }>;
+      };
+    }
+  >;
+  variants: {
+    nodes: Array<
+      Pick<StorefrontAPI.ProductVariant, 'id'> & {
+        selectedOptions: Array<
+          Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+        >;
+        sellingPlanAllocations: {
+          nodes: Array<{sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>}>;
+        };
+      }
+    >;
+  };
+};
+
+export type LandingInfoFragment = Pick<StorefrontAPI.Metaobject, 'id'> & {
+  content?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.Metaobject, 'id'> & {
+          title?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          description?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          tags?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          note?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          points?: StorefrontAPI.Maybe<{
+            references?: StorefrontAPI.Maybe<{
+              nodes: Array<
+                Pick<StorefrontAPI.Metaobject, 'id'> & {
+                  step?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  description?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                }
+              >;
+            }>;
+          }>;
+          ingredients?: StorefrontAPI.Maybe<{
+            references?: StorefrontAPI.Maybe<{
+              nodes: Array<
+                Pick<StorefrontAPI.Metaobject, 'id'> & {
+                  text?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  description?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  amount?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.MetaobjectField, 'value'>
+                  >;
+                  image?: StorefrontAPI.Maybe<{
+                    reference?: StorefrontAPI.Maybe<{
+                      image?: StorefrontAPI.Maybe<
+                        Pick<
+                          StorefrontAPI.Image,
+                          'url' | 'altText' | 'width' | 'height'
+                        >
+                      >;
+                    }>;
+                  }>;
+                }
+              >;
+            }>;
+          }>;
+        }
+      >;
+    }>;
+  }>;
+};
+
 export type HeroWithCtaFragment = Pick<
   StorefrontAPI.Metaobject,
   'id' | 'type'
@@ -1849,7 +3072,10 @@ export type BannerStepsFragment = Pick<
 };
 
 export type CarouselFragment = Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
-  title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  top_heading?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  caption?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
   header?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
   label?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
   layout?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
@@ -1920,6 +3146,78 @@ export type CarouselFragment = Pick<StorefrontAPI.Metaobject, 'id' | 'type'> & {
         }
       >;
     }>;
+  }>;
+};
+
+export type ComparisonTableFragment = Pick<
+  StorefrontAPI.Metaobject,
+  'id' | 'type'
+> & {
+  header?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  label?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  background_image?: StorefrontAPI.Maybe<{
+    reference?: StorefrontAPI.Maybe<{
+      image?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+      >;
+    }>;
+  }>;
+  table_header?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.Metaobject, 'id'> & {
+          text?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          highlight?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          image?: StorefrontAPI.Maybe<{
+            reference?: StorefrontAPI.Maybe<{
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+            }>;
+          }>;
+        }
+      >;
+    }>;
+  }>;
+  rows?: StorefrontAPI.Maybe<{
+    references?: StorefrontAPI.Maybe<{
+      nodes: Array<
+        Pick<StorefrontAPI.Metaobject, 'id'> & {
+          label?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+          values?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.MetaobjectField, 'value'>
+          >;
+        }
+      >;
+    }>;
+  }>;
+  footnote?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  cta?: StorefrontAPI.Maybe<{
+    reference?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.Metaobject, 'type'> & {
+        label?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        internalUrl?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        externalUrl?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        iconVariant?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+      }
+    >;
   }>;
 };
 
@@ -2468,6 +3766,9 @@ export type CartApiMutationFragment = Pick<
   StorefrontAPI.Cart,
   'id' | 'totalQuantity' | 'checkoutUrl'
 > & {
+  discountCodes: Array<
+    Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
+  >;
   lines: {
     nodes: Array<
       | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
@@ -2486,6 +3787,55 @@ export type CartApiMutationFragment = Pick<
         })
     >;
   };
+};
+
+export type CartDiscountCodesUpdateMutationVariables = StorefrontAPI.Exact<{
+  cartId: StorefrontAPI.Scalars['ID']['input'];
+  discountCodes:
+    | Array<StorefrontAPI.Scalars['String']['input']>
+    | StorefrontAPI.Scalars['String']['input'];
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+}>;
+
+export type CartDiscountCodesUpdateMutation = {
+  cartDiscountCodesUpdate?: StorefrontAPI.Maybe<{
+    cart?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.Cart, 'id' | 'totalQuantity' | 'checkoutUrl'> & {
+        discountCodes: Array<
+          Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
+        >;
+        lines: {
+          nodes: Array<
+            | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
+                attributes: Array<
+                  Pick<StorefrontAPI.Attribute, 'key' | 'value'>
+                >;
+                merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+                sellingPlanAllocation?: StorefrontAPI.Maybe<{
+                  sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                }>;
+              })
+            | (Pick<StorefrontAPI.ComponentizableCartLine, 'quantity'> & {
+                attributes: Array<
+                  Pick<StorefrontAPI.Attribute, 'key' | 'value'>
+                >;
+                merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+                sellingPlanAllocation?: StorefrontAPI.Maybe<{
+                  sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                }>;
+              })
+          >;
+        };
+      }
+    >;
+    userErrors: Array<
+      Pick<StorefrontAPI.CartUserError, 'code' | 'field' | 'message'>
+    >;
+    warnings: Array<
+      Pick<StorefrontAPI.CartWarning, 'code' | 'message' | 'target'>
+    >;
+  }>;
 };
 
 export type MoneyProductItemFragment = Pick<
@@ -4082,7 +5432,7 @@ export type StoreRobotsQueryVariables = StorefrontAPI.Exact<{
 export type StoreRobotsQuery = {shop: Pick<StorefrontAPI.Shop, 'id'>};
 
 interface GeneratedQueryTypes {
-  '#graphql\n  #graphql\n  fragment Accordion on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    collapsible: field(key: "collapsible") {\n      value\n    }\n    iconVariant: field(key: "icon_variant") {\n      value\n    }\n    numberedContent: field(key: "numbered_content") {\n      value\n    }\n    variant: field(key: "variant") {\n      value\n    }\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            title: field(key: "title") {\n              value\n            }\n            description: field(key: "description") {\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\nfragment Carousel on Metaobject {\n  id\n  type\n  title: field(key: "title") {\n    value\n  }\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  layout: field(key: "layout") {\n    value\n  }\n  slides: field(key: "slides") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          title: field(key: "title") { value }\n          show_overlay: field(key: "show_overlay") { value }\n          overlay_color: field(key: "overlay_color") { value }\n          overlay_opacity: field(key: "overlay_opacity") { value }\n          video_title: field(key: "video_title") { value }\n          video_label: field(key: "video_label") { value }\n          logo: field(key: "logo") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          media: field(key: "media") {\n            references(first: 5) {\n              nodes {\n                __typename\n                ... on MediaImage {\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n                ... on Video {\n                  previewImage {\n                    url\n                    altText\n                  }\n                  sources {\n                    url\n                    mimeType\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\n\n  query AbTestingPageCms($handle: String!) {\n    abTestingPage: metaobject(\n      handle: {type: "ab_testing_page", handle: $handle}\n    ) {\n      id\n      handle\n\n      title: field(key: "title") { value }\n\n      gallery: field(key: "gallery") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      review: field(key: "review") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      faq: field(key: "faq") {\n        reference {\n          ... on Metaobject {\n            ...Accordion\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  #graphql\n  fragment Accordion on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    collapsible: field(key: "collapsible") {\n      value\n    }\n    iconVariant: field(key: "icon_variant") {\n      value\n    }\n    numberedContent: field(key: "numbered_content") {\n      value\n    }\n    variant: field(key: "variant") {\n      value\n    }\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            title: field(key: "title") {\n              value\n            }\n            description: field(key: "description") {\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\nfragment Carousel on Metaobject {\n  id\n  type\n  top_heading: field(key: "top_heading") {\n    value\n  }\n  caption: field(key: "caption") {\n    value\n  }\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  layout: field(key: "layout") {\n    value\n  }\n  slides: field(key: "slides") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          title: field(key: "title") { value }\n          show_overlay: field(key: "show_overlay") { value }\n          overlay_color: field(key: "overlay_color") { value }\n          overlay_opacity: field(key: "overlay_opacity") { value }\n          video_title: field(key: "video_title") { value }\n          video_label: field(key: "video_label") { value }\n          logo: field(key: "logo") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          media: field(key: "media") {\n            references(first: 5) {\n              nodes {\n                __typename\n                ... on MediaImage {\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n                ... on Video {\n                  previewImage {\n                    url\n                    altText\n                  }\n                  sources {\n                    url\n                    mimeType\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\n  #graphql\nfragment ComparisonTable on Metaobject {\n  id\n  type\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  background_image: field(key: "background_image") {\n    reference {\n      ... on MediaImage {\n        image {\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n  table_header: field(key: "table_header") {\n    references(first: 10) {\n      nodes {\n        ... on Metaobject {\n          id\n          text: field(key: "text") { value }\n          highlight: field(key: "highlight") { value }\n          image: field(key: "image") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  rows: field(key: "rows") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          label: field(key: "label") { value }\n          values: field(key: "values") { value }\n        }\n      }\n    }\n  }\n  footnote: field(key: "footnote") {\n    value\n  }\n  cta: field(key: "cta") {\n    reference {\n      ... on Metaobject {\n        type\n        label: field(key: "label") { value }\n        internalUrl: field(key: "internal_url") { value }\n        externalUrl: field(key: "external_url") { value }\n        iconVariant: field(key: "icon_variant") { value }\n      }\n    }\n  }\n}\n\n  #graphql\n  fragment HeroWithCta on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    description: field(key: "description") {\n      value\n    }\n    desktopImage: field(key: "desktop_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    mobileImage: field(key: "mobile_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    cta: field(key: "cta") {\n      reference {\n        ... on Metaobject {\n          type\n          label: field(key: "label") {\n            value\n          }\n          internalUrl: field(key: "internal_url") {\n            value\n          }\n          externalUrl: field(key: "external_url") {\n            value\n          }\n          iconVariant: field(key: "icon_variant") {\n            value\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingProduct on Product {\n    id\n    handle\n    title\n    vendor\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 20) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...LandingProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(\n      selectedOptions: $selectedOptions\n      ignoreUnknownOptions: true\n      caseInsensitiveMatch: true\n    ) {\n      ...LandingProductVariant\n    }\n    adjacentVariants(selectedOptions: $selectedOptions) {\n      ...LandingProductVariant\n    }\n    # Used to open on the first variant that can be subscribed to\n    variants(first: 50) {\n      nodes {\n        id\n        selectedOptions {\n          name\n          value\n        }\n        sellingPlanAllocations(first: 1) {\n          nodes {\n            sellingPlan {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment LandingProductVariant on ProductVariant {\n    availableForSale\n    id\n    title\n    sku\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    unitPrice {\n      amount\n      currencyCode\n    }\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    unitsPerPack: metafield(key: "units_per_pack", namespace: "custom") {\n      value\n    }\n    freeGift: metafield(key: "free_gift", namespace: "custom") {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    freeGiftSubscription: metafield(\n      key: "free_gift_subscription"\n      namespace: "custom"\n    ) {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    sellingPlanAllocations(first: 10) {\n      nodes {\n        sellingPlan {\n          id\n        }\n        priceAdjustments {\n          compareAtPrice {\n            amount\n            currencyCode\n          }\n          price {\n            amount\n            currencyCode\n          }\n          perDeliveryPrice {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingGiftVariant on ProductVariant {\n    id\n    title\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    image {\n      url\n      altText\n      width\n      height\n    }\n    selectedOptions {\n      name\n      value\n    }\n    product {\n      title\n      sizeChart: metafield(key: "size_chart", namespace: "custom") {\n        reference {\n          ... on MediaImage {\n            image {\n              url\n            }\n          }\n        }\n      }\n    }\n  }\n\n\n  #graphql\n  fragment LandingInfo on Metaobject {\n    id\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            id\n            title: field(key: "title") { value }\n            description: field(key: "description") { value }\n            tags: field(key: "tags") { value }\n            note: field(key: "note") { value }\n            points: field(key: "points") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    step: field(key: "step") { value }\n                    description: field(key: "description") { value }\n                  }\n                }\n              }\n            }\n            ingredients: field(key: "ingredients") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    text: field(key: "text") { value }\n                    description: field(key: "description") { value }\n                    amount: field(key: "amount") { value }\n                    image: field(key: "image") {\n                      reference {\n                        ... on MediaImage {\n                          image { url altText width height }\n                        }\n                      }\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n\n\n  query AbTestingPageCms(\n    $handle: String!\n    $selectedOptions: [SelectedOptionInput!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    abTestingPage: metaobject(\n      handle: {type: "ab_testing_page", handle: $handle}\n    ) {\n      id\n      handle\n\n      title: field(key: "title") { value }\n\n      hero: field(key: "hero") {\n        reference {\n          ... on Metaobject {\n            ...HeroWithCta\n          }\n        }\n      }\n\n      # Add-to-cart section (landing_product metaobject)\n      productSection: field(key: "product_section") {\n        reference {\n          ... on Metaobject {\n            product: field(key: "product") {\n              reference {\n                ... on Product {\n                  ...LandingProduct\n                }\n              }\n            }\n            subtitle: field(key: "subtitle") { value }\n            highlights: field(key: "highlights") { value }\n            info: field(key: "info") {\n              reference {\n                ... on Metaobject {\n                  ...LandingInfo\n                }\n              }\n            }\n          }\n        }\n      }\n\n      gallery: field(key: "gallery") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      comparison: field(key: "comparison_table") {\n        reference {\n          ... on Metaobject {\n            ...ComparisonTable\n          }\n        }\n      }\n\n      review: field(key: "review") {\n        reference {\n          ... on Metaobject {\n            ...Carousel\n          }\n        }\n      }\n\n      faq: field(key: "faq") {\n        reference {\n          ... on Metaobject {\n            ...Accordion\n          }\n        }\n      }\n\n      # Background of the "Join the Upbound Club" footer\n      footerImage: field(key: "footer_image") {\n        reference {\n          ... on MediaImage {\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: AbTestingPageCmsQuery;
     variables: AbTestingPageCmsQueryVariables;
   };
@@ -4192,7 +5542,12 @@ interface GeneratedQueryTypes {
   };
 }
 
-interface GeneratedMutationTypes {}
+interface GeneratedMutationTypes {
+  '#graphql\n  mutation CartDiscountCodesUpdate(\n    $cartId: ID!\n    $discountCodes: [String!]!\n    $language: LanguageCode\n    $country: CountryCode\n  ) @inContext(country: $country, language: $language) {\n    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {\n      cart {\n        ...CartApiMutation\n      }\n      userErrors {\n        code\n        field\n        message\n      }\n      warnings {\n        code\n        message\n        target\n      }\n    }\n  }\n  #graphql\n  fragment CartApiMutation on Cart {\n    id\n    totalQuantity\n    checkoutUrl\n    discountCodes {\n      code\n      applicable\n    }\n    lines(first: 100) {\n      nodes {\n        quantity\n        attributes {\n          key\n          value\n        }\n        merchandise {\n          ... on ProductVariant {\n            id\n          }\n        }\n        sellingPlanAllocation {\n          sellingPlan {\n            id\n          }\n        }\n      }\n    }\n  }\n\n': {
+    return: CartDiscountCodesUpdateMutation;
+    variables: CartDiscountCodesUpdateMutationVariables;
+  };
+}
 
 declare module '@shopify/hydrogen' {
   interface StorefrontQueries extends GeneratedQueryTypes {}

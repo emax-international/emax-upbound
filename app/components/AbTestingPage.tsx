@@ -2,6 +2,10 @@ import {useEffect} from 'react';
 import type {AbTestingPageCmsQuery} from 'types/storefrontapi.generated';
 import MediaCarousel from '~/components/cms/MediaCarousel';
 import HeroAccordion from '~/components/cms/HeroAccordion';
+import ComparisonTable from '~/components/cms/ComparisonTable';
+import LandingProduct from '~/components/cms/LandingProduct';
+import ClubFooter from '~/components/cms/ClubFooter';
+import LandingHero from '~/components/cms/LandingHero';
 
 interface AbTestingPageProps {
   page: NonNullable<AbTestingPageCmsQuery['abTestingPage']>;
@@ -21,13 +25,28 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
     });
   }, [page.handle, source]);
 
+  const productSection = page.productSection?.reference;
+
   return (
     <div className="abTestingPage">
+      {page.hero?.reference && <LandingHero reference={page.hero.reference} />}
+
+      {productSection?.product?.reference && (
+        <LandingProduct
+          product={productSection.product.reference}
+          subtitle={productSection.subtitle?.value}
+          highlights={productSection.highlights?.value}
+          info={productSection.info?.reference}
+        />
+      )}
+
       {page.gallery?.reference && (
         <MediaCarousel reference={page.gallery.reference} />
       )}
 
-      {/* TODO: "Hydration that keeps your head in the game" comparison section (on hold) */}
+      {page.comparison?.reference && (
+        <ComparisonTable reference={page.comparison.reference} />
+      )}
 
       {page.review?.reference && (
         <MediaCarousel reference={page.review.reference} />
@@ -38,6 +57,9 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
           <HeroAccordion reference={page.faq.reference} />
         </div>
       )}
+
+      {/* Replaces the site footer (hidden via the route handle) */}
+      <ClubFooter image={page.footerImage?.reference?.image} />
     </div>
   );
 }

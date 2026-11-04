@@ -6,7 +6,13 @@ import {
 } from '@shopify/remix-oxygen';
 import {useLoaderData} from 'react-router';
 import AbTestingPage from '~/components/AbTestingPage';
-import {loadAbTestingPage, pickAbVariant} from '~/lib/abTestingPage';
+import {
+  AB_ROUTE_HANDLE,
+  loadAbTestingPage,
+  pickAbVariant,
+} from '~/lib/abTestingPage';
+
+export const handle = AB_ROUTE_HANDLE;
 
 /**
  * A/B split URL: each visitor is randomly assigned to one `ab_testing_page`
@@ -19,7 +25,7 @@ export const meta: MetaFunction<typeof loader> = ({data}) => {
 
 export async function loader({request, context}: LoaderFunctionArgs) {
   const {variant, setCookie} = pickAbVariant(request);
-  const page = await loadAbTestingPage(context, variant);
+  const page = await loadAbTestingPage(context, variant, request);
 
   // The response depends on the visitor's cookie, so it must not be shared
   // by a CDN/browser cache.
