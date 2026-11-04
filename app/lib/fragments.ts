@@ -245,12 +245,17 @@ export const FOOTER_QUERY = `#graphql
 ` as const;
 
 // Returned after cart changes. Hydrogen's default only has id, totalQuantity and
-// checkoutUrl; the lines let tracking report each item's quantity in the cart.
+// checkoutUrl; the lines let tracking report each item's quantity in the cart,
+// and discountCodes lets the cart show why a submitted code wasn't applied.
 export const CART_MUTATE_FRAGMENT = `#graphql
   fragment CartApiMutation on Cart {
     id
     totalQuantity
     checkoutUrl
+    discountCodes {
+      code
+      applicable
+    }
     lines(first: 100) {
       nodes {
         quantity
