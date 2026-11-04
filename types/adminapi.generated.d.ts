@@ -5,6 +5,7 @@ import type * as StorefrontAPI from '@shopify/hydrogen/storefront-api-types';
 
 export type CustomerCartDiscountsQueryVariables = StorefrontAPI.Exact<{
   query: StorefrontAPI.Scalars['String']['input'];
+  first: StorefrontAPI.Scalars['Int']['input'];
 }>;
 
 export type CustomerCartDiscountsQuery = {
@@ -28,8 +29,15 @@ export type CustomerCartDiscountsQuery = {
                   nodes: Array<Pick<StorefrontAPI.DiscountRedeemCode, 'code'>>;
                 };
                 customerSelection:
-                  | Pick<StorefrontAPI.DiscountCustomerAll, 'allCustomers'>
-                  | {customers: Array<Pick<StorefrontAPI.Customer, 'id'>>};
+                  | {
+                      __typename:
+                        | 'DiscountCustomerAll'
+                        | 'DiscountCustomerSegments'
+                        | 'DiscountCustomerSelectionUnknown';
+                    }
+                  | ({__typename: 'DiscountCustomers'} & {
+                      customers: Array<Pick<StorefrontAPI.Customer, 'id'>>;
+                    });
               })
           | ({__typename: 'DiscountCodeBxgy'} & Pick<
               StorefrontAPI.DiscountCodeBxgy,
@@ -39,8 +47,15 @@ export type CustomerCartDiscountsQuery = {
                   nodes: Array<Pick<StorefrontAPI.DiscountRedeemCode, 'code'>>;
                 };
                 customerSelection:
-                  | Pick<StorefrontAPI.DiscountCustomerAll, 'allCustomers'>
-                  | {customers: Array<Pick<StorefrontAPI.Customer, 'id'>>};
+                  | {
+                      __typename:
+                        | 'DiscountCustomerAll'
+                        | 'DiscountCustomerSegments'
+                        | 'DiscountCustomerSelectionUnknown';
+                    }
+                  | ({__typename: 'DiscountCustomers'} & {
+                      customers: Array<Pick<StorefrontAPI.Customer, 'id'>>;
+                    });
               })
           | ({__typename: 'DiscountCodeFreeShipping'} & Pick<
               StorefrontAPI.DiscountCodeFreeShipping,
@@ -50,13 +65,36 @@ export type CustomerCartDiscountsQuery = {
                   nodes: Array<Pick<StorefrontAPI.DiscountRedeemCode, 'code'>>;
                 };
                 customerSelection:
-                  | Pick<StorefrontAPI.DiscountCustomerAll, 'allCustomers'>
-                  | {customers: Array<Pick<StorefrontAPI.Customer, 'id'>>};
+                  | {
+                      __typename:
+                        | 'DiscountCustomerAll'
+                        | 'DiscountCustomerSegments'
+                        | 'DiscountCustomerSelectionUnknown';
+                    }
+                  | ({__typename: 'DiscountCustomers'} & {
+                      customers: Array<Pick<StorefrontAPI.Customer, 'id'>>;
+                    });
               });
       }
     >;
   };
 };
+
+type CustomerSelection_DiscountCustomerAll_DiscountCustomerSegments_DiscountCustomerSelectionUnknown_Fragment =
+  {
+    __typename:
+      | 'DiscountCustomerAll'
+      | 'DiscountCustomerSegments'
+      | 'DiscountCustomerSelectionUnknown';
+  };
+
+type CustomerSelection_DiscountCustomers_Fragment = {
+  __typename: 'DiscountCustomers';
+} & {customers: Array<Pick<StorefrontAPI.Customer, 'id'>>};
+
+export type CustomerSelectionFragment =
+  | CustomerSelection_DiscountCustomerAll_DiscountCustomerSegments_DiscountCustomerSelectionUnknown_Fragment
+  | CustomerSelection_DiscountCustomers_Fragment;
 
 export type CustomerCreateMutationVariables = StorefrontAPI.Exact<{
   input: StorefrontAPI.CustomerInput;
@@ -121,7 +159,7 @@ export type CustomerEmailMarketingConsentUpdateMutation = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query CustomerCartDiscounts($query: String!) {\n    discountNodes(first: 20, query: $query) {\n      nodes {\n        id\n        discount {\n          __typename\n          ... on DiscountCodeBasic {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ... on DiscountCustomerAll {\n                allCustomers\n              }\n              ... on DiscountCustomers {\n                customers {\n                  id\n                }\n              }\n            }\n          }\n          ... on DiscountCodeFreeShipping {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ... on DiscountCustomerAll {\n                allCustomers\n              }\n              ... on DiscountCustomers {\n                customers {\n                  id\n                }\n              }\n            }\n          }\n          ... on DiscountCodeBxgy {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ... on DiscountCustomerAll {\n                allCustomers\n              }\n              ... on DiscountCustomers {\n                customers {\n                  id\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+  "#graphql\n  query CustomerCartDiscounts($query: String!, $first: Int!) {\n    discountNodes(first: $first, query: $query) {\n      nodes {\n        id\n        discount {\n          __typename\n          ... on DiscountCodeBasic {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ...CustomerSelection\n            }\n          }\n          ... on DiscountCodeFreeShipping {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ...CustomerSelection\n            }\n          }\n          ... on DiscountCodeBxgy {\n            title\n            summary\n            status\n            codes(first: 1) {\n              nodes {\n                code\n              }\n            }\n            customerSelection {\n              ...CustomerSelection\n            }\n          }\n        }\n      }\n    }\n  }\n  # Re-checked in getCustomerVouchers: the query's customer_ids filter is\n  # silently ignored on Admin API versions before 2026-07.\n  fragment CustomerSelection on DiscountCustomerSelection {\n    __typename\n    ... on DiscountCustomers {\n      customers {\n        id\n      }\n    }\n  }\n": {
     return: CustomerCartDiscountsQuery;
     variables: CustomerCartDiscountsQueryVariables;
   };

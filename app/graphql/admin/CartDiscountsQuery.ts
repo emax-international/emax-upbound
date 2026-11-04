@@ -10,8 +10,8 @@
 // customerSelection is fetched per discount instead, and getCustomerVouchers
 // filters by it in code — see there for why.
 export const CART_DISCOUNTS_QUERY = `#graphql
-  query CustomerCartDiscounts($query: String!) {
-    discountNodes(first: 20, query: $query) {
+  query CustomerCartDiscounts($query: String!, $first: Int!) {
+    discountNodes(first: $first, query: $query) {
       nodes {
         id
         discount {
@@ -77,6 +77,16 @@ export const CART_DISCOUNTS_QUERY = `#graphql
             }
           }
         }
+      }
+    }
+  }
+  # Re-checked in getCustomerVouchers: the query's customer_ids filter is
+  # silently ignored on Admin API versions before 2026-07.
+  fragment CustomerSelection on DiscountCustomerSelection {
+    __typename
+    ... on DiscountCustomers {
+      customers {
+        id
       }
     }
   }
