@@ -23,6 +23,8 @@ declare global {
     STORE_PASSWORD: string;
     LOYALTY_API_URL?: string;
     LOYALTY_API_KEY?: string;
+    // 'true' opens rewards to every logged-in customer (see hasRewardsAccess)
+    REWARDS_OPEN_TO_ALL?: string;
   }
 }
 

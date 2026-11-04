@@ -70,6 +70,18 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+/**
+ * Rewards rollout switch. With REWARDS_OPEN_TO_ALL=true every logged-in
+ * customer is eligible; otherwise only customers whitelisted via the
+ * `custom.test_account` boolean metafield (set in Shopify admin) are.
+ */
+export function hasRewardsAccess(
+  env: Env,
+  testAccountValue?: string | null,
+): boolean {
+  return env.REWARDS_OPEN_TO_ALL === 'true' || testAccountValue === 'true';
+}
+
 export type RewardsCustomer = {
   id: string;
   email: string;
@@ -112,10 +124,7 @@ export async function getRewardsCustomer(
     return {
       id: customer.id,
       email: customer.emailAddress?.emailAddress ?? '',
-      // Rewards is still being rolled out — only customers whitelisted via
-      // the `custom.test_account` boolean metafield (set in Shopify admin)
-      // are eligible.
-      isEligible: customer.testAccount?.value === 'true',
+      isEligible: hasRewardsAccess(context.env, customer.testAccount?.value),
     };
   } catch (error) {
     console.error('Failed to load rewards customer:', error);
