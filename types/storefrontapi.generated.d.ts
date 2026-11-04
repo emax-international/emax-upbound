@@ -2170,6 +2170,9 @@ export type CartApiMutationFragment = Pick<
   StorefrontAPI.Cart,
   'id' | 'totalQuantity' | 'checkoutUrl'
 > & {
+  discountCodes: Array<
+    Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
+  >;
   lines: {
     nodes: Array<
       | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
@@ -2188,6 +2191,55 @@ export type CartApiMutationFragment = Pick<
         })
     >;
   };
+};
+
+export type CartDiscountCodesUpdateMutationVariables = StorefrontAPI.Exact<{
+  cartId: StorefrontAPI.Scalars['ID']['input'];
+  discountCodes:
+    | Array<StorefrontAPI.Scalars['String']['input']>
+    | StorefrontAPI.Scalars['String']['input'];
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+}>;
+
+export type CartDiscountCodesUpdateMutation = {
+  cartDiscountCodesUpdate?: StorefrontAPI.Maybe<{
+    cart?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.Cart, 'id' | 'totalQuantity' | 'checkoutUrl'> & {
+        discountCodes: Array<
+          Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
+        >;
+        lines: {
+          nodes: Array<
+            | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
+                attributes: Array<
+                  Pick<StorefrontAPI.Attribute, 'key' | 'value'>
+                >;
+                merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+                sellingPlanAllocation?: StorefrontAPI.Maybe<{
+                  sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                }>;
+              })
+            | (Pick<StorefrontAPI.ComponentizableCartLine, 'quantity'> & {
+                attributes: Array<
+                  Pick<StorefrontAPI.Attribute, 'key' | 'value'>
+                >;
+                merchandise: Pick<StorefrontAPI.ProductVariant, 'id'>;
+                sellingPlanAllocation?: StorefrontAPI.Maybe<{
+                  sellingPlan: Pick<StorefrontAPI.SellingPlan, 'id'>;
+                }>;
+              })
+          >;
+        };
+      }
+    >;
+    userErrors: Array<
+      Pick<StorefrontAPI.CartUserError, 'code' | 'field' | 'message'>
+    >;
+    warnings: Array<
+      Pick<StorefrontAPI.CartWarning, 'code' | 'message' | 'target'>
+    >;
+  }>;
 };
 
 export type MoneyProductItemFragment = Pick<
@@ -3890,7 +3942,12 @@ interface GeneratedQueryTypes {
   };
 }
 
-interface GeneratedMutationTypes {}
+interface GeneratedMutationTypes {
+  '#graphql\n  mutation CartDiscountCodesUpdate(\n    $cartId: ID!\n    $discountCodes: [String!]!\n    $language: LanguageCode\n    $country: CountryCode\n  ) @inContext(country: $country, language: $language) {\n    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {\n      cart {\n        ...CartApiMutation\n      }\n      userErrors {\n        code\n        field\n        message\n      }\n      warnings {\n        code\n        message\n        target\n      }\n    }\n  }\n  #graphql\n  fragment CartApiMutation on Cart {\n    id\n    totalQuantity\n    checkoutUrl\n    discountCodes {\n      code\n      applicable\n    }\n    lines(first: 100) {\n      nodes {\n        quantity\n        attributes {\n          key\n          value\n        }\n        merchandise {\n          ... on ProductVariant {\n            id\n          }\n        }\n        sellingPlanAllocation {\n          sellingPlan {\n            id\n          }\n        }\n      }\n    }\n  }\n\n': {
+    return: CartDiscountCodesUpdateMutation;
+    variables: CartDiscountCodesUpdateMutationVariables;
+  };
+}
 
 declare module '@shopify/hydrogen' {
   interface StorefrontQueries extends GeneratedQueryTypes {}
