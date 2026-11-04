@@ -14,6 +14,33 @@ import {
 } from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
 import type {CartDiscountOption} from '~/graphql/admin/CartDiscountsQuery';
+import {CART_MUTATE_FRAGMENT} from '~/lib/fragments';
+
+const CART_DISCOUNT_CODES_UPDATE_MUTATION = `#graphql
+  mutation CartDiscountCodesUpdate(
+    $cartId: ID!
+    $discountCodes: [String!]!
+    $language: LanguageCode
+    $country: CountryCode
+  ) @inContext(country: $country, language: $language) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        ...CartApiMutation
+      }
+      userErrors {
+        code
+        field
+        message
+      }
+      warnings {
+        code
+        message
+        target
+      }
+    }
+  }
+  ${CART_MUTATE_FRAGMENT}
+` as const;
 
 export const meta: MetaFunction = () => {
   return [{title: `Upbound | Cart`}];
@@ -123,7 +150,24 @@ export async function action({request, context}: ActionFunctionArgs) {
       // Combine discount codes already applied on cart
       discountCodes.push(...inputs.discountCodes);
 
-      result = await cart.updateDiscountCodes(discountCodes);
+      // Not cart.updateDiscountCodes(): Hydrogen 2025.7's built-in mutation
+      // declares $discountCodes as nullable [String!], which newer Storefront
+      // API versions reject ("Nullability mismatch ... [String!]!").
+      const {cartDiscountCodesUpdate, errors} = await context.storefront.mutate(
+        CART_DISCOUNT_CODES_UPDATE_MUTATION,
+        {
+          variables: {
+            cartId: cart.getCartId()!,
+            discountCodes: [...new Set(discountCodes)],
+          },
+        },
+      );
+      result = {
+        cart: cartDiscountCodesUpdate?.cart,
+        userErrors: cartDiscountCodesUpdate?.userErrors,
+        warnings: cartDiscountCodesUpdate?.warnings,
+        errors,
+      } as CartQueryDataReturn;
       break;
     }
     case CartForm.ACTIONS.GiftCardCodesUpdate: {

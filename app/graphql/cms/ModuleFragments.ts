@@ -816,3 +816,150 @@ fragment BannerSteps on Metaobject {
 `;
 
 
+
+export const CAROUSEL_FRAGMENT = `#graphql
+fragment Carousel on Metaobject {
+  id
+  type
+  top_heading: field(key: "top_heading") {
+    value
+  }
+  caption: field(key: "caption") {
+    value
+  }
+  header: field(key: "header") {
+    value
+  }
+  label: field(key: "label") {
+    value
+  }
+  layout: field(key: "layout") {
+    value
+  }
+  slides: field(key: "slides") {
+    references(first: 20) {
+      nodes {
+        ... on Metaobject {
+          id
+          title: field(key: "title") { value }
+          show_overlay: field(key: "show_overlay") { value }
+          overlay_color: field(key: "overlay_color") { value }
+          overlay_opacity: field(key: "overlay_opacity") { value }
+          video_title: field(key: "video_title") { value }
+          video_label: field(key: "video_label") { value }
+          logo: field(key: "logo") {
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+          media: field(key: "media") {
+            references(first: 5) {
+              nodes {
+                __typename
+                ... on MediaImage {
+                  image {
+                    url
+                    altText
+                    width
+                    height
+                  }
+                }
+                ... on Video {
+                  previewImage {
+                    url
+                    altText
+                  }
+                  sources {
+                    url
+                    mimeType
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+export const COMPARISON_TABLE_FRAGMENT = `#graphql
+fragment ComparisonTable on Metaobject {
+  id
+  type
+  header: field(key: "header") {
+    value
+  }
+  label: field(key: "label") {
+    value
+  }
+  background_image: field(key: "background_image") {
+    reference {
+      ... on MediaImage {
+        image {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+  table_header: field(key: "table_header") {
+    references(first: 10) {
+      nodes {
+        ... on Metaobject {
+          id
+          text: field(key: "text") { value }
+          highlight: field(key: "highlight") { value }
+          image: field(key: "image") {
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  rows: field(key: "rows") {
+    references(first: 20) {
+      nodes {
+        ... on Metaobject {
+          id
+          label: field(key: "label") { value }
+          values: field(key: "values") { value }
+        }
+      }
+    }
+  }
+  footnote: field(key: "footnote") {
+    value
+  }
+  cta: field(key: "cta") {
+    reference {
+      ... on Metaobject {
+        type
+        label: field(key: "label") { value }
+        internalUrl: field(key: "internal_url") { value }
+        externalUrl: field(key: "external_url") { value }
+        iconVariant: field(key: "icon_variant") { value }
+      }
+    }
+  }
+}
+`;

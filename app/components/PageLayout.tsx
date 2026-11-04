@@ -1,5 +1,5 @@
 import { Suspense, useId, useState, useEffect } from 'react';
-import { Await, Link, NavLink, useFetcher } from 'react-router';
+import { Await, Link, NavLink, useFetcher, useMatches } from 'react-router';
 import type {
   CartApiQueryFragment,
   FooterMenuCmsQuery,
@@ -46,6 +46,10 @@ export function PageLayout({
 }: PageLayoutProps) {
   // Set by <Banner> once it is actually on screen
   const [isBannerOpened, setIsBannerOpened] = useState(false);
+  // Routes can opt out of the site footer with `handle = {hideFooter: true}`
+  const hideFooter = useMatches().some(
+    (match) => (match.handle as {hideFooter?: boolean})?.hideFooter,
+  );
 
   return (
     <Aside.Provider>
@@ -86,11 +90,13 @@ export function PageLayout({
         {children}
         <NewsletterPopup globalNewsletterPopupPromise={globalNewsletterPopup} />
       </main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      {!hideFooter && (
+        <Footer
+          footer={footer}
+          header={header}
+          publicStoreDomain={publicStoreDomain}
+        />
+      )}
     </Aside.Provider>
   );
 }
