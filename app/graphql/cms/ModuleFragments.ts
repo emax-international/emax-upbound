@@ -836,6 +836,9 @@ fragment Carousel on Metaobject {
   layout: field(key: "layout") {
     value
   }
+  background_color: field(key: "background_color") {
+    value
+  }
   slides: field(key: "slides") {
     references(first: 20) {
       nodes {

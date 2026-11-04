@@ -3,6 +3,7 @@ import {Suspense, useEffect, useState} from 'react';
 import {Await} from 'react-router';
 import {GlobalBannerCmsQuery} from 'types/storefrontapi.generated';
 import {markComponentAsShown, shouldShowComponent} from '~/lib/cooldown';
+import {cn} from '~/lib/utils';
 
 // Unique key for this component in localStorage
 const STORAGE_KEY = 'promo_banner';
@@ -12,12 +13,18 @@ const COOLDOWN_MINUTES = 10;
 const MIN_ITEMS = 6;
 
 type SetBannerOpened = React.Dispatch<React.SetStateAction<boolean>>;
+type BannerVariant = 'mint' | 'dark';
+
+/** Messages a route shows instead of the Global Banner entries. */
+export type RouteBanner = {messages: string[]; variant?: BannerVariant};
 
 function Banner({
   bannerPromise,
+  routeBanner,
   setIsBannerOpened,
 }: {
   bannerPromise: Promise<GlobalBannerCmsQuery | null>;
+  routeBanner?: RouteBanner | null;
   setIsBannerOpened: SetBannerOpened;
 }) {
   // Starts hidden so server and client render the same; localStorage is read after mount
@@ -26,6 +33,17 @@ function Banner({
   useEffect(() => {
     setIsDismissed(!shouldShowComponent(STORAGE_KEY, COOLDOWN_MINUTES));
   }, []);
+
+  // Route messages (e.g. A/B landing pages) are always shown
+  if (routeBanner) {
+    return (
+      <BannerBar
+        messages={routeBanner.messages}
+        variant={routeBanner.variant}
+        setIsBannerOpened={setIsBannerOpened}
+      />
+    );
+  }
 
   if (isDismissed) return null;
 
@@ -61,12 +79,15 @@ function Banner({
 
 function BannerBar({
   messages,
+  variant = 'mint',
   setIsBannerOpened,
   onClose,
 }: {
   messages: string[];
+  variant?: BannerVariant;
   setIsBannerOpened: SetBannerOpened;
-  onClose: () => void;
+  /** Shows the close button when set */
+  onClose?: () => void;
 }) {
   // Tell the layout to offset the header only while the bar is on screen
   useEffect(() => {
@@ -74,24 +95,59 @@ function BannerBar({
     return () => setIsBannerOpened(false);
   }, [setIsBannerOpened]);
 
+  const colors = variant === 'dark' ? 'bg-black text-white' : 'bg-mint';
+
   return (
     <div className="sticky top-0 z-10">
-      <div className="relative max-h-[50px] md:max-h-[28px] py-3 md:py-1.5 flex items-center bg-mint overflow-hidden">
-        <Marquee messages={messages} />
-        <button
-          type="button"
-          className="absolute right-0 h-full px-2 bg-mint cursor-pointer"
-          onClick={onClose}
-          aria-label="Close promotional banner"
-        >
-          <X size={14} />
-        </button>
+      <div
+        className={cn(
+          'relative flex items-center overflow-hidden',
+          // Dark bar is a fixed 50px on all screens (the header offsets match
+          // via PageLayout's `tallBanner`)
+          variant === 'dark'
+            ? 'h-[50px]'
+            : 'max-h-[50px] md:max-h-[28px] py-3 md:py-1.5',
+          colors,
+        )}
+      >
+        <Marquee messages={messages} variant={variant} />
+        {onClose && (
+          <button
+            type="button"
+            className={cn('absolute right-0 h-full px-2 cursor-pointer', colors)}
+            onClick={onClose}
+            aria-label="Close promotional banner"
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-function Marquee({messages}: {messages: string[]}) {
+/**
+ * Dark variant: "FREE SHIPPING (West Malaysia only)" → bold text with the
+ * bracketed part smaller and regular.
+ */
+function Message({message, variant}: {message: string; variant: BannerVariant}) {
+  const match = variant === 'dark' ? message.match(/^(.*?)\s*(\(.*\))$/) : null;
+  if (!match) return <>{message}</>;
+  return (
+    <>
+      <span className="font-normal uppercase">{match[1]}</span>{' '}
+      <span className="text-[10px] font-normal normal-case">{match[2]}</span>
+    </>
+  );
+}
+
+function Marquee({
+  messages,
+  variant,
+}: {
+  messages: string[];
+  variant: BannerVariant;
+}) {
   const repeat = Math.max(1, Math.ceil(MIN_ITEMS / messages.length));
   const items = Array.from({length: repeat}, () => messages).flat();
 
@@ -100,7 +156,7 @@ function Marquee({messages}: {messages: string[]}) {
     <div className="flex shrink-0" aria-hidden={hidden}>
       {items.map((message, index) => (
         <p key={index} className="typo-caption px-8 whitespace-nowrap">
-          {message}
+          <Message message={message} variant={variant} />
         </p>
       ))}
     </div>

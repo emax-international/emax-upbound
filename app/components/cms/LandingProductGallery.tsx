@@ -1,5 +1,4 @@
 import {Image} from '@shopify/hydrogen';
-import {ChevronLeft, ChevronRight} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import type {LandingProductFragment} from 'types/storefrontapi.generated';
 import {
@@ -38,7 +37,8 @@ export default function LandingProductGallery({
   if (images.length === 0) return null;
 
   const arrowButton =
-    'absolute top-1/2 -translate-y-1/2 flex items-center justify-center size-8 rounded-full bg-white/90 text-black shadow-sm cursor-pointer transition-opacity disabled:opacity-0';
+    // Half-pill tabs flush with the image edge
+    'absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-8 bg-white/50 backdrop-blur-sm text-black cursor-pointer transition-opacity disabled:opacity-0';
 
   return (
     <div className={cn('space-y-3', className)}>
@@ -67,19 +67,19 @@ export default function LandingProductGallery({
               type="button"
               onClick={() => api?.scrollPrev()}
               disabled={selected === 0}
-              className={cn(arrowButton, 'left-3')}
+              className={cn(arrowButton, 'left-0 rounded-r-full pr-1')}
               aria-label="Previous image"
             >
-              <ChevronLeft className="size-4" />
+              <ArrowIcon className="-scale-x-100" />
             </button>
             <button
               type="button"
               onClick={() => api?.scrollNext()}
               disabled={selected === images.length - 1}
-              className={cn(arrowButton, 'right-3')}
+              className={cn(arrowButton, 'right-0 rounded-l-full pl-1')}
               aria-label="Next image"
             >
-              <ChevronRight className="size-4" />
+              <ArrowIcon />
             </button>
           </>
         )}
@@ -113,5 +113,22 @@ export default function LandingProductGallery({
         </div>
       )}
     </div>
+  );
+}
+
+/** Thin right-pointing chevron; mirror it with -scale-x-100 for "previous". */
+function ArrowIcon({className}: {className?: string}) {
+  return (
+    <svg
+      viewBox="0 0 12 21"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      aria-hidden="true"
+      className={cn('h-3.5 w-auto', className)}
+    >
+      <path d="M0.866217 19.6673L10.7907 9.40059" />
+      <path d="M10.8027 10.8028L0.707079 0.70723" />
+    </svg>
   );
 }

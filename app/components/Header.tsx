@@ -22,6 +22,10 @@ export type HeaderProps = {
   isLoggedIn: Promise<boolean>;
   publicStoreDomain: string;
   isBannerOpened: boolean;
+  /** Logo + cart only, e.g. on landing pages */
+  hideMenu?: boolean;
+  /** The open banner is the 50px-on-all-screens bar (route banner) */
+  tallBanner?: boolean;
 };
 
 type Viewport = 'desktop' | 'mobile';
@@ -32,11 +36,18 @@ export function Header({
   cart,
   publicStoreDomain,
   isBannerOpened,
+  hideMenu,
+  tallBanner,
 }: HeaderProps) {
   const {shop, menu} = header;
 
   return (
-    <header className={cn('header', isBannerOpened && 'mt-10 md:mt-7')}>
+    <header
+      className={cn(
+        'header',
+        isBannerOpened && (tallBanner ? 'mt-[50px]' : 'mt-10 md:mt-7'),
+      )}
+    >
       {/* Mobile Header */}
       <div className="w-full lg:hidden">
         <HeaderMobile
@@ -45,21 +56,47 @@ export function Header({
           cart={cart}
           publicStoreDomain={publicStoreDomain}
           isBannerOpened={isBannerOpened}
+          hideMenu={hideMenu}
         />
       </div>
 
       {/* Desktop Header */}
       <div className="hidden lg:flex w-full justify-between items-center">
-        <HeaderMenu
-          menu={menu}
-          viewport="desktop"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
+        {hideMenu ? (
+          <div />
+        ) : (
+          <HeaderMenu
+            menu={menu}
+            viewport="desktop"
+            primaryDomainUrl={header.shop.primaryDomain.url}
+            publicStoreDomain={publicStoreDomain}
+          />
+        )}
         {/* placeholder for the logo since logo is outside */}
         <div className="w-[120px]" />
-        <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+        {hideMenu ? (
+          <div />
+        ) : (
+          <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+        )}
       </div>
+
+      {/* Without the menu, the cart is a bag tab pinned to the right edge */}
+      {hideMenu && (
+        <div
+          className={cn(
+            'fixed right-0 z-10',
+            // Below the mobile header bar; level with the logo on desktop
+            !isBannerOpened
+              ? 'top-20 lg:top-4'
+              : tallBanner
+                ? 'top-[122px] lg:top-[66px]'
+                : 'top-28 md:top-24 lg:top-11',
+          )}
+        >
+          <CartToggle cart={cart} variant="tab" />
+        </div>
+      )}
     </header>
   );
 }
@@ -203,6 +240,7 @@ export function HeaderMobile({
   cart,
   publicStoreDomain,
   isBannerOpened,
+  hideMenu,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -237,14 +275,18 @@ export function HeaderMobile({
       <div className="p-2 rounded-xl bg-mid-grey/40 backdrop-blur-2xl">
         {/* Mobile menu toggle button */}
         <div className="flex justify-between items-center relative">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="!px-2"
-          >
-            <Menu size={14} />
-          </Button>
+          {hideMenu ? (
+            <div />
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="!px-2"
+            >
+              <Menu size={14} />
+            </Button>
+          )}
           <NavLink
             prefetch="intent"
             to="/"
@@ -257,7 +299,7 @@ export function HeaderMobile({
               className="text-white absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
             />
           </NavLink>
-          <CartToggle cart={cart} />
+          {hideMenu ? <div className="h-8" /> : <CartToggle cart={cart} />}
         </div>
         <AnimatePresence>
           {isMenuOpen && (
@@ -322,9 +364,45 @@ export function HeaderMobile({
   );
 }
 
-function CartBadge({count}: {count: number | null}) {
+type CartVariant = 'default' | 'tab';
+
+function CartBadge({
+  count,
+  variant = 'default',
+}: {
+  count: number | null;
+  variant?: CartVariant;
+}) {
   const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
+
+  if (variant === 'tab') {
+    // Bag tab pinned to the right edge (landing pages without the menu)
+    return (
+      <a
+        href="/cart"
+        onClick={(e) => {
+          e.preventDefault();
+          open('cart');
+          publish('cart_viewed', {
+            cart,
+            prevCart,
+            shop,
+            url: window.location.href || '',
+          } as CartViewPayload);
+        }}
+        aria-label={count ? `Cart (${count} items)` : 'Cart'}
+        className="relative flex items-center pl-5 pr-4 py-3 lg:pl-6 lg:pr-5 lg:py-4 rounded-l-full bg-mid-grey/40 backdrop-blur-2xl text-white"
+      >
+        <BagIcon className="size-6 lg:size-7" />
+        {(count ?? 0) > 0 && (
+          <span className="absolute top-1.5 left-3 flex items-center justify-center rounded-full typo-caption text-mint size-[18px] bg-black">
+            {count}
+          </span>
+        )}
+      </a>
+    );
+  }
 
   return (
     <>
@@ -385,17 +463,44 @@ function CartBadge({count}: {count: number | null}) {
   );
 }
 
-function CartToggle({cart}: Pick<HeaderProps, 'cart'>) {
+function CartToggle({
+  cart,
+  variant,
+}: Pick<HeaderProps, 'cart'> & {variant?: CartVariant}) {
   return (
-    <Suspense fallback={<CartBadge count={null} />}>
+    <Suspense fallback={<CartBadge count={null} variant={variant} />}>
       <Await resolve={cart}>
-        <CartBanner />
+        <CartBanner variant={variant} />
       </Await>
     </Suspense>
   );
 }
 
-function CartBanner() {
+function BagIcon({className}: {className?: string}) {
+  return (
+    // Traced from the design's bag icon (697×754 artboard)
+    <svg
+      viewBox="0 0 697 754"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={24}
+      aria-hidden="true"
+      className={className}
+    >
+      {/* body: straight top edge, sloping sides, rounded bottom corners */}
+      <path
+        d="M105 175H592L685 655Q697 742 610 742H87Q0 742 12 655Z"
+        strokeLinejoin="round"
+      />
+      {/* handle above the top edge */}
+      <path d="M207 175A141 163 0 0 1 490 175" />
+      {/* curve below the top edge */}
+      <path d="M207 262A141 128 0 0 0 490 262" />
+    </svg>
+  );
+}
+
+function CartBanner({variant}: {variant?: CartVariant}) {
   const originalCart = useAsyncValue() as CartApiQueryFragment | null;
   const cart = useOptimisticCart(originalCart);
   const count = cart?.lines?.nodes
@@ -403,7 +508,7 @@ function CartBanner() {
         .filter((l) => !l.attributes?.some((a) => a.key === '_is_free_gift' && a.value === 'true'))
         .reduce((sum, l) => sum + l.quantity, 0)
     : 0;
-  return <CartBadge count={count} />;
+  return <CartBadge count={count} variant={variant} />;
 }
 
 const FALLBACK_HEADER_MENU = {

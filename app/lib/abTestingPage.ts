@@ -1,5 +1,7 @@
 import {getSelectedProductOptions} from '@shopify/hydrogen';
 import type {AppLoadContext} from '@shopify/remix-oxygen';
+import type {AbTestingPageCmsQuery} from 'types/storefrontapi.generated';
+import type {RouteHandle} from '~/components/PageLayout';
 import {AB_TESTING_PAGE_CMS_QUERY} from '~/graphql/cms/AbTestingPageQuery';
 
 /** Handles of the `ab_testing_page` metaobject entries. */
@@ -7,10 +9,26 @@ export const AB_VARIANTS = ['loved-by-many', 'love-by-athletes'] as const;
 export type AbVariant = (typeof AB_VARIANTS)[number];
 
 /**
- * Route `handle` for the A/B pages: PageLayout skips the site footer, since
- * AbTestingPage renders its own "Join the Upbound Club" footer.
+ * Route `handle` for the A/B pages. PageLayout:
+ * - skips the site footer (AbTestingPage renders its own "Join the Upbound
+ *   Club" footer) and the header menu links, leaving just the logo and cart;
+ * - shows the entry's own marquee messages (if any) instead of the site banner.
  */
-export const AB_ROUTE_HANDLE = {hideFooter: true};
+export const AB_ROUTE_HANDLE: RouteHandle = {
+  hideFooter: true,
+  hideMenu: true,
+  banner: (data) => {
+    const page = (data as {page?: AbTestingPageCmsQuery['abTestingPage']})
+      ?.page;
+    const nodes = page?.banner?.references?.nodes ?? [
+      page?.banner?.reference,
+    ];
+    const messages = nodes
+      .map((node) => node?.content?.value)
+      .filter((content): content is string => !!content);
+    return messages.length > 0 ? {messages, variant: 'dark'} : null;
+  },
+};
 
 /** Cookie that pins a visitor to one variant on the split URL (/loved-by). */
 export const AB_COOKIE = 'ab_loved_by';

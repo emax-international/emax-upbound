@@ -31,6 +31,23 @@ export const AB_TESTING_PAGE_CMS_QUERY = `#graphql
 
       title: field(key: "title") { value }
 
+      # Marquee messages (global_banner entries) shown instead of the site banner
+      # Works as a single reference or a list
+      banner: field(key: "banner") {
+        reference {
+          ... on Metaobject {
+            content: field(key: "content") { value }
+          }
+        }
+        references(first: 10) {
+          nodes {
+            ... on Metaobject {
+              content: field(key: "content") { value }
+            }
+          }
+        }
+      }
+
       hero: field(key: "hero") {
         reference {
           ... on Metaobject {

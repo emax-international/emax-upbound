@@ -11,6 +11,8 @@ interface HeroAccordionProps {
   reference: AccordionFragment;
   titleCentered?: boolean;
   className?: string;
+  /** Extra classes for the title (split layout), e.g. a heavier weight */
+  titleClassName?: string;
   size?: 'default' | 'small';
   /**
    * split: title on the left, questions as cards on the right (1 column on
@@ -22,6 +24,7 @@ interface HeroAccordionProps {
 function HeroAccordion({
   reference,
   className,
+  titleClassName,
   size = 'default',
   layout: layoutProp,
 }: HeroAccordionProps) {
@@ -69,7 +72,9 @@ function HeroAccordion({
         )}
       >
         {title?.value && (
-          <p className="typo-h1 text-center md:w-1/2">{title.value}</p>
+          <p className={cn('typo-h1 text-center md:w-1/2', titleClassName)}>
+            {title.value}
+          </p>
         )}
         <Accordion
           type={isCollapsible ? 'single' : 'multiple'}

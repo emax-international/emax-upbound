@@ -1,6 +1,6 @@
 import {Image} from '@shopify/hydrogen';
 import type {HeroWithCtaFragment} from 'types/storefrontapi.generated';
-import {LANDING_PRODUCT_ID} from './LandingProduct';
+import BuyNowLink from './BuyNowLink';
 
 /**
  * Landing-page hero built from a `hero_with_cta` entry. Centred title (first
@@ -19,13 +19,6 @@ export default function LandingHero({
     .filter(Boolean);
   const desktop = desktopImage?.reference?.image;
   const mobile = mobileImage?.reference?.image ?? desktop;
-
-  const scrollToProduct = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const target = document.getElementById(LANDING_PRODUCT_ID);
-    if (!target) return;
-    event.preventDefault();
-    target.scrollIntoView({behavior: 'smooth', block: 'start'});
-  };
 
   return (
     <section className="relative w-full h-[80svh] min-h-[480px] max-h-[760px] overflow-clip bg-black">
@@ -52,22 +45,19 @@ export default function LandingHero({
       <div className="relative h-full flex flex-col items-center justify-center gap-6 px-6 text-center text-white">
         <h1 className="typo-h1 uppercase">
           {firstLine && (
-            <span className="block font-light italic">{firstLine}</span>
+            <span className="block font-extralight italic">{firstLine}</span>
           )}
           {restLines.map((line) => (
-            <span key={line} className="block font-semibold">
+            <span key={line} className="block font-normal">
               {line}
             </span>
           ))}
         </h1>
         {cta?.reference && (
-          <a
-            href={`#${LANDING_PRODUCT_ID}`}
-            onClick={scrollToProduct}
-            className="inline-flex items-center min-h-10 px-5 rounded-md bg-mint text-black typo-caption-responsive-uppercase font-semibold hover:bg-white transition-colors"
-          >
-            {cta.reference.label?.value || 'Buy now'}
-          </a>
+          <BuyNowLink
+            label={cta.reference.label?.value}
+            className="hover:bg-white"
+          />
         )}
       </div>
     </section>
