@@ -230,6 +230,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
         {buyNow ? (
           <div className="page-px lg:px-0 mt-8">
             <BuyNowLink
+              position="comparison"
               label={cta?.reference?.label?.value}
               className="w-full lg:w-1/2 hover:bg-black hover:text-white"
             />

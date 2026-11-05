@@ -247,6 +247,7 @@ export const FOOTER_QUERY = `#graphql
 // Returned after cart changes. Hydrogen's default only has id, totalQuantity and
 // checkoutUrl; the lines let tracking report each item's quantity in the cart,
 // and discountCodes lets the cart show why a submitted code wasn't applied.
+// attributes: existing cart attributes, merged with the A/B test context.
 export const CART_MUTATE_FRAGMENT = `#graphql
   fragment CartApiMutation on Cart {
     id
@@ -255,6 +256,11 @@ export const CART_MUTATE_FRAGMENT = `#graphql
     discountCodes {
       code
       applicable
+    }
+    # Kept when the A/B test context is added (cartAttributesUpdate replaces all)
+    attributes {
+      key
+      value
     }
     lines(first: 100) {
       nodes {
