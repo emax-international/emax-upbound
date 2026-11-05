@@ -43,8 +43,8 @@ export default function ClubFooter({
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="relative flex flex-col items-center text-center px-6 py-14 md:py-20">
-          <h2 className="typo-h2 font-light">
-            Join the <span className="font-semibold">Upbound Club</span>
+          <h2 className="typo-h2 font-extralight">
+            Join the <span className="font-normal">Upbound Club</span>
           </h2>
 
           <fetcher.Form

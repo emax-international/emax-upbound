@@ -36,6 +36,8 @@ interface LandingProductProps {
   highlights?: string | null;
   /** Accordion metaobject for "Why Upbound?", "Ingredients", ... */
   info?: LandingInfoFragment | null;
+  /** Gallery images for this page; the product's own images when empty */
+  images?: LandingProductFragment['images']['nodes'];
 }
 
 /**
@@ -48,6 +50,7 @@ export default function LandingProduct({
   subtitle,
   highlights,
   info,
+  images,
 }: LandingProductProps) {
   const navigate = useNavigate();
   const selectedVariant = useOptimisticVariant(
@@ -101,20 +104,30 @@ export default function LandingProduct({
   return (
     <section
       id={LANDING_PRODUCT_ID}
-      className="page-px my-[60px] md:my-[100px] max-w-content mx-auto scroll-mt-[calc(var(--header-height)+16px)]"
+      // Full-width white band; the content inside stays at max-w-content
+      className="bg-white py-[60px] md:py-[100px] scroll-mt-(--header-height)"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-16 items-start">
+      <div className="page-px max-w-content mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-16 items-start">
         {/* Images: pinned below the header while the details scroll */}
         <LandingProductGallery
-          images={product.images.nodes}
+          images={images?.length ? images : product.images.nodes}
           className="md:sticky md:top-[calc(var(--header-height)+24px)]"
         />
 
         <div className="space-y-6">
           {/* Title, subtitle, highlights */}
           <div className="space-y-3">
-            <h1 className="typo-h1">{product.title}</h1>
-            {subtitle && <p className="typo-paragraph">{subtitle}</p>}
+            {/* Medium is the heaviest Whyte Inktrap weight loaded (typo-h1 is Light on desktop) */}
+            <div className="space-y-1">
+              <h1 className="typo-h1 font-medium md:font-medium">
+                {product.title}
+              </h1>
+              {subtitle && (
+                <p className="typo-paragraph text-base md:text-lg">
+                  {subtitle}
+                </p>
+              )}
+            </div>
             {highlightList.length > 0 && (
               <ul className="space-y-1 text-xs md:text-[13px]">
                 {highlightList.map((item) => (
@@ -136,7 +149,7 @@ export default function LandingProduct({
                     {formatRM(activeCompareAt)}
                   </s>
                 )}
-              <span className="typo-h2 font-semibold">
+              <span className="typo-h2 font-normal">
                 {formatRM(activePrice)}
               </span>
             </p>
@@ -186,7 +199,7 @@ export default function LandingProduct({
                   <>
                     Subscribe
                     {subscriptionSaving > 0 && (
-                      <span className="ml-2 px-2 py-0.5 rounded-full bg-black text-mint text-[10px] font-semibold uppercase">
+                      <span className="ml-2 px-2 py-0.5 rounded-full bg-black text-mint text-[10px] font-normal uppercase">
                         Save {formatRM(subscriptionSaving)}
                       </span>
                     )}
@@ -266,7 +279,7 @@ export default function LandingProduct({
                 >
                   <AccordionTrigger
                     iconVariant="plusMinus"
-                    className="py-3 text-xs md:text-[13px] font-semibold"
+                    className="py-3 text-xs md:text-[13px] font-medium"
                   >
                     {item.title?.value}
                   </AccordionTrigger>
@@ -343,7 +356,7 @@ function PurchaseCard({
       )}
     >
       {badge && (
-        <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full bg-mint text-[10px] font-semibold uppercase">
+        <span className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-mint text-[11px] font-normal uppercase">
           {badge}
         </span>
       )}
@@ -361,7 +374,7 @@ function PurchaseCard({
         </div>
         {price && (
           <div className="text-right shrink-0">
-            <p className="font-semibold text-sm md:text-base">
+            <p className="font-normal text-sm md:text-base">
               {formatRM(price)}
             </p>
             {selected && showCompareAt && (
@@ -382,7 +395,7 @@ function PurchaseCard({
             ))}
           </ul>
           {units && price && (
-            <span className="shrink-0 px-2 py-0.5 rounded-full bg-black text-mint text-[10px] font-semibold">
+            <span className="shrink-0 px-2 py-0.5 rounded-full bg-black text-mint text-[10px] font-normal">
               {formatRM(amount(price) / units)}/Can
             </span>
           )}
@@ -405,7 +418,7 @@ function GiftBox({
 
   return (
     <div className="mt-3 rounded-md overflow-clip border border-black">
-      <p className="bg-black text-mint px-3 py-1.5 text-[10px] font-semibold uppercase">
+      <p className="bg-black text-mint px-3 py-1.5 text-[10px] font-normal uppercase">
         {heading}
       </p>
       <div className="p-3 bg-white">
@@ -419,7 +432,7 @@ function GiftBox({
             />
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-semibold uppercase">Free gift</p>
+            <p className="text-[10px] font-normal uppercase">Free gift</p>
             <p className="uppercase truncate">{gift.product.title}</p>
             {worth && amount(worth) > 0 && (
               <p className="text-[10px] text-mid-grey">
@@ -556,7 +569,7 @@ type InfoItem = NonNullable<
   NonNullable<LandingInfoFragment['content']>['references']
 >['nodes'][number];
 
-const infoText = 'text-xs md:text-[13px] text-mid-grey';
+const infoText = 'text-xs md:text-[13px] text-black';
 
 /**
  * One info row. Every field is optional and shown in this order:
@@ -574,7 +587,7 @@ function InfoContent({item}: {item: InfoItem}) {
           {tags.map((tag) => (
             <li
               key={tag}
-              className="px-3 py-1.5 rounded-full bg-black text-mint text-xs font-medium"
+              className="px-3 py-1.5 rounded-sm bg-black text-mint text-xs font-medium"
             >
               {tag}
             </li>
@@ -590,7 +603,7 @@ function InfoContent({item}: {item: InfoItem}) {
         <ul className="divide-y divide-neutral-200">
           {points.map((point, index) => (
             <li key={point.id ?? index} className="py-3 first:pt-0 last:pb-0">
-              <p className="text-xs md:text-[13px] font-semibold text-black">
+              <p className="text-xs md:text-[13px] font-medium text-black">
                 {point.step?.value}
               </p>
               {point.description?.value && (
@@ -622,7 +635,7 @@ function InfoContent({item}: {item: InfoItem}) {
                   />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs md:text-[13px] font-semibold text-black">
+                  <p className="text-xs md:text-[13px] font-medium text-black">
                     {ingredient.text?.value}
                   </p>
                   {ingredient.description?.value && (
@@ -679,7 +692,10 @@ function DescriptionText({value}: {value: string}) {
             ))}
           </ul>
         ) : block.text.endsWith(':') ? (
-          <p key={index} className="font-semibold text-black uppercase">
+          <p
+            key={index}
+            className="font-medium text-black uppercase underline underline-offset-2"
+          >
             {block.text}
           </p>
         ) : (
@@ -694,7 +710,7 @@ function DescriptionText({value}: {value: string}) {
 function IngredientAmount({value}: {value: string}) {
   const match = value.match(/^([\d.,]+)\s*(.*)$/);
   return (
-    <p className="shrink-0 font-semibold text-black">
+    <p className="shrink-0 font-medium text-black">
       <span className="text-lg md:text-xl">{match ? match[1] : value}</span>
       {match?.[2] && <span className="text-xs ml-0.5">{match[2]}</span>}
     </p>

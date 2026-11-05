@@ -37,6 +37,9 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
           subtitle={productSection.subtitle?.value}
           highlights={productSection.highlights?.value}
           info={productSection.info?.reference}
+          images={page.productImages?.references?.nodes.flatMap((node) =>
+            'image' in node && node.image ? [node.image] : [],
+          )}
         />
       )}
 
@@ -45,7 +48,10 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
       )}
 
       {page.comparison?.reference && (
-        <ComparisonTable reference={page.comparison.reference} />
+        // flow-root keeps the table's margins inside the white band
+        <div className="flow-root bg-white">
+          <ComparisonTable reference={page.comparison.reference} buyNow />
+        </div>
       )}
 
       {page.review?.reference && (
@@ -53,8 +59,11 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
       )}
 
       {page.faq?.reference && (
-        <div className="page-px my-[60px] md:my-[100px]">
-          <HeroAccordion reference={page.faq.reference} />
+        <div className="page-px py-[60px] md:py-[100px] bg-white">
+          <HeroAccordion
+            reference={page.faq.reference}
+            titleClassName="font-medium md:font-medium"
+          />
         </div>
       )}
 

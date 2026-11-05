@@ -30,7 +30,16 @@ interface MediaCarouselProps {
  * - layout "Left": heading on the left, video cards on the right (e.g. Loved by athletes)
  */
 function MediaCarousel({reference, className}: MediaCarouselProps) {
-  const {top_heading, caption, header, label, layout, slides} = reference ?? {};
+  const {
+    top_heading,
+    caption,
+    header,
+    label,
+    layout,
+    slides,
+    background_color,
+  } = reference ?? {};
+  const background = background_color?.value;
   const slidesArray = slides?.references?.nodes ?? [];
   const isLeft = layout?.value === 'Left';
   const [api, setApi] = useState<CarouselApi>();
@@ -73,7 +82,15 @@ function MediaCarousel({reference, className}: MediaCarouselProps) {
   if (slidesArray.length === 0) return null;
 
   return (
-    <section className={cn('my-[60px] md:my-[100px]', className)}>
+    <section
+      className={cn(
+        // With a background colour the section is a full-width band, so the
+        // spacing moves inside it
+        background ? 'py-[60px] md:py-[100px]' : 'my-[60px] md:my-[100px]',
+        className,
+      )}
+      style={background ? {backgroundColor: background} : undefined}
+    >
       {/* Top heading + caption: centered above the section in both layouts */}
       {(top_heading?.value || caption?.value) && (
         <div className="page-px text-center space-y-2 mb-8 md:mb-12">
@@ -86,7 +103,7 @@ function MediaCarousel({reference, className}: MediaCarouselProps) {
         className={cn(
           isLeft
             ? // Mobile: stacked, carousel full-bleed; md+: side by side
-              'flex flex-col md:flex-row md:items-center gap-8 md:gap-12 md:px-6'
+              'flex flex-col md:flex-row md:items-center gap-8 md:gap-12'
             : 'space-y-8 md:space-y-12',
         )}
       >
@@ -96,12 +113,30 @@ function MediaCarousel({reference, className}: MediaCarouselProps) {
             className={cn(
               'space-y-4',
               isLeft
-                ? 'page-px md:px-0 md:w-1/4 shrink-0 text-center md:text-left'
+                ? // md+: text kept narrow so it wraps ("Loved by / athletes") and
+                  // centred in its column; the carousel runs to the right edge.
+                  // px-6 rather than page-px: page-px is unlayered CSS and
+                  // would beat the md: overrides
+                  'px-6 md:pr-0 md:w-1/3 lg:w-[28%] shrink-0 text-center md:text-left md:[&>*]:max-w-[260px] md:[&>*]:mx-auto'
                 : 'page-px text-center',
             )}
           >
-            <TextField value={header?.value} className="[&_p]:typo-h1" />
-            <TextField value={label?.value} className="[&_p]:text-mid-grey" />
+            <div className="">
+              {/* Mobile: paragraphs run on as one sentence (e.g. "Over /
+                100,000 / cans served" stacks only from md up) */}
+              <TextField
+                value={header?.value}
+                className="[&_p]:typo-h1 max-md:[&_p]:inline max-md:[&_p+p]:ml-[0.25em]"
+              />
+              <TextField
+                value={label?.value}
+                className={cn(
+                  isLeft
+                    ? '[&_p]:text-black [&_p]:text-base lg:[&_p]:text-xl [&_p]:leading-snug'
+                    : '[&_p]:text-mid-grey',
+                )}
+              />
+            </div>
           </div>
         )}
 
@@ -112,15 +147,18 @@ function MediaCarousel({reference, className}: MediaCarouselProps) {
             // Left layout aligns to the start once it's side by side
             breakpoints: isLeft ? {'(min-width: 768px)': {align: 'start'}} : {},
           }}
-          className={cn('w-full', isLeft && 'md:flex-1 min-w-0')}
+          className={cn(
+            'w-full',
+            isLeft ? 'md:flex-1 min-w-0' : 'lg:px-10 xl:px-16',
+          )}
           setApi={setApi}
         >
-          <CarouselContent className={cn(!isLeft && 'ml-0 md:ml-2')}>
+          <CarouselContent>
             {slidesArray.map((slide, index) => (
               <CarouselItem
                 key={slide.id ?? index}
                 className={cn(
-                  'pr-4',
+                  // 16px gap between cards (CarouselItem's pl-4)
                   isLeft
                     ? 'basis-2/3 md:basis-1/3 lg:basis-[22.22%]' // 4½ on desktop
                     : 'basis-2/3 md:basis-1/3 lg:basis-1/5',
@@ -392,7 +430,7 @@ function VideoCaption({slide, className}: {slide: Slide; className?: string}) {
   return (
     <div
       className={cn(
-        'absolute inset-x-0 bottom-0 px-3 pb-4 pt-16 text-center text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none',
+        'absolute inset-x-0 bottom-0 px-3 pb-4 pt-24 text-center text-white bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none',
         className,
       )}
     >

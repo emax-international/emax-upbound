@@ -3,10 +3,14 @@ import {useEffect, useRef, useState} from 'react';
 import {ComparisonTableFragment} from 'types/storefrontapi.generated';
 import {cn} from '~/lib/utils';
 import CtaButton from '../CtaButton';
+import BuyNowLink from './BuyNowLink';
 import TextField from './TextField';
 
 interface ComparisonTableProps {
   reference: ComparisonTableFragment;
+  /** Show a "Buy now" button that scrolls to the add-to-cart section
+   * (A/B landing pages). The CTA entry, if set, only provides the label. */
+  buyNow?: boolean;
 }
 
 /** Parses a list.single_line_text_field value (JSON array of strings). */
@@ -28,7 +32,7 @@ function parseList(value?: string | null): string[] {
  * - below lg: stacked on a plain background, the table scrolls sideways
  *   with a progress indicator underneath
  */
-function ComparisonTable({reference}: ComparisonTableProps) {
+function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
   const {header, label, background_image, table_header, rows, footnote, cta} =
     reference ?? {};
 
@@ -93,7 +97,11 @@ function ComparisonTable({reference}: ComparisonTableProps) {
           )}
         >
           <TextField value={header?.value} className="[&_p]:typo-h1" />
-          <TextField value={label?.value} />
+          {/* Size goes on the <p>: the global p style would override the wrapper */}
+          <TextField
+            value={label?.value}
+            className="max-w-[300px] lg:max-w-none mx-auto [&_p]:text-base md:[&_p]:text-lg [&_p]:font-light"
+          />
         </div>
 
         {/* Table: scrolls sideways below lg; pt leaves room for header
@@ -103,12 +111,18 @@ function ComparisonTable({reference}: ComparisonTableProps) {
             ref={scrollRef}
             className="@container overflow-x-auto pt-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            <table className="w-full border-separate border-spacing-0 text-xs lg:text-[13px] leading-snug text-left wrap-break-word hyphens-auto">
+            <table
+              // lg: fixed layout, a narrow label column and equal value columns
+              style={
+                {'--value-col': `${84 / columnCount}%`} as React.CSSProperties
+              }
+              className="w-full lg:table-fixed border-separate border-spacing-0 text-xs lg:text-[13px] leading-snug text-left wrap-break-word hyphens-auto"
+            >
               <thead>
                 <tr>
                   <th
                     className={cn(
-                      'bg-white rounded-tl-lg lg:w-[22%]',
+                      'bg-white rounded-tl-lg lg:w-[16%]',
                       frozenLabel,
                     )}
                   />
@@ -120,11 +134,9 @@ function ComparisonTable({reference}: ComparisonTableProps) {
                         key={cell?.id ?? i}
                         className={cn(
                           cellPadding,
-                          'py-3 align-bottom font-semibold',
+                          'py-3 align-bottom lg:w-(--value-col)',
                           i === 0 ? frozenFirst : scrolling,
-                          isHighlight
-                            ? 'bg-black text-white rounded-t-lg'
-                            : 'bg-[#F7F7F7]',
+                          isHighlight ? 'bg-black text-white' : 'bg-[#F7F7F7]',
                           i === lastColumn && 'rounded-tr-lg',
                         )}
                       >
@@ -147,7 +159,6 @@ function ComparisonTable({reference}: ComparisonTableProps) {
               </thead>
               <tbody>
                 {rowsArray.map((row, rowIndex) => {
-                  const isFirst = rowIndex === 0;
                   const isLast = rowIndex === lastRow;
                   // Non-highlight columns alternate white / grey, starting white
                   const isStriped = rowIndex % 2 === 1;
@@ -159,7 +170,6 @@ function ComparisonTable({reference}: ComparisonTableProps) {
                           cellPadding,
                           'bg-[#F2F2F2] font-medium py-4',
                           frozenLabel,
-                          isFirst && 'rounded-tl-lg',
                           isLast && 'rounded-bl-lg',
                         )}
                       >
@@ -180,7 +190,6 @@ function ComparisonTable({reference}: ComparisonTableProps) {
                                     'text-black/80',
                                     isStriped ? 'bg-[#F7F7F7]' : 'bg-white',
                                   ),
-                              isLast && isHighlight && 'rounded-b-lg',
                               isLast && i === lastColumn && 'rounded-br-lg',
                             )}
                           >
@@ -218,13 +227,22 @@ function ComparisonTable({reference}: ComparisonTableProps) {
           />
         )}
 
-        {cta?.reference && (
+        {buyNow ? (
           <div className="page-px lg:px-0 mt-8">
-            <CtaButton
-              reference={cta.reference}
-              className="w-full lg:w-auto lg:min-w-[150px] bg-mint text-black hover:bg-black hover:text-white uppercase rounded-md"
+            <BuyNowLink
+              label={cta?.reference?.label?.value}
+              className="w-full lg:w-1/2 hover:bg-black hover:text-white"
             />
           </div>
+        ) : (
+          cta?.reference && (
+            <div className="page-px lg:px-0 mt-8">
+              <CtaButton
+                reference={cta.reference}
+                className="w-full lg:w-auto lg:min-w-[150px] bg-mint text-black hover:bg-black hover:text-white uppercase rounded-md"
+              />
+            </div>
+          )
         )}
       </div>
     </section>

@@ -31,6 +31,23 @@ export const AB_TESTING_PAGE_CMS_QUERY = `#graphql
 
       title: field(key: "title") { value }
 
+      # Marquee messages (global_banner entries) shown instead of the site banner
+      # Works as a single reference or a list
+      banner: field(key: "banner") {
+        reference {
+          ... on Metaobject {
+            content: field(key: "content") { value }
+          }
+        }
+        references(first: 10) {
+          nodes {
+            ... on Metaobject {
+              content: field(key: "content") { value }
+            }
+          }
+        }
+      }
+
       hero: field(key: "hero") {
         reference {
           ... on Metaobject {
@@ -96,6 +113,23 @@ export const AB_TESTING_PAGE_CMS_QUERY = `#graphql
       }
 
       # Background of the "Join the Upbound Club" footer
+      # Per-page images for the add-to-cart gallery (else the product's own)
+      productImages: field(key: "product_images") {
+        references(first: 20) {
+          nodes {
+            ... on MediaImage {
+              image {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+
       footerImage: field(key: "footer_image") {
         reference {
           ... on MediaImage {
