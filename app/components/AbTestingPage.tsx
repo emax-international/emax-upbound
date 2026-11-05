@@ -37,6 +37,9 @@ export default function AbTestingPage({page, source}: AbTestingPageProps) {
           subtitle={productSection.subtitle?.value}
           highlights={productSection.highlights?.value}
           info={productSection.info?.reference}
+          images={page.productImages?.references?.nodes.flatMap((node) =>
+            'image' in node && node.image ? [node.image] : [],
+          )}
         />
       )}
 

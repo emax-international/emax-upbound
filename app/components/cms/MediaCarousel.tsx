@@ -430,7 +430,7 @@ function VideoCaption({slide, className}: {slide: Slide; className?: string}) {
   return (
     <div
       className={cn(
-        'absolute inset-x-0 bottom-0 px-3 pb-4 pt-16 text-center text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none',
+        'absolute inset-x-0 bottom-0 px-3 pb-4 pt-24 text-center text-white bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none',
         className,
       )}
     >

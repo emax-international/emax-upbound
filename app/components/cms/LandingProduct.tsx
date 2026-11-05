@@ -36,6 +36,8 @@ interface LandingProductProps {
   highlights?: string | null;
   /** Accordion metaobject for "Why Upbound?", "Ingredients", ... */
   info?: LandingInfoFragment | null;
+  /** Gallery images for this page; the product's own images when empty */
+  images?: LandingProductFragment['images']['nodes'];
 }
 
 /**
@@ -48,6 +50,7 @@ export default function LandingProduct({
   subtitle,
   highlights,
   info,
+  images,
 }: LandingProductProps) {
   const navigate = useNavigate();
   const selectedVariant = useOptimisticVariant(
@@ -107,7 +110,7 @@ export default function LandingProduct({
       <div className="page-px max-w-content mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-16 items-start">
         {/* Images: pinned below the header while the details scroll */}
         <LandingProductGallery
-          images={product.images.nodes}
+          images={images?.length ? images : product.images.nodes}
           className="md:sticky md:top-[calc(var(--header-height)+24px)]"
         />
 
