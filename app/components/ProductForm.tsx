@@ -137,7 +137,7 @@ export function ProductForm({
         return (
           <div className="product-options" key={option.name}>
             <p className="typo-caption-responsive-uppercase pb-3">
-              {option.name} 12
+              {option.name}
             </p>
             <div className="product-options-grid">
               {option.optionValues.map((value) => {
