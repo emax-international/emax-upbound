@@ -3,10 +3,9 @@
 // options in the cart. No manually-curated/duplicated list — this reads
 // real discounts live from Shopify.
 //
-// IMPORTANT: `query: $query` only filters by things Shopify's discount
-// search actually indexes (status, title, dates, etc.) — `customer_ids:` is
-// NOT a supported search term here and is silently ignored rather than
-// erroring, so it must never be relied on to scope results to one customer.
+// IMPORTANT: the `customer_ids:` search term only works on Admin API 2026-07+
+// — older versions silently ignore it rather than erroring — so it must
+// never be relied on alone to scope results to one customer.
 // customerSelection is fetched per discount instead, and getCustomerVouchers
 // filters by it in code — see there for why.
 export const CART_DISCOUNTS_QUERY = `#graphql
@@ -77,16 +76,6 @@ export const CART_DISCOUNTS_QUERY = `#graphql
             }
           }
         }
-      }
-    }
-  }
-  # Re-checked in getCustomerVouchers: the query's customer_ids filter is
-  # silently ignored on Admin API versions before 2026-07.
-  fragment CustomerSelection on DiscountCustomerSelection {
-    __typename
-    ... on DiscountCustomers {
-      customers {
-        id
       }
     }
   }

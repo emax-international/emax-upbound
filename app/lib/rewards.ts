@@ -166,43 +166,21 @@ export async function getCustomerVouchers(
     const customer = await (rewardsCustomer ?? getRewardsCustomer(context));
     if (!customer?.isEligible) return [];
 
-    const {data: discountData, errors} = await adminApiClient.request(
-      CART_DISCOUNTS_QUERY,
-      {
-        // Shopify's discountNodes search does NOT support filtering by
-        // customer (see CartDiscountsQuery.ts) — eligibility is checked
-        // below, per-discount, using its own customerSelection instead.
-        variables: {query: 'status:active'},
+    const numericId = customer.id.split('/').pop();
+    if (!numericId) return [];
+
+    const fetchDiscounts = async (query: string, first: number) => {
+      const {data, errors} = await adminApiClient.request(CART_DISCOUNTS_QUERY, {
+        variables: {query, first},
         // Without this, a slow/unresponsive Admin API call hangs forever —
         // and since this is part of the cart's deferred data, that leaves
         // the whole cart drawer stuck on "Loading cart ..." after Add to
         // Cart rather than just failing this one lookup.
         signal: AbortSignal.timeout(5000),
-      },
-    );
-    if (errors) {
-      console.error('Admin API errors fetching customer vouchers:', errors);
-      return [];
-    }
-
-    const nodes = discountData?.discountNodes?.nodes ?? [];
-    return nodes.reduce((options: CartDiscountOption[], node: any) => {
-      const discount = node?.discount;
-      // This is the actual customer-scoping check — without it, EVERY
-      // active store-wide discount code would be offered to EVERY
-      // customer, regardless of who it was actually assigned to.
-      if (!isEligibleForCustomer(discount?.customerSelection, customer.id)) {
-        return options;
-      }
-
-      const code = discount?.codes?.nodes?.[0]?.code;
-      if (code) {
-        const label = discount.title || discount.summary || code;
-        const summary = cleanDiscountSummary(discount.summary);
-        // Shopify's auto-generated summary (e.g. "5% off orders over RM50")
-        // — only worth showing as a subtitle when it says more than the label.
-        const description = summary && summary !== label ? summary : null;
-        options.push({code, label, description});
+      });
+      if (errors) {
+        console.error('Admin API errors fetching customer vouchers:', errors);
+        return [];
       }
       return (data?.discountNodes?.nodes ?? []) as any[];
     };
@@ -242,8 +220,7 @@ export async function getCustomerVouchers(
     storeNodes
       .map((node) => node?.discount)
       .filter(
-        (discount) =>
-          discount?.customerSelection?.__typename === 'DiscountCustomerAll',
+        (discount) => discount?.customerSelection?.allCustomers === true,
       )
       .forEach(addOption);
 
@@ -252,20 +229,6 @@ export async function getCustomerVouchers(
     console.error('Failed to load customer vouchers:', error);
     return [];
   }
-}
-
-// A discount's customerSelection is either DiscountCustomerAll (open to
-// everyone) or DiscountCustomers (an explicit id list) — only offer a code
-// as this customer's voucher if it's genuinely scoped to them (or to
-// everyone). This is what actually prevents one customer's "Specific
-// customers" codes from leaking into another customer's voucher list.
-function isEligibleForCustomer(
-  customerSelection: {allCustomers?: boolean; customers?: {id: string}[]} | null | undefined,
-  customerId: string,
-): boolean {
-  if (!customerSelection) return false;
-  if (customerSelection.allCustomers) return true;
-  return customerSelection.customers?.some((c) => c.id === customerId) ?? false;
 }
 
 // Raw shape returned by the loyalty API's GET /loyalty/api/customer?email=...
