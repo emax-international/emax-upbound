@@ -70,6 +70,18 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+/**
+ * Rewards rollout switch. With REWARDS_OPEN_TO_ALL=true every logged-in
+ * customer is eligible; otherwise only customers whitelisted via the
+ * `custom.test_account` boolean metafield (set in Shopify admin) are.
+ */
+export function hasRewardsAccess(
+  env: Env,
+  testAccountValue?: string | null,
+): boolean {
+  return env.REWARDS_OPEN_TO_ALL === 'true' || testAccountValue === 'true';
+}
+
 export type RewardsCustomer = {
   id: string;
   email: string;
@@ -112,10 +124,7 @@ export async function getRewardsCustomer(
     return {
       id: customer.id,
       email: customer.emailAddress?.emailAddress ?? '',
-      // Rewards is still being rolled out — only customers whitelisted via
-      // the `custom.test_account` boolean metafield (set in Shopify admin)
-      // are eligible.
-      isEligible: customer.testAccount?.value === 'true',
+      isEligible: hasRewardsAccess(context.env, customer.testAccount?.value),
     };
   } catch (error) {
     console.error('Failed to load rewards customer:', error);
@@ -138,12 +147,13 @@ export async function isRewardsEligible(
 }
 
 /**
- * Look up the logged-in customer's own active discounts (assigned via
- * Shopify's native "Specific customers" discount eligibility). Used both by
- * the cart's discount picker and the account "My Rewards" page. Guests,
- * stores without an Admin API client configured, and customers not
- * eligible for rewards (see isRewardsEligible) simply get no personalized
- * discounts — never throws, so a failure here should never break the page.
+ * Look up the active code discounts the logged-in customer can use: their own
+ * (assigned via Shopify's native "Specific customers" discount eligibility)
+ * first, then store-wide "All customers" ones. Used both by the cart's
+ * discount picker and the account "My Rewards" page. Guests, stores without
+ * an Admin API client configured, and customers not eligible for rewards
+ * (see isRewardsEligible) simply get no discounts — never throws, so a
+ * failure here should never break the page.
  */
 export async function getCustomerVouchers(
   context: LoaderFunctionArgs['context'],
@@ -159,36 +169,63 @@ export async function getCustomerVouchers(
     const numericId = customer.id.split('/').pop();
     if (!numericId) return [];
 
-    const {data: discountData, errors} = await adminApiClient.request(
-      CART_DISCOUNTS_QUERY,
-      {
-        variables: {query: `customer_ids:${numericId} status:active`},
+    const fetchDiscounts = async (query: string, first: number) => {
+      const {data, errors} = await adminApiClient.request(CART_DISCOUNTS_QUERY, {
+        variables: {query, first},
         // Without this, a slow/unresponsive Admin API call hangs forever —
         // and since this is part of the cart's deferred data, that leaves
         // the whole cart drawer stuck on "Loading cart ..." after Add to
         // Cart rather than just failing this one lookup.
         signal: AbortSignal.timeout(5000),
-      },
-    );
-    if (errors) {
-      console.error('Admin API errors fetching customer vouchers:', errors);
-      return [];
-    }
-
-    const nodes = discountData?.discountNodes?.nodes ?? [];
-    return nodes.reduce((options: CartDiscountOption[], node: any) => {
-      const discount = node?.discount;
-      const code = discount?.codes?.nodes?.[0]?.code;
-      if (code) {
-        const label = discount.title || discount.summary || code;
-        const summary = cleanDiscountSummary(discount.summary);
-        // Shopify's auto-generated summary (e.g. "5% off orders over RM50")
-        // — only worth showing as a subtitle when it says more than the label.
-        const description = summary && summary !== label ? summary : null;
-        options.push({code, label, description});
+      });
+      if (errors) {
+        console.error('Admin API errors fetching customer vouchers:', errors);
+        return [];
       }
-      return options;
-    }, []);
+      return (data?.discountNodes?.nodes ?? []) as any[];
+    };
+
+    // The Admin API has no filter for "All customers" eligibility (nor a way
+    // to exclude customer-specific discounts), so store-wide ones are found
+    // by scanning active code discounts and checking each one below.
+    const [ownNodes, storeNodes] = await Promise.all([
+      fetchDiscounts(`customer_ids:${numericId} status:active`, 20),
+      fetchDiscounts('status:active method:code', 100),
+    ]);
+
+    const options: CartDiscountOption[] = [];
+    const addOption = (discount: any) => {
+      const code = discount?.codes?.nodes?.[0]?.code;
+      if (!code || options.some((o) => o.code === code)) return;
+      const label = discount.title || discount.summary || code;
+      const summary = cleanDiscountSummary(discount.summary);
+      // Shopify's auto-generated summary (e.g. "5% off orders over RM50")
+      // — only worth showing as a subtitle when it says more than the label.
+      const description = summary && summary !== label ? summary : null;
+      options.push({code, label, description});
+    };
+
+    // Only discounts assigned to this customer — the query's customer_ids
+    // filter is silently ignored on Admin API versions before 2026-07,
+    // which would otherwise list every active code in the store.
+    ownNodes
+      .map((node) => node?.discount)
+      .filter((discount) =>
+        (
+          discount?.customerSelection?.customers as {id: string}[] | undefined
+        )?.some((c) => c.id === customer.id),
+      )
+      .forEach(addOption);
+
+    storeNodes
+      .map((node) => node?.discount)
+      .filter(
+        (discount) =>
+          discount?.customerSelection?.__typename === 'DiscountCustomerAll',
+      )
+      .forEach(addOption);
+
+    return options;
   } catch (error) {
     console.error('Failed to load customer vouchers:', error);
     return [];

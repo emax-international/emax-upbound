@@ -47,7 +47,9 @@ export async function createAppLoadContext(
     env.SHOPIFY_ADMIN_API_ACCESS_TOKEN && env.PUBLIC_STORE_DOMAIN
       ? createAdminApiClient({
           storeDomain: env.PUBLIC_STORE_DOMAIN,
-          apiVersion: env.SHOPIFY_ADMIN_API_VERSION || '2023-04',
+          // 2026-07+ is required for discountNodes' `customer_ids` filter
+          // (see getCustomerVouchers) — older versions silently ignore it.
+          apiVersion: env.SHOPIFY_ADMIN_API_VERSION || '2026-07',
           accessToken: env.SHOPIFY_ADMIN_API_ACCESS_TOKEN,
         })
       : null;

@@ -6,6 +6,7 @@ import {Form, NavLink, Outlet, useLoaderData} from 'react-router';
 import AccountHero from '~/components/account/AccountHero';
 import {ACCOUNT_HERO_CMS_QUERY} from '~/graphql/cms/AccountPageQuery';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import {hasRewardsAccess} from '~/lib/rewards';
 
 export function shouldRevalidate() {
   return true;
@@ -30,7 +31,14 @@ export async function loader({context}: LoaderFunctionArgs) {
   }
 
   return remixData(
-    {customer: data.customer, accountHero},
+    {
+      customer: data.customer,
+      accountHero,
+      isRewardsEligible: hasRewardsAccess(
+        context.env,
+        data.customer.testAccount?.value,
+      ),
+    },
     {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -40,7 +48,8 @@ export async function loader({context}: LoaderFunctionArgs) {
 }
 
 export default function AccountLayout() {
-  const {customer, accountHero} = useLoaderData<typeof loader>();
+  const {customer, accountHero, isRewardsEligible} =
+    useLoaderData<typeof loader>();
 
   // const heading = customer
   //   ? customer.firstName
@@ -52,7 +61,7 @@ export default function AccountLayout() {
     <div>
       <AccountHero data={accountHero} />
       <div className="account">
-        <AccountMenu isRewardsEligible={customer?.testAccount?.value === 'true'} />
+        <AccountMenu isRewardsEligible={isRewardsEligible} />
         <div className="flex-3">
           <Outlet context={{customer}} />
         </div>
