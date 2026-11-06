@@ -3804,6 +3804,7 @@ export type CartApiMutationFragment = Pick<
   discountCodes: Array<
     Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
   >;
+  attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
   lines: {
     nodes: Array<
       | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
@@ -3840,6 +3841,7 @@ export type CartDiscountCodesUpdateMutation = {
         discountCodes: Array<
           Pick<StorefrontAPI.CartDiscountCode, 'code' | 'applicable'>
         >;
+        attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
         lines: {
           nodes: Array<
             | (Pick<StorefrontAPI.CartLine, 'quantity'> & {
@@ -5578,7 +5580,7 @@ interface GeneratedQueryTypes {
 }
 
 interface GeneratedMutationTypes {
-  '#graphql\n  mutation CartDiscountCodesUpdate(\n    $cartId: ID!\n    $discountCodes: [String!]!\n    $language: LanguageCode\n    $country: CountryCode\n  ) @inContext(country: $country, language: $language) {\n    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {\n      cart {\n        ...CartApiMutation\n      }\n      userErrors {\n        code\n        field\n        message\n      }\n      warnings {\n        code\n        message\n        target\n      }\n    }\n  }\n  #graphql\n  fragment CartApiMutation on Cart {\n    id\n    totalQuantity\n    checkoutUrl\n    discountCodes {\n      code\n      applicable\n    }\n    lines(first: 100) {\n      nodes {\n        quantity\n        attributes {\n          key\n          value\n        }\n        merchandise {\n          ... on ProductVariant {\n            id\n          }\n        }\n        sellingPlanAllocation {\n          sellingPlan {\n            id\n          }\n        }\n      }\n    }\n  }\n\n': {
+  '#graphql\n  mutation CartDiscountCodesUpdate(\n    $cartId: ID!\n    $discountCodes: [String!]!\n    $language: LanguageCode\n    $country: CountryCode\n  ) @inContext(country: $country, language: $language) {\n    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {\n      cart {\n        ...CartApiMutation\n      }\n      userErrors {\n        code\n        field\n        message\n      }\n      warnings {\n        code\n        message\n        target\n      }\n    }\n  }\n  #graphql\n  fragment CartApiMutation on Cart {\n    id\n    totalQuantity\n    checkoutUrl\n    discountCodes {\n      code\n      applicable\n    }\n    # Kept when the A/B test context is added (cartAttributesUpdate replaces all)\n    attributes {\n      key\n      value\n    }\n    lines(first: 100) {\n      nodes {\n        quantity\n        attributes {\n          key\n          value\n        }\n        merchandise {\n          ... on ProductVariant {\n            id\n          }\n        }\n        sellingPlanAllocation {\n          sellingPlan {\n            id\n          }\n        }\n      }\n    }\n  }\n\n': {
     return: CartDiscountCodesUpdateMutation;
     variables: CartDiscountCodesUpdateMutationVariables;
   };

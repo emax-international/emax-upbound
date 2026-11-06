@@ -1,7 +1,9 @@
 import {Image} from '@shopify/hydrogen';
 import type {Image as ImageType} from '@shopify/hydrogen/storefront-api-types';
 import {AlertCircle, CheckCircle, Instagram, Loader2} from 'lucide-react';
+import {useEffect} from 'react';
 import {useFetcher} from 'react-router';
+import {pushAbEvent} from '~/lib/abTracking';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/stayupbound/';
 
@@ -19,6 +21,13 @@ export default function ClubFooter({
   const isSuccess = fetcher.state === 'idle' && fetcher.data?.success;
   const isError = fetcher.state === 'idle' && fetcher.data?.error;
 
+  // Signups are tracked only once the subscription succeeds; attempts
+  // (button clicks / submits) are a separate event
+  useEffect(() => {
+    if (isSuccess)
+      pushAbEvent('newsletter_signup', {signup_position: 'footer'});
+  }, [isSuccess]);
+
   return (
     <footer>
       {/* From tablet up the banner takes the image's own ratio so the whole
@@ -27,7 +36,9 @@ export default function ClubFooter({
         className="relative overflow-clip bg-black text-white md:aspect-(--image-ratio) flex flex-col justify-center"
         style={
           image?.width && image?.height
-            ? ({'--image-ratio': `${image.width} / ${image.height}`} as React.CSSProperties)
+            ? ({
+                '--image-ratio': `${image.width} / ${image.height}`,
+              } as React.CSSProperties)
             : undefined
         }
       >
@@ -51,6 +62,9 @@ export default function ClubFooter({
             method="POST"
             action="/newsletter/subscribe"
             className="w-full max-w-[560px] mt-6"
+            onSubmit={() =>
+              pushAbEvent('newsletter_submit', {signup_position: 'footer'})
+            }
           >
             {!isSuccess ? (
               <div className="flex">
@@ -88,9 +102,9 @@ export default function ClubFooter({
           </fetcher.Form>
 
           <p className="mt-5 max-w-[560px] typo-caption-responsive">
-            Get FREE shipping on your first order (West Malaysia only). Plus,
-            be the first to know about our events, partnerships, and next
-            product drop.
+            Get FREE shipping on your first order (West Malaysia only). Plus, be
+            the first to know about our events, partnerships, and next product
+            drop.
           </p>
           {/* One line from tablet up; wraps on small phones */}
           <p className="mt-3 md:whitespace-nowrap typo-caption-responsive text-white/70 underline underline-offset-2">

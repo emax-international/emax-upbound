@@ -14,6 +14,7 @@ import type {
   LandingProductFragment,
 } from 'types/storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
+import {pushAbEvent} from '~/lib/abTracking';
 import {
   Accordion,
   AccordionContent,
@@ -256,6 +257,12 @@ export default function LandingProduct({
               })}
               quantity={quantity}
               page="Landing Page"
+              onClick={() =>
+                pushAbEvent('cta_click', {
+                  cta_label: 'Add to cart',
+                  cta_position: 'product_section',
+                })
+              }
               trackingItem={{
                 id: product.id,
                 name: product.title,
@@ -667,8 +674,10 @@ function InfoContent({item}: {item: InfoItem}) {
  * "- text" lines become bullets, and a line ending in ":" becomes a bold label.
  */
 function DescriptionText({value}: {value: string}) {
-  const blocks: ({type: 'line'; text: string} | {type: 'list'; items: string[]})[] =
-    [];
+  const blocks: (
+    | {type: 'line'; text: string}
+    | {type: 'list'; items: string[]}
+  )[] = [];
   for (const raw of value.split('\n')) {
     const line = raw.trim();
     if (!line) continue;

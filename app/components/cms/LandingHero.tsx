@@ -55,6 +55,7 @@ export default function LandingHero({
         </h1>
         {cta?.reference && (
           <BuyNowLink
+            position="hero"
             label={cta.reference.label?.value}
             className="hover:bg-white"
           />

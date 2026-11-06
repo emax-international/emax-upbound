@@ -5,7 +5,7 @@ import type {RouteHandle} from '~/components/PageLayout';
 import {AB_TESTING_PAGE_CMS_QUERY} from '~/graphql/cms/AbTestingPageQuery';
 
 /** Handles of the `ab_testing_page` metaobject entries. */
-export const AB_VARIANTS = ['loved-by-many', 'love-by-athletes'] as const;
+export const AB_VARIANTS = ['loved-by-many', 'loved-by-athletes'] as const;
 export type AbVariant = (typeof AB_VARIANTS)[number];
 
 /**

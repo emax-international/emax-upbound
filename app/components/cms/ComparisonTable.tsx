@@ -76,7 +76,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
     'max-lg:sticky max-lg:left-[30cqw] max-lg:z-10 max-lg:w-[38cqw] max-lg:min-w-[38cqw]';
   // Scrolling columns: ~1 column visible beside the frozen ones
   const scrolling = 'max-lg:w-[40cqw] max-lg:min-w-[40cqw]';
-  const cellPadding = 'px-3 lg:px-4';
+  const cellPadding = 'px-3 lg:px-5';
 
   return (
     <section className="relative my-[60px] lg:my-0 lg:py-[100px] overflow-hidden">
@@ -109,14 +109,14 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
         <div className="px-6 lg:px-0">
           <div
             ref={scrollRef}
-            className="@container overflow-x-auto pt-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="@container isolate overflow-x-auto pt-14 lg:pt-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <table
               // lg: fixed layout, a narrow label column and equal value columns
               style={
                 {'--value-col': `${84 / columnCount}%`} as React.CSSProperties
               }
-              className="w-full lg:table-fixed border-separate border-spacing-0 text-xs lg:text-[13px] leading-snug text-left wrap-break-word hyphens-auto"
+              className="w-full lg:table-fixed border-separate border-spacing-0 text-xs lg:text-sm xl:text-base leading-snug text-left wrap-break-word hyphens-auto"
             >
               <thead>
                 <tr>
@@ -134,7 +134,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
                         key={cell?.id ?? i}
                         className={cn(
                           cellPadding,
-                          'py-3 align-bottom lg:w-(--value-col)',
+                          'py-3 lg:py-4 align-bottom lg:w-(--value-col)',
                           i === 0 ? frozenFirst : scrolling,
                           isHighlight ? 'bg-black text-white' : 'bg-[#F7F7F7]',
                           i === lastColumn && 'rounded-tr-lg',
@@ -144,7 +144,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
                           <Image
                             data={cell.image}
                             width={240}
-                            className="block h-auto max-h-24 lg:max-h-28 w-auto max-w-full object-contain -mt-14"
+                            className="block h-auto max-h-24 lg:max-h-36 w-auto max-w-full object-contain -mt-14 lg:-mt-20"
                           />
                         )}
                         {cell?.text && (
@@ -168,7 +168,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
                         scope="row"
                         className={cn(
                           cellPadding,
-                          'bg-[#F2F2F2] font-medium py-4',
+                          'bg-[#F2F2F2] font-medium py-4 lg:py-5',
                           frozenLabel,
                           isLast && 'rounded-bl-lg',
                         )}
@@ -182,7 +182,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
                             key={i}
                             className={cn(
                               cellPadding,
-                              'py-4',
+                              'py-4 lg:py-5',
                               i === 0 ? frozenFirst : scrolling,
                               isHighlight
                                 ? 'bg-black text-mint'
@@ -221,22 +221,23 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
           <TextField
             value={footnote.value}
             className={cn(
-              'page-px lg:px-0 mt-4 [&_p]:text-xs [&_p]:text-mid-grey',
+              'page-px lg:px-0 mt-4 lg:text-center [&_p]:text-xs [&_p]:text-mid-grey',
               background && 'lg:[&_p]:text-white/70',
             )}
           />
         )}
 
         {buyNow ? (
-          <div className="page-px lg:px-0 mt-8">
+          <div className="page-px lg:px-0 mt-8 lg:flex lg:justify-center">
             <BuyNowLink
+              position="comparison"
               label={cta?.reference?.label?.value}
               className="w-full lg:w-1/2 hover:bg-black hover:text-white"
             />
           </div>
         ) : (
           cta?.reference && (
-            <div className="page-px lg:px-0 mt-8">
+            <div className="page-px lg:px-0 mt-8 lg:flex lg:justify-center">
               <CtaButton
                 reference={cta.reference}
                 className="w-full lg:w-auto lg:min-w-[150px] bg-mint text-black hover:bg-black hover:text-white uppercase rounded-md"
