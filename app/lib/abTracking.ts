@@ -10,6 +10,7 @@
  *   report begin_checkout / purchase per version and traffic source.
  */
 
+import {createContext, useContext} from 'react';
 import type {AbVariant} from './abTestingPage';
 
 /** GA4 property the site reports to; its session cookie is `_ga_<id>`. */
@@ -177,4 +178,19 @@ function pickCampaign(context: AbContext | null) {
     if (context?.[key]) campaign[key] = context[key];
   }
   return campaign;
+}
+
+/**
+ * Whether the current page is one of the A/B test versions. Set by
+ * LandingPage; shared sections (Buy now, add to cart, footer) read it so
+ * that on other landing pages their clicks aren't counted in the A/B test.
+ */
+export const AbPageContext = createContext(false);
+
+const noop = () => {};
+
+/** pushAbEvent on A/B pages; does nothing on other pages. */
+export function useAbEvent() {
+  const isAbPage = useContext(AbPageContext);
+  return isAbPage ? pushAbEvent : noop;
 }

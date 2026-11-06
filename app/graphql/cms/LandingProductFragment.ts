@@ -123,6 +123,15 @@ export const LANDING_PRODUCT_FRAGMENT = `#graphql
     handle
     title
     vendor
+    # Landing page set on the product (SEO: /landing/<handle> then points
+    # search engines to the product page)
+    landingPage: metafield(key: "landing_page", namespace: "custom") {
+      reference {
+        ... on Metaobject {
+          id
+        }
+      }
+    }
     encodedVariantExistence
     encodedVariantAvailability
     images(first: 20) {

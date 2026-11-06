@@ -3,7 +3,7 @@ import type {Image as ImageType} from '@shopify/hydrogen/storefront-api-types';
 import {AlertCircle, CheckCircle, Instagram, Loader2} from 'lucide-react';
 import {useEffect} from 'react';
 import {useFetcher} from 'react-router';
-import {pushAbEvent} from '~/lib/abTracking';
+import {useAbEvent} from '~/lib/abTracking';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/stayupbound/';
 
@@ -13,9 +13,13 @@ const INSTAGRAM_URL = 'https://www.instagram.com/stayupbound/';
  */
 export default function ClubFooter({
   image,
+  logo,
 }: {
   image?: Pick<ImageType, 'url' | 'altText' | 'width' | 'height'> | null;
+  /** Optional logo under the Instagram link (`footer_logo` field) */
+  logo?: {url: string; alt?: string | null} | null;
 }) {
+  const pushAbEvent = useAbEvent();
   const fetcher = useFetcher<{success?: boolean; error?: string}>();
   const isLoading = fetcher.state !== 'idle';
   const isSuccess = fetcher.state === 'idle' && fetcher.data?.success;
@@ -26,7 +30,7 @@ export default function ClubFooter({
   useEffect(() => {
     if (isSuccess)
       pushAbEvent('newsletter_signup', {signup_position: 'footer'});
-  }, [isSuccess]);
+  }, [isSuccess, pushAbEvent]);
 
   return (
     <footer>
@@ -121,6 +125,16 @@ export default function ClubFooter({
             <Instagram className="size-4" />
             @stayupbound
           </a>
+
+          {logo && (
+            // Plain <img> so SVG files work too; height fixed, width follows
+            <img
+              src={logo.url}
+              alt={logo.alt || 'Upbound'}
+              loading="lazy"
+              className="mt-6 md:mt-8 h-8 md:h-10 w-auto max-w-[240px] object-contain"
+            />
+          )}
         </div>
       </div>
     </footer>

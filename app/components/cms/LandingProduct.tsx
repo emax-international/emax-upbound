@@ -14,7 +14,7 @@ import type {
   LandingProductFragment,
 } from 'types/storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
-import {pushAbEvent} from '~/lib/abTracking';
+import {useAbEvent} from '~/lib/abTracking';
 import {
   Accordion,
   AccordionContent,
@@ -53,6 +53,7 @@ export default function LandingProduct({
   info,
   images,
 }: LandingProductProps) {
+  const pushAbEvent = useAbEvent();
   const navigate = useNavigate();
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
