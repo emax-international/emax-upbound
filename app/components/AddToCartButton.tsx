@@ -7,6 +7,7 @@ import { cn } from '~/lib/utils';
 import { Button, buttonVariants } from './ui/button';
 import { useAside } from './Aside';
 import { pushCartEvent, type TrackedItem } from '~/lib/tracking';
+import { abCartAttributes } from '~/lib/abTracking';
 import type { AsideType } from './Aside';
 
 
@@ -26,6 +27,7 @@ export function AddToCartButton({
   quantity,
   page,
   onSuccess,
+  onClick,
 }: {
   analytics?: unknown;
   children: React.ReactNode;
@@ -40,6 +42,8 @@ export function AddToCartButton({
   quantity?: number;
   page?: string;
   onSuccess?: () => void;
+  /** Called when the button is clicked (e.g. CTA click tracking) */
+  onClick?: () => void;
 } & VariantProps<typeof buttonVariants> & {
   asChild?: boolean;
 }) {
@@ -70,6 +74,7 @@ export function AddToCartButton({
             page={page}
             currencyCode={currencyCode}
             onSuccess={onSuccess}
+            onClick={onClick}
             open={open}
             loadingChildren={loadingChildren}
           >
@@ -96,6 +101,7 @@ function CartFormInner({
   page,
   currencyCode,
   onSuccess,
+  onClick,
   open,
   loadingChildren,
   children,
@@ -114,11 +120,14 @@ function CartFormInner({
   page?: string;
   currencyCode: string;
   onSuccess?: () => void;
+  /** Called when the button is clicked (e.g. CTA click tracking) */
+  onClick?: () => void;
   open: (mode: AsideType) => void;
   loadingChildren?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const previousFetcherState = useRef('idle');
+  const abAttributesRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (previousFetcherState.current !== 'idle' && fetcher.state === 'idle') {
@@ -159,8 +168,17 @@ function CartFormInner({
         type="hidden"
         value={JSON.stringify(analytics)}
       />
+      {/* A/B test context for the cart attributes; filled on click since it
+          comes from localStorage/cookies (not available during SSR) */}
+      <input ref={abAttributesRef} name="cartAttributes" type="hidden" />
       <Button
         type="submit"
+        onClick={() => {
+          if (abAttributesRef.current) {
+            abAttributesRef.current.value = JSON.stringify(abCartAttributes());
+          }
+          onClick?.();
+        }}
         variant={variant ?? 'gray-mint'}
         size={size}
         disabled={disabled || isLoading}

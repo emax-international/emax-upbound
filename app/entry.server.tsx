@@ -57,6 +57,14 @@ export default async function handleRequest(
       'https://shopify.com',
       'https://www.facebook.com',
     ],
+    // Shopify Files videos are served from the store domain
+    // (https://<store>.myshopify.com/cdn/shop/videos/...), which default-src
+    // doesn't cover
+    mediaSrc: [
+      "'self'",
+      'https://cdn.shopify.com',
+      `https://${context.env.PUBLIC_STORE_DOMAIN}`,
+    ],
 
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,

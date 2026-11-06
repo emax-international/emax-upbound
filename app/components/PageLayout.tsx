@@ -1,5 +1,5 @@
 import { Suspense, useId, useState, useEffect } from 'react';
-import { Await, Link, NavLink, useFetcher } from 'react-router';
+import { Await, Link, NavLink, useFetcher, useMatches } from 'react-router';
 import type {
   CartApiQueryFragment,
   FooterMenuCmsQuery,
@@ -19,9 +19,17 @@ import {
 } from '~/components/SearchFormPredictive';
 import { SearchResultsPredictive } from '~/components/SearchResultsPredictive';
 import { cn } from '~/lib/utils';
-import Banner from './cms/Banner';
+import Banner, {type RouteBanner} from './cms/Banner';
 import NewsletterPopup from './cms/NewsletterPopup';
 import Logo from './icons/Logo';
+
+/** What a route can set in its `handle` export to change the layout. */
+export interface RouteHandle {
+  hideFooter?: boolean;
+  hideMenu?: boolean;
+  /** Marquee messages from the route's loader data, replacing the site banner */
+  banner?: (data: unknown) => RouteBanner | null;
+}
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -46,6 +54,18 @@ export function PageLayout({
 }: PageLayoutProps) {
   // Set by <Banner> once it is actually on screen
   const [isBannerOpened, setIsBannerOpened] = useState(false);
+  // Routes can change the layout via their `handle` (see RouteHandle)
+  const matches = useMatches();
+  const handles = matches.map((match) => ({
+    handle: match.handle as RouteHandle | undefined,
+    data: match.data,
+  }));
+  const hideFooter = handles.some(({handle}) => handle?.hideFooter);
+  const hideMenu = handles.some(({handle}) => handle?.hideMenu);
+  const routeBanner =
+    handles
+      .map(({handle, data}) => handle?.banner?.(data))
+      .find((banner) => !!banner) ?? null;
 
   return (
     <Aside.Provider>
@@ -56,6 +76,7 @@ export function PageLayout({
 
       <Banner
         bannerPromise={globalBanner}
+        routeBanner={routeBanner}
         setIsBannerOpened={setIsBannerOpened}
       />
       {header && (
@@ -65,6 +86,8 @@ export function PageLayout({
           isLoggedIn={isLoggedIn}
           publicStoreDomain={publicStoreDomain}
           isBannerOpened={isBannerOpened}
+          hideMenu={hideMenu}
+          tallBanner={!!routeBanner}
         />
       )}
       <main className="relative">
@@ -74,7 +97,7 @@ export function PageLayout({
           end
           className={cn(
             'hidden lg:block fixed left-[50%] translate-x-[-50%] z-10 mix-blend-exclusion',
-            isBannerOpened ? 'top-11' : 'top-4',
+            !isBannerOpened ? 'top-4' : routeBanner ? 'top-[66px]' : 'top-11',
           )}
         >
           <Logo
@@ -86,11 +109,13 @@ export function PageLayout({
         {children}
         <NewsletterPopup globalNewsletterPopupPromise={globalNewsletterPopup} />
       </main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      {!hideFooter && (
+        <Footer
+          footer={footer}
+          header={header}
+          publicStoreDomain={publicStoreDomain}
+        />
+      )}
     </Aside.Provider>
   );
 }

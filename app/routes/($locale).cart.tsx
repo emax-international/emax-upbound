@@ -15,6 +15,7 @@ import {
 import {CartMain} from '~/components/CartMain';
 import type {CartDiscountOption} from '~/graphql/admin/CartDiscountsQuery';
 import {CART_MUTATE_FRAGMENT} from '~/lib/fragments';
+import {parseAbCartAttributes} from '~/lib/abTracking';
 
 const CART_DISCOUNT_CODES_UPDATE_MUTATION = `#graphql
   mutation CartDiscountCodesUpdate(
@@ -130,6 +131,26 @@ export async function action({request, context}: ActionFunctionArgs) {
 
       if (!handled) {
         result = await cart.addLines(inputs.lines);
+      }
+
+      // A/B test context (page version, ad source, GA4 IDs) → cart attributes,
+      // so Shopify copies it onto the order. Never blocks the add itself.
+      const abAttributes = parseAbCartAttributes(formData.get('cartAttributes'));
+      if (abAttributes.length > 0 && result?.cart?.id) {
+        try {
+          const abKeys = new Set(abAttributes.map((a) => a.key));
+          const kept = (result.cart.attributes ?? [])
+            .filter((a) => !abKeys.has(a.key))
+            .map((a) => ({key: a.key, value: a.value ?? ''}));
+          const updated = await cart.updateAttributes([...kept, ...abAttributes], {
+            cartId: result.cart.id,
+          });
+          if (updated?.cart) {
+            result = {...updated, errors: result.errors, warnings: result.warnings};
+          }
+        } catch (_e) {
+          // Tracking only: keep the add-to-cart result
+        }
       }
       break;
     }
