@@ -10,7 +10,7 @@ export const meta: MetaFunction<typeof loader> = ({data}) => {
 };
 
 export async function loader({context, request}: LoaderFunctionArgs) {
-  const page = await loadAbTestingPage(context, 'love-by-athletes', request);
+  const page = await loadAbTestingPage(context, 'loved-by-athletes', request);
   return {page};
 }
 

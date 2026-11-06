@@ -17,7 +17,7 @@ export const handle = AB_ROUTE_HANDLE;
 /**
  * A/B split URL: each visitor is randomly assigned to one `ab_testing_page`
  * entry and kept on it via a cookie. The variants also have their own URLs
- * (/loved-by-many, /love-by-athletes).
+ * (/loved-by-many, /loved-by-athletes).
  */
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Upbound | ${data?.page?.title?.value ?? 'Upbound'}`}];

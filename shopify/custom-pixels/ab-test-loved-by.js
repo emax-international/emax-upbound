@@ -19,7 +19,9 @@ const GA4_MEASUREMENT_ID = 'G-NB0SCMEGH0';
 // If a Shopify app (e.g. Google & YouTube) already sends purchases to this
 // GA4 property, set this to false: the events are then sent as
 // ab_begin_checkout / ab_purchase so purchases aren't counted twice.
-const USE_STANDARD_EVENT_NAMES = true;
+// false: Shopify's GA4 integration already sends purchase/begin_checkout
+// to G-NB0SCMEGH0 (checked 2026-11-06).
+const USE_STANDARD_EVENT_NAMES = false;
 
 const script = document.createElement('script');
 script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;

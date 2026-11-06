@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import type {AbTestingPageCmsQuery} from 'types/storefrontapi.generated';
 import MediaCarousel from '~/components/cms/MediaCarousel';
 import HeroAccordion from '~/components/cms/HeroAccordion';
@@ -18,7 +18,13 @@ interface AbTestingPageProps {
 export default function AbTestingPage({page, source}: AbTestingPageProps) {
   // Lets GTM/GA4 compare the variants. The context (version + ad source) is
   // remembered so later events and the cart/order carry it too.
+  // The ref sends it once per view: in development React's StrictMode runs
+  // effects twice, which showed up as duplicate ab_test_view events.
+  const sentView = useRef<string | null>(null);
   useEffect(() => {
+    const key = `${page.handle}:${source}`;
+    if (sentView.current === key) return;
+    sentView.current = key;
     const context = saveAbContext(page.handle as AbVariant, source);
     pushAbEvent('ab_test_view', {}, context);
   }, [page.handle, source]);
