@@ -294,8 +294,8 @@ export function HeaderMobile({
             className={cn(isBannerOpened ? 'top-11' : 'top-4')}
           >
             <Logo
-              width={90}
-              height={27}
+              width={152}
+              height={33}
               className="text-white absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
             />
           </NavLink>

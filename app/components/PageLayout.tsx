@@ -101,9 +101,9 @@ export function PageLayout({
           )}
         >
           <Logo
-            width={112}
-            height={34}
-            className="text-white w-[112px] h-[34px] "
+            width={194}
+            height={42}
+            className="text-white w-[194px] h-[42px]"
           />
         </NavLink>
         {children}

@@ -5,7 +5,7 @@ import {
   type MetaFunction,
 } from '@shopify/remix-oxygen';
 import {useLoaderData} from 'react-router';
-import AbTestingPage from '~/components/AbTestingPage';
+import LandingPage from '~/components/LandingPage';
 import {
   AB_ROUTE_HANDLE,
   loadAbTestingPage,
@@ -39,5 +39,5 @@ export const headers: HeadersFunction = ({loaderHeaders}) => loaderHeaders;
 
 export default function LovedByPage() {
   const {page} = useLoaderData<typeof loader>();
-  return <AbTestingPage page={page} source="split" />;
+  return <LandingPage page={page} source="split" />;
 }

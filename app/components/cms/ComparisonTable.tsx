@@ -221,7 +221,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
           <TextField
             value={footnote.value}
             className={cn(
-              'page-px lg:px-0 mt-4 lg:text-center [&_p]:text-xs [&_p]:text-mid-grey',
+              'page-px lg:px-0 mt-4 [&_p]:text-xs [&_p]:italic [&_p]:text-mid-grey',
               background && 'lg:[&_p]:text-white/70',
             )}
           />
