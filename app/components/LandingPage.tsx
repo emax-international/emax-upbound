@@ -94,8 +94,11 @@ export default function LandingPage({
             route handle) */}
         {clubFooter && (
           <ClubFooter
-            image={page.footerImage?.reference?.image}
-            logo={footerLogoOf(page.footerLogo?.reference)}
+            content={page.clubFooter?.reference}
+            image={
+              page.clubFooter?.reference?.backgroundImage?.reference?.image
+            }
+            logo={footerLogoOf(page.clubFooter?.reference?.logo?.reference)}
           />
         )}
       </div>
