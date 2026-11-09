@@ -961,11 +961,48 @@ export type LabPageCmsQuery = {
   >;
 };
 
+export type ClubFooterContentFragment = Pick<StorefrontAPI.Metaobject, 'id'> & {
+  heading?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  emailSubscription?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  description?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  consentText?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  instagramHandle?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  instagramUrl?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.MetaobjectField, 'value'>
+  >;
+  backgroundImage?: StorefrontAPI.Maybe<{
+    reference?: StorefrontAPI.Maybe<{
+      image?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+      >;
+    }>;
+  }>;
+  logo?: StorefrontAPI.Maybe<{
+    reference?: StorefrontAPI.Maybe<
+      | Pick<StorefrontAPI.GenericFile, 'url' | 'alt'>
+      | {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+          >;
+        }
+    >;
+  }>;
+};
+
 export type LandingPageFragment = Pick<
   StorefrontAPI.Metaobject,
   'id' | 'type' | 'handle'
 > & {
   title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+  showMenu?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
   banner?: StorefrontAPI.Maybe<{
     reference?: StorefrontAPI.Maybe<{
       content?: StorefrontAPI.Maybe<
@@ -1832,21 +1869,48 @@ export type LandingPageFragment = Pick<
       }>;
     }>;
   }>;
-  footerImage?: StorefrontAPI.Maybe<{
-    reference?: StorefrontAPI.Maybe<{
-      image?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-      >;
-    }>;
-  }>;
-  footerLogo?: StorefrontAPI.Maybe<{
+  clubFooter?: StorefrontAPI.Maybe<{
     reference?: StorefrontAPI.Maybe<
-      | Pick<StorefrontAPI.GenericFile, 'url' | 'alt'>
-      | {
-          image?: StorefrontAPI.Maybe<
-            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+      Pick<StorefrontAPI.Metaobject, 'id'> & {
+        heading?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        emailSubscription?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        description?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        consentText?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        instagramHandle?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        instagramUrl?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        backgroundImage?: StorefrontAPI.Maybe<{
+          reference?: StorefrontAPI.Maybe<{
+            image?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+            >;
+          }>;
+        }>;
+        logo?: StorefrontAPI.Maybe<{
+          reference?: StorefrontAPI.Maybe<
+            | Pick<StorefrontAPI.GenericFile, 'url' | 'alt'>
+            | {
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    'url' | 'altText' | 'width' | 'height'
+                  >
+                >;
+              }
           >;
-        }
+        }>;
+      }
     >;
   }>;
 };
@@ -1865,6 +1929,9 @@ export type LandingPageCmsQuery = {
   landingPage?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Metaobject, 'id' | 'type' | 'handle'> & {
       title?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, 'value'>>;
+      showMenu?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.MetaobjectField, 'value'>
+      >;
       banner?: StorefrontAPI.Maybe<{
         reference?: StorefrontAPI.Maybe<{
           content?: StorefrontAPI.Maybe<
@@ -2791,24 +2858,51 @@ export type LandingPageCmsQuery = {
           }>;
         }>;
       }>;
-      footerImage?: StorefrontAPI.Maybe<{
-        reference?: StorefrontAPI.Maybe<{
-          image?: StorefrontAPI.Maybe<
-            Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
-          >;
-        }>;
-      }>;
-      footerLogo?: StorefrontAPI.Maybe<{
+      clubFooter?: StorefrontAPI.Maybe<{
         reference?: StorefrontAPI.Maybe<
-          | Pick<StorefrontAPI.GenericFile, 'url' | 'alt'>
-          | {
-              image?: StorefrontAPI.Maybe<
-                Pick<
-                  StorefrontAPI.Image,
-                  'url' | 'altText' | 'width' | 'height'
-                >
+          Pick<StorefrontAPI.Metaobject, 'id'> & {
+            heading?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            emailSubscription?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            description?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            consentText?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            instagramHandle?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            instagramUrl?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MetaobjectField, 'value'>
+            >;
+            backgroundImage?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<{
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    'url' | 'altText' | 'width' | 'height'
+                  >
+                >;
+              }>;
+            }>;
+            logo?: StorefrontAPI.Maybe<{
+              reference?: StorefrontAPI.Maybe<
+                | Pick<StorefrontAPI.GenericFile, 'url' | 'alt'>
+                | {
+                    image?: StorefrontAPI.Maybe<
+                      Pick<
+                        StorefrontAPI.Image,
+                        'url' | 'altText' | 'width' | 'height'
+                      >
+                    >;
+                  }
               >;
-            }
+            }>;
+          }
         >;
       }>;
     }
@@ -6424,7 +6518,7 @@ interface GeneratedQueryTypes {
     return: LabPageCmsQuery;
     variables: LabPageCmsQueryVariables;
   };
-  '#graphql\n  #graphql\n  fragment Accordion on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    collapsible: field(key: "collapsible") {\n      value\n    }\n    iconVariant: field(key: "icon_variant") {\n      value\n    }\n    numberedContent: field(key: "numbered_content") {\n      value\n    }\n    variant: field(key: "variant") {\n      value\n    }\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            title: field(key: "title") {\n              value\n            }\n            description: field(key: "description") {\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\nfragment Carousel on Metaobject {\n  id\n  type\n  top_heading: field(key: "top_heading") {\n    value\n  }\n  caption: field(key: "caption") {\n    value\n  }\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  layout: field(key: "layout") {\n    value\n  }\n  background_color: field(key: "background_color") {\n    value\n  }\n  slides: field(key: "slides") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          title: field(key: "title") { value }\n          show_overlay: field(key: "show_overlay") { value }\n          overlay_color: field(key: "overlay_color") { value }\n          overlay_opacity: field(key: "overlay_opacity") { value }\n          video_title: field(key: "video_title") { value }\n          video_label: field(key: "video_label") { value }\n          logo: field(key: "logo") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          media: field(key: "media") {\n            references(first: 5) {\n              nodes {\n                __typename\n                ... on MediaImage {\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n                ... on Video {\n                  previewImage {\n                    url\n                    altText\n                  }\n                  sources {\n                    url\n                    mimeType\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\n  #graphql\nfragment ComparisonTable on Metaobject {\n  id\n  type\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  background_image: field(key: "background_image") {\n    reference {\n      ... on MediaImage {\n        image {\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n  table_header: field(key: "table_header") {\n    references(first: 10) {\n      nodes {\n        ... on Metaobject {\n          id\n          text: field(key: "text") { value }\n          highlight: field(key: "highlight") { value }\n          image: field(key: "image") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  rows: field(key: "rows") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          label: field(key: "label") { value }\n          values: field(key: "values") { value }\n        }\n      }\n    }\n  }\n  footnote: field(key: "footnote") {\n    value\n  }\n  cta: field(key: "cta") {\n    reference {\n      ... on Metaobject {\n        type\n        label: field(key: "label") { value }\n        internalUrl: field(key: "internal_url") { value }\n        externalUrl: field(key: "external_url") { value }\n        iconVariant: field(key: "icon_variant") { value }\n      }\n    }\n  }\n}\n\n  #graphql\n  fragment HeroWithCta on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    description: field(key: "description") {\n      value\n    }\n    desktopImage: field(key: "desktop_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    mobileImage: field(key: "mobile_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    cta: field(key: "cta") {\n      reference {\n        ... on Metaobject {\n          type\n          label: field(key: "label") {\n            value\n          }\n          internalUrl: field(key: "internal_url") {\n            value\n          }\n          externalUrl: field(key: "external_url") {\n            value\n          }\n          iconVariant: field(key: "icon_variant") {\n            value\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingProduct on Product {\n    id\n    handle\n    title\n    vendor\n    # Landing page set on the product (SEO: /landing/<handle> then points\n    # search engines to the product page)\n    landingPage: metafield(key: "landing_page", namespace: "custom") {\n      reference {\n        ... on Metaobject {\n          id\n        }\n      }\n    }\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 20) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...LandingProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(\n      selectedOptions: $selectedOptions\n      ignoreUnknownOptions: true\n      caseInsensitiveMatch: true\n    ) {\n      ...LandingProductVariant\n    }\n    adjacentVariants(selectedOptions: $selectedOptions) {\n      ...LandingProductVariant\n    }\n    # Used to open on the first variant that can be subscribed to\n    variants(first: 50) {\n      nodes {\n        id\n        selectedOptions {\n          name\n          value\n        }\n        sellingPlanAllocations(first: 1) {\n          nodes {\n            sellingPlan {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment LandingProductVariant on ProductVariant {\n    availableForSale\n    id\n    title\n    sku\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    unitPrice {\n      amount\n      currencyCode\n    }\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    unitsPerPack: metafield(key: "units_per_pack", namespace: "custom") {\n      value\n    }\n    freeGift: metafield(key: "free_gift", namespace: "custom") {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    freeGiftSubscription: metafield(\n      key: "free_gift_subscription"\n      namespace: "custom"\n    ) {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    sellingPlanAllocations(first: 10) {\n      nodes {\n        sellingPlan {\n          id\n        }\n        priceAdjustments {\n          compareAtPrice {\n            amount\n            currencyCode\n          }\n          price {\n            amount\n            currencyCode\n          }\n          perDeliveryPrice {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingGiftVariant on ProductVariant {\n    id\n    title\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    image {\n      url\n      altText\n      width\n      height\n    }\n    selectedOptions {\n      name\n      value\n    }\n    product {\n      title\n      sizeChart: metafield(key: "size_chart", namespace: "custom") {\n        reference {\n          ... on MediaImage {\n            image {\n              url\n            }\n          }\n        }\n      }\n    }\n  }\n\n\n  #graphql\n  fragment LandingInfo on Metaobject {\n    id\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            id\n            title: field(key: "title") { value }\n            description: field(key: "description") { value }\n            tags: field(key: "tags") { value }\n            note: field(key: "note") { value }\n            points: field(key: "points") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    step: field(key: "step") { value }\n                    description: field(key: "description") { value }\n                  }\n                }\n              }\n            }\n            ingredients: field(key: "ingredients") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    text: field(key: "text") { value }\n                    description: field(key: "description") { value }\n                    amount: field(key: "amount") { value }\n                    image: field(key: "image") {\n                      reference {\n                        ... on MediaImage {\n                          image { url altText width height }\n                        }\n                      }\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingPage on Metaobject {\n    id\n    type\n    handle\n\n    title: field(key: "title") { value }\n\n    # Marquee messages (global_banner entries) shown instead of the site banner\n    # Works as a single reference or a list\n    banner: field(key: "banner") {\n      reference {\n        ... on Metaobject {\n          content: field(key: "content") { value }\n        }\n      }\n      references(first: 10) {\n        nodes {\n          ... on Metaobject {\n            content: field(key: "content") { value }\n          }\n        }\n      }\n    }\n\n    hero: field(key: "hero") {\n      reference {\n        ... on Metaobject {\n          ...HeroWithCta\n        }\n      }\n    }\n\n    # Add-to-cart section (landing_product metaobject)\n    productSection: field(key: "product_section") {\n      reference {\n        ... on Metaobject {\n          product: field(key: "product") {\n            reference {\n              ... on Product {\n                ...LandingProduct\n              }\n            }\n          }\n          subtitle: field(key: "subtitle") { value }\n          highlights: field(key: "highlights") { value }\n          info: field(key: "info") {\n            reference {\n              ... on Metaobject {\n                ...LandingInfo\n              }\n            }\n          }\n        }\n      }\n    }\n\n    gallery: field(key: "gallery") {\n      reference {\n        ... on Metaobject {\n          ...Carousel\n        }\n      }\n    }\n\n    comparison: field(key: "comparison_table") {\n      reference {\n        ... on Metaobject {\n          ...ComparisonTable\n        }\n      }\n    }\n\n    review: field(key: "review") {\n      reference {\n        ... on Metaobject {\n          ...Carousel\n        }\n      }\n    }\n\n    faq: field(key: "faq") {\n      reference {\n        ... on Metaobject {\n          ...Accordion\n        }\n      }\n    }\n\n    # Per-page images for the add-to-cart gallery (else the product\'s own)\n    productImages: field(key: "product_images") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            image {\n              id\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n    }\n\n    # Background of the "Join the Upbound Club" footer\n    footerImage: field(key: "footer_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n\n    # Logo under the Instagram link in the footer (image or SVG file)\n    footerLogo: field(key: "footer_logo") {\n      reference {\n        ... on MediaImage {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on GenericFile {\n          url\n          alt\n        }\n      }\n    }\n  }\n\n\n  query LandingPageCms(\n    $id: ID\n    $handle: MetaobjectHandleInput\n    $selectedOptions: [SelectedOptionInput!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    landingPage: metaobject(id: $id, handle: $handle) {\n      ...LandingPage\n    }\n  }\n': {
+  '#graphql\n  #graphql\n  fragment Accordion on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    collapsible: field(key: "collapsible") {\n      value\n    }\n    iconVariant: field(key: "icon_variant") {\n      value\n    }\n    numberedContent: field(key: "numbered_content") {\n      value\n    }\n    variant: field(key: "variant") {\n      value\n    }\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            title: field(key: "title") {\n              value\n            }\n            description: field(key: "description") {\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\nfragment Carousel on Metaobject {\n  id\n  type\n  top_heading: field(key: "top_heading") {\n    value\n  }\n  caption: field(key: "caption") {\n    value\n  }\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  layout: field(key: "layout") {\n    value\n  }\n  background_color: field(key: "background_color") {\n    value\n  }\n  slides: field(key: "slides") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          title: field(key: "title") { value }\n          show_overlay: field(key: "show_overlay") { value }\n          overlay_color: field(key: "overlay_color") { value }\n          overlay_opacity: field(key: "overlay_opacity") { value }\n          video_title: field(key: "video_title") { value }\n          video_label: field(key: "video_label") { value }\n          logo: field(key: "logo") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          media: field(key: "media") {\n            references(first: 5) {\n              nodes {\n                __typename\n                ... on MediaImage {\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n                ... on Video {\n                  previewImage {\n                    url\n                    altText\n                  }\n                  sources {\n                    url\n                    mimeType\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\n  #graphql\nfragment ComparisonTable on Metaobject {\n  id\n  type\n  header: field(key: "header") {\n    value\n  }\n  label: field(key: "label") {\n    value\n  }\n  background_image: field(key: "background_image") {\n    reference {\n      ... on MediaImage {\n        image {\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n  table_header: field(key: "table_header") {\n    references(first: 10) {\n      nodes {\n        ... on Metaobject {\n          id\n          text: field(key: "text") { value }\n          highlight: field(key: "highlight") { value }\n          image: field(key: "image") {\n            reference {\n              ... on MediaImage {\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  rows: field(key: "rows") {\n    references(first: 20) {\n      nodes {\n        ... on Metaobject {\n          id\n          label: field(key: "label") { value }\n          values: field(key: "values") { value }\n        }\n      }\n    }\n  }\n  footnote: field(key: "footnote") {\n    value\n  }\n  cta: field(key: "cta") {\n    reference {\n      ... on Metaobject {\n        type\n        label: field(key: "label") { value }\n        internalUrl: field(key: "internal_url") { value }\n        externalUrl: field(key: "external_url") { value }\n        iconVariant: field(key: "icon_variant") { value }\n      }\n    }\n  }\n}\n\n  #graphql\n  fragment HeroWithCta on Metaobject {\n    id\n    type\n    title: field(key: "title") {\n      value\n    }\n    description: field(key: "description") {\n      value\n    }\n    desktopImage: field(key: "desktop_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    mobileImage: field(key: "mobile_image") {\n      reference {\n        ... on MediaImage {\n          image {\n            height\n            width\n            url\n            altText\n          }\n        }\n      }\n    }\n    cta: field(key: "cta") {\n      reference {\n        ... on Metaobject {\n          type\n          label: field(key: "label") {\n            value\n          }\n          internalUrl: field(key: "internal_url") {\n            value\n          }\n          externalUrl: field(key: "external_url") {\n            value\n          }\n          iconVariant: field(key: "icon_variant") {\n            value\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingProduct on Product {\n    id\n    handle\n    title\n    vendor\n    # Landing page set on the product (SEO: /landing/<handle> then points\n    # search engines to the product page)\n    landingPage: metafield(key: "landing_page", namespace: "custom") {\n      reference {\n        ... on Metaobject {\n          id\n        }\n      }\n    }\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 20) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...LandingProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(\n      selectedOptions: $selectedOptions\n      ignoreUnknownOptions: true\n      caseInsensitiveMatch: true\n    ) {\n      ...LandingProductVariant\n    }\n    adjacentVariants(selectedOptions: $selectedOptions) {\n      ...LandingProductVariant\n    }\n    # Used to open on the first variant that can be subscribed to\n    variants(first: 50) {\n      nodes {\n        id\n        selectedOptions {\n          name\n          value\n        }\n        sellingPlanAllocations(first: 1) {\n          nodes {\n            sellingPlan {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment LandingProductVariant on ProductVariant {\n    availableForSale\n    id\n    title\n    sku\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    unitPrice {\n      amount\n      currencyCode\n    }\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    unitsPerPack: metafield(key: "units_per_pack", namespace: "custom") {\n      value\n    }\n    freeGift: metafield(key: "free_gift", namespace: "custom") {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    freeGiftSubscription: metafield(\n      key: "free_gift_subscription"\n      namespace: "custom"\n    ) {\n      references(first: 10) {\n        nodes {\n          ...LandingGiftVariant\n        }\n      }\n    }\n    sellingPlanAllocations(first: 10) {\n      nodes {\n        sellingPlan {\n          id\n        }\n        priceAdjustments {\n          compareAtPrice {\n            amount\n            currencyCode\n          }\n          price {\n            amount\n            currencyCode\n          }\n          perDeliveryPrice {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingGiftVariant on ProductVariant {\n    id\n    title\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    image {\n      url\n      altText\n      width\n      height\n    }\n    selectedOptions {\n      name\n      value\n    }\n    product {\n      title\n      sizeChart: metafield(key: "size_chart", namespace: "custom") {\n        reference {\n          ... on MediaImage {\n            image {\n              url\n            }\n          }\n        }\n      }\n    }\n  }\n\n\n  #graphql\n  fragment LandingInfo on Metaobject {\n    id\n    content: field(key: "content") {\n      references(first: 20) {\n        nodes {\n          ... on Metaobject {\n            id\n            title: field(key: "title") { value }\n            description: field(key: "description") { value }\n            tags: field(key: "tags") { value }\n            note: field(key: "note") { value }\n            points: field(key: "points") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    step: field(key: "step") { value }\n                    description: field(key: "description") { value }\n                  }\n                }\n              }\n            }\n            ingredients: field(key: "ingredients") {\n              references(first: 10) {\n                nodes {\n                  ... on Metaobject {\n                    id\n                    text: field(key: "text") { value }\n                    description: field(key: "description") { value }\n                    amount: field(key: "amount") { value }\n                    image: field(key: "image") {\n                      reference {\n                        ... on MediaImage {\n                          image { url altText width height }\n                        }\n                      }\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment ClubFooterContent on Metaobject {\n    id\n    heading: field(key: "heading") { value }\n    # Show the email signup form + consent line (true/false; empty = show)\n    emailSubscription: field(key: "email_subscription") { value }\n    description: field(key: "description") { value }\n    consentText: field(key: "consent_text") { value }\n    instagramHandle: field(key: "instagram_handle") { value }\n    instagramUrl: field(key: "instagram_url") { value }\n    backgroundImage: field(key: "background_image") {\n      reference {\n        ... on MediaImage {\n          image { url altText width height }\n        }\n      }\n    }\n    logo: field(key: "logo") {\n      reference {\n        ... on MediaImage {\n          image { url altText width height }\n        }\n        ... on GenericFile {\n          url\n          alt\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment LandingPage on Metaobject {\n    id\n    type\n    handle\n\n    title: field(key: "title") { value }\n\n    # Show the header menu links (true/false); empty = the route\'s default\n    showMenu: field(key: "show_menu") { value }\n\n    # Marquee messages (global_banner entries) shown instead of the site banner\n    # Works as a single reference or a list\n    banner: field(key: "banner") {\n      reference {\n        ... on Metaobject {\n          content: field(key: "content") { value }\n        }\n      }\n      references(first: 10) {\n        nodes {\n          ... on Metaobject {\n            content: field(key: "content") { value }\n          }\n        }\n      }\n    }\n\n    hero: field(key: "hero") {\n      reference {\n        ... on Metaobject {\n          ...HeroWithCta\n        }\n      }\n    }\n\n    # Add-to-cart section (landing_product metaobject)\n    productSection: field(key: "product_section") {\n      reference {\n        ... on Metaobject {\n          product: field(key: "product") {\n            reference {\n              ... on Product {\n                ...LandingProduct\n              }\n            }\n          }\n          subtitle: field(key: "subtitle") { value }\n          highlights: field(key: "highlights") { value }\n          info: field(key: "info") {\n            reference {\n              ... on Metaobject {\n                ...LandingInfo\n              }\n            }\n          }\n        }\n      }\n    }\n\n    gallery: field(key: "gallery") {\n      reference {\n        ... on Metaobject {\n          ...Carousel\n        }\n      }\n    }\n\n    comparison: field(key: "comparison_table") {\n      reference {\n        ... on Metaobject {\n          ...ComparisonTable\n        }\n      }\n    }\n\n    review: field(key: "review") {\n      reference {\n        ... on Metaobject {\n          ...Carousel\n        }\n      }\n    }\n\n    faq: field(key: "faq") {\n      reference {\n        ... on Metaobject {\n          ...Accordion\n        }\n      }\n    }\n\n    # Per-page images for the add-to-cart gallery (else the product\'s own)\n    productImages: field(key: "product_images") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            image {\n              id\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n    }\n\n    # "Join the Upbound Club" footer content (club_footer metaobject)\n    clubFooter: field(key: "club_footer") {\n      reference {\n        ... on Metaobject {\n          ...ClubFooterContent\n        }\n      }\n    }\n  }\n\n\n  query LandingPageCms(\n    $id: ID\n    $handle: MetaobjectHandleInput\n    $selectedOptions: [SelectedOptionInput!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    landingPage: metaobject(id: $id, handle: $handle) {\n      ...LandingPage\n    }\n  }\n': {
     return: LandingPageCmsQuery;
     variables: LandingPageCmsQueryVariables;
   };

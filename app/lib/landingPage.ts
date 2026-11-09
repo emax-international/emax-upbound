@@ -66,14 +66,29 @@ export function landingBanner(
 }
 
 /**
+ * Whether the header menu links show on this page: the entry's `show_menu`
+ * setting, or `fallback` when it's left empty.
+ */
+export function landingShowsMenu(
+  page: LandingPageFragment | null | undefined,
+  fallback: boolean,
+): boolean {
+  const value = page?.showMenu?.value;
+  return value === 'true' ? true : value === 'false' ? false : fallback;
+}
+
+/**
  * Route `handle` for standalone landing pages (the A/B pages). PageLayout:
  * - skips the site footer (LandingPage renders its own "Join the Upbound
- *   Club" footer) and the header menu links, leaving just the logo and cart;
+ *   Club" footer);
+ * - hides the header menu links (logo + cart only) unless the entry's
+ *   `show_menu` is on;
  * - shows the entry's own marquee messages (if any) instead of the site banner.
  * Loaders must return the entry as `page`.
  */
 export const LANDING_ROUTE_HANDLE: RouteHandle = {
   hideFooter: true,
-  hideMenu: true,
+  hideMenu: (data) =>
+    !landingShowsMenu((data as {page?: LandingPageFragment})?.page, false),
   banner: (data) => landingBanner((data as {page?: LandingPageFragment})?.page),
 };

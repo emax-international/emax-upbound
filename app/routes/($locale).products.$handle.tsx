@@ -31,7 +31,11 @@ import { Image as ShopifyImage } from '@shopify/hydrogen/storefront-api-types';
 import ProductEndorsementCard from '~/components/ProductEndorsementCard';
 import LandingPage from '~/components/LandingPage';
 import type { RouteHandle } from '~/components/PageLayout';
-import { landingBanner, loadLandingPage } from '~/lib/landingPage';
+import {
+  landingBanner,
+  landingShowsMenu,
+  loadLandingPage,
+} from '~/lib/landingPage';
 
 import type {
   LandingPageFragment,
@@ -49,14 +53,18 @@ export const links: Route.LinksFunction = () => [
 
 /**
  * Products with a landing page (custom.landing_page metafield) show its
- * marquee messages, if any, instead of the site banner. The header menu and
- * site footer stay, unlike the standalone A/B pages.
+ * marquee messages, if any, instead of the site banner. The site footer
+ * stays; the header menu shows unless the entry's `show_menu` is off.
  */
+const landingPageOf = (data: unknown) =>
+  (data as { landingPage?: LandingPageFragment | null })?.landingPage;
+
 export const handle: RouteHandle = {
-  banner: (data) =>
-    landingBanner(
-      (data as { landingPage?: LandingPageFragment | null })?.landingPage,
-    ),
+  banner: (data) => landingBanner(landingPageOf(data)),
+  hideMenu: (data) => {
+    const page = landingPageOf(data);
+    return page ? !landingShowsMenu(page, true) : false;
+  },
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

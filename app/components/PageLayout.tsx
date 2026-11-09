@@ -26,7 +26,8 @@ import Logo from './icons/Logo';
 /** What a route can set in its `handle` export to change the layout. */
 export interface RouteHandle {
   hideFooter?: boolean;
-  hideMenu?: boolean;
+  /** Header shows only the logo and cart. Can depend on the loader data. */
+  hideMenu?: boolean | ((data: unknown) => boolean);
   /** Marquee messages from the route's loader data, replacing the site banner */
   banner?: (data: unknown) => RouteBanner | null;
 }
@@ -61,7 +62,11 @@ export function PageLayout({
     data: match.data,
   }));
   const hideFooter = handles.some(({handle}) => handle?.hideFooter);
-  const hideMenu = handles.some(({handle}) => handle?.hideMenu);
+  const hideMenu = handles.some(({handle, data}) =>
+    typeof handle?.hideMenu === 'function'
+      ? handle.hideMenu(data)
+      : handle?.hideMenu,
+  );
   const routeBanner =
     handles
       .map(({handle, data}) => handle?.banner?.(data))
