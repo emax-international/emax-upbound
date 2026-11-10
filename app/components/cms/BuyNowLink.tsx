@@ -1,4 +1,4 @@
-import {pushAbEvent} from '~/lib/abTracking';
+import {useAbEvent} from '~/lib/abTracking';
 import {cn} from '~/lib/utils';
 import {LANDING_PRODUCT_ID} from './LandingProduct';
 
@@ -17,6 +17,7 @@ export default function BuyNowLink({
   position: string;
   className?: string;
 }) {
+  const pushAbEvent = useAbEvent();
   const text = label || 'Buy now';
 
   const scrollToProduct = (event: React.MouseEvent<HTMLAnchorElement>) => {

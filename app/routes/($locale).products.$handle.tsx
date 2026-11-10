@@ -29,8 +29,20 @@ import {
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { Image as ShopifyImage } from '@shopify/hydrogen/storefront-api-types';
 import ProductEndorsementCard from '~/components/ProductEndorsementCard';
+import LandingPage from '~/components/LandingPage';
+import type { RouteHandle } from '~/components/PageLayout';
+import {
+  landingBanner,
+  landingShowsMenu,
+  landingUsesClubFooter,
+  loadLandingPage,
+} from '~/lib/landingPage';
 
-import type { ProductFragment, SellingPlanFragment } from 'types/storefrontapi.generated';
+import type {
+  LandingPageFragment,
+  ProductFragment,
+  SellingPlanFragment,
+} from 'types/storefrontapi.generated';
 import { useState, useEffect } from 'react';
 
 import sellingPlanStyle from '~/styles/selling-plan.css?url';
@@ -39,6 +51,25 @@ export const links: Route.LinksFunction = () => [
   { rel: 'stylesheet', href: sellingPlanStyle },
 ];
 
+
+/**
+ * Products with a landing page (custom.landing_page metafield) show its
+ * marquee messages, if any, instead of the site banner. The site footer
+ * stays unless the entry has a `club_footer` set (then the "Join the
+ * Upbound Club" footer replaces it); the header menu shows unless the
+ * entry's `show_menu` is off.
+ */
+const landingPageOf = (data: unknown) =>
+  (data as { landingPage?: LandingPageFragment | null })?.landingPage;
+
+export const handle: RouteHandle = {
+  banner: (data) => landingBanner(landingPageOf(data)),
+  hideFooter: (data) => landingUsesClubFooter(landingPageOf(data), false),
+  hideMenu: (data) => {
+    const page = landingPageOf(data);
+    return page ? !landingShowsMenu(page, true) : false;
+  },
+};
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -193,6 +224,13 @@ async function loadCriticalData({
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
 
+  // Landing page template (custom.landing_page metafield). Falls back to the
+  // regular product page if the entry is missing or unpublished.
+  const landingPageId = product.landingPage?.reference?.id;
+  const landingPage = landingPageId
+    ? await loadLandingPage(context, request, { id: landingPageId })
+    : null;
+
   // Initialize the selectedSellingPlan to null
   let selectedSellingPlan = null;
 
@@ -222,6 +260,7 @@ async function loadCriticalData({
     product,
     selectedSellingPlan,
     giftImages,
+    landingPage,
   };
 }
 
@@ -238,6 +277,42 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
+  const { landingPage } = useLoaderData<typeof loader>();
+  return landingPage ? (
+    <ProductLandingPage page={landingPage} />
+  ) : (
+    <ProductTemplate />
+  );
+}
+
+/** A product shown with its landing page template. */
+function ProductLandingPage({ page }: { page: LandingPageFragment }) {
+  const { product } = useLoaderData<typeof loader>();
+  const variant = product.selectedOrFirstAvailableVariant;
+  return (
+    <>
+      <LandingPage page={page} clubFooter={false} />
+      <Analytics.ProductView
+        data={{
+          products: [
+            {
+              id: product.id,
+              title: product.title,
+              price: variant?.price.amount || '0',
+              vendor: product.vendor,
+              variantId: variant?.id || '',
+              variantTitle: variant?.title || '',
+              quantity: 1,
+            },
+          ],
+        }}
+      />
+    </>
+  );
+}
+
+/** The regular product page. */
+function ProductTemplate() {
   const { product, selectedSellingPlan, giftImages } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
@@ -824,6 +899,14 @@ const PRODUCT_QUERY = `#graphql
         type
         reference {
           ...Accordion
+        }
+      }
+      # Landing page template for this product (landing_page metaobject)
+      landingPage: metafield(key: "landing_page", namespace: "custom") {
+        reference {
+          ... on Metaobject {
+            id
+          }
         }
       }
       productEndorsements: metafield(key: "product_endorsements", namespace: "custom") {

@@ -25,8 +25,10 @@ import Logo from './icons/Logo';
 
 /** What a route can set in its `handle` export to change the layout. */
 export interface RouteHandle {
-  hideFooter?: boolean;
-  hideMenu?: boolean;
+  /** Skip the site footer. Can depend on the loader data. */
+  hideFooter?: boolean | ((data: unknown) => boolean);
+  /** Header shows only the logo and cart. Can depend on the loader data. */
+  hideMenu?: boolean | ((data: unknown) => boolean);
   /** Marquee messages from the route's loader data, replacing the site banner */
   banner?: (data: unknown) => RouteBanner | null;
 }
@@ -60,8 +62,16 @@ export function PageLayout({
     handle: match.handle as RouteHandle | undefined,
     data: match.data,
   }));
-  const hideFooter = handles.some(({handle}) => handle?.hideFooter);
-  const hideMenu = handles.some(({handle}) => handle?.hideMenu);
+  const hideFooter = handles.some(({handle, data}) =>
+    typeof handle?.hideFooter === 'function'
+      ? handle.hideFooter(data)
+      : handle?.hideFooter,
+  );
+  const hideMenu = handles.some(({handle, data}) =>
+    typeof handle?.hideMenu === 'function'
+      ? handle.hideMenu(data)
+      : handle?.hideMenu,
+  );
   const routeBanner =
     handles
       .map(({handle, data}) => handle?.banner?.(data))
@@ -101,9 +111,9 @@ export function PageLayout({
           )}
         >
           <Logo
-            width={112}
-            height={34}
-            className="text-white w-[112px] h-[34px] "
+            width={194}
+            height={42}
+            className="text-white w-[194px] h-[42px]"
           />
         </NavLink>
         {children}

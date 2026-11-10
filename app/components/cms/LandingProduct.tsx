@@ -14,7 +14,7 @@ import type {
   LandingProductFragment,
 } from 'types/storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
-import {pushAbEvent} from '~/lib/abTracking';
+import {useAbEvent} from '~/lib/abTracking';
 import {
   Accordion,
   AccordionContent,
@@ -53,6 +53,7 @@ export default function LandingProduct({
   info,
   images,
 }: LandingProductProps) {
+  const pushAbEvent = useAbEvent();
   const navigate = useNavigate();
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -243,8 +244,11 @@ export default function LandingProduct({
             <QuantityControl quantity={quantity} onChange={setQuantity} />
             <AddToCartButton
               variant="black-mint"
+              // No size preset: its typo-caption would override the text style,
+              // which matches the page's "Buy now" buttons
+              size={null}
               containerClassName="flex-1"
-              buttonClassName="w-full h-full min-h-11 rounded-md uppercase text-mint hover:text-black"
+              buttonClassName="w-full h-full min-h-11 px-6 rounded-md typo-caption-responsive-uppercase font-semibold text-mint hover:text-black"
               disabled={
                 !selectedVariant.availableForSale ||
                 (isSubscription && !sellingPlanId)
