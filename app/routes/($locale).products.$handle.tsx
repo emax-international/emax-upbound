@@ -34,6 +34,7 @@ import type { RouteHandle } from '~/components/PageLayout';
 import {
   landingBanner,
   landingShowsMenu,
+  landingUsesClubFooter,
   loadLandingPage,
 } from '~/lib/landingPage';
 
@@ -54,13 +55,16 @@ export const links: Route.LinksFunction = () => [
 /**
  * Products with a landing page (custom.landing_page metafield) show its
  * marquee messages, if any, instead of the site banner. The site footer
- * stays; the header menu shows unless the entry's `show_menu` is off.
+ * stays unless the entry has a `club_footer` set (then the "Join the
+ * Upbound Club" footer replaces it); the header menu shows unless the
+ * entry's `show_menu` is off.
  */
 const landingPageOf = (data: unknown) =>
   (data as { landingPage?: LandingPageFragment | null })?.landingPage;
 
 export const handle: RouteHandle = {
   banner: (data) => landingBanner(landingPageOf(data)),
+  hideFooter: (data) => landingUsesClubFooter(landingPageOf(data), false),
   hideMenu: (data) => {
     const page = landingPageOf(data);
     return page ? !landingShowsMenu(page, true) : false;

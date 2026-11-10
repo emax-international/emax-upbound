@@ -8,14 +8,17 @@ import ClubFooter from '~/components/cms/ClubFooter';
 import LandingHero from '~/components/cms/LandingHero';
 import {isAbVariant} from '~/lib/abTestingPage';
 import {AbPageContext, pushAbEvent, saveAbContext} from '~/lib/abTracking';
+import {landingUsesClubFooter} from '~/lib/landingPage';
 
 interface LandingPageProps {
   page: LandingPageFragment;
   /** "split" when served from /loved-by, "direct" from the variant's own URL.
    * Only used for A/B test versions. */
   source?: 'split' | 'direct';
-  /** Render the "Join the Upbound Club" footer. Off on product pages,
-   * which keep the site footer. */
+  /** Show the "Join the Upbound Club" footer when the entry has no
+   * `club_footer` set: on for standalone pages, off on product pages
+   * (which keep the site footer). With `club_footer` set it always shows.
+   * Must match the route handle's fallback so exactly one footer shows. */
   clubFooter?: boolean;
 }
 
@@ -92,7 +95,7 @@ export default function LandingPage({
 
         {/* Replaces the site footer on standalone pages (hidden via the
             route handle) */}
-        {clubFooter && (
+        {landingUsesClubFooter(page, clubFooter) && (
           <ClubFooter
             content={page.clubFooter?.reference}
             image={
