@@ -73,7 +73,23 @@ export function landingShowsMenu(
   page: LandingPageFragment | null | undefined,
   fallback: boolean,
 ): boolean {
-  const value = page?.showMenu?.value;
+  return flag(page?.showMenu?.value, fallback);
+}
+
+/**
+ * Whether the page ends with the "Join the Upbound Club" footer instead of
+ * the site footer: always when the entry's `club_footer` is set, otherwise
+ * `fallback` (standalone pages show it with the default copy).
+ */
+export function landingUsesClubFooter(
+  page: LandingPageFragment | null | undefined,
+  fallback: boolean,
+): boolean {
+  return page?.clubFooter?.reference ? true : fallback;
+}
+
+/** A true/false field's value; `fallback` when empty. */
+function flag(value: string | null | undefined, fallback: boolean) {
   return value === 'true' ? true : value === 'false' ? false : fallback;
 }
 
@@ -86,9 +102,10 @@ export function landingShowsMenu(
  * - shows the entry's own marquee messages (if any) instead of the site banner.
  * Loaders must return the entry as `page`.
  */
+const pageOf = (data: unknown) => (data as {page?: LandingPageFragment})?.page;
+
 export const LANDING_ROUTE_HANDLE: RouteHandle = {
-  hideFooter: true,
-  hideMenu: (data) =>
-    !landingShowsMenu((data as {page?: LandingPageFragment})?.page, false),
-  banner: (data) => landingBanner((data as {page?: LandingPageFragment})?.page),
+  hideFooter: (data) => landingUsesClubFooter(pageOf(data), true),
+  hideMenu: (data) => !landingShowsMenu(pageOf(data), false),
+  banner: (data) => landingBanner(pageOf(data)),
 };
