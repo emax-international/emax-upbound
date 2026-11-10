@@ -1,10 +1,12 @@
 import {Image} from '@shopify/hydrogen';
 import type {HeroWithCtaFragment} from 'types/storefrontapi.generated';
+import {cn} from '~/lib/utils';
 import BuyNowLink from './BuyNowLink';
 
 /**
- * Landing-page hero built from a `hero_with_cta` entry. Centred title (first
- * line light italic, the rest bold). When a CTA is attached, its button
+ * Landing-page hero built from a `hero_with_cta` entry. Title (first line
+ * light italic, the rest bold) centred on the image, or at the bottom when
+ * the entry's `text_position` is "bottom". When a CTA is attached, its button
  * scrolls down to the add-to-cart section; the CTA only sets the label.
  */
 export default function LandingHero({
@@ -19,6 +21,8 @@ export default function LandingHero({
     .filter(Boolean);
   const desktop = desktopImage?.reference?.image;
   const mobile = mobileImage?.reference?.image ?? desktop;
+  const atBottom =
+    reference.textPosition?.value?.trim().toLowerCase() === 'bottom';
 
   return (
     <section className="relative w-full h-[80svh] min-h-[480px] max-h-[760px] overflow-clip bg-black">
@@ -40,9 +44,14 @@ export default function LandingHero({
           draggable={false}
         />
       )}
-      <div className="absolute inset-0 bg-black/30" />
+      {/* <div className="absolute inset-0 bg-black/30" /> */}
 
-      <div className="relative h-full flex flex-col items-center justify-center gap-6 px-6 text-center text-white">
+      <div
+        className={cn(
+          'relative h-full flex flex-col items-center gap-6 px-6 text-center text-white',
+          atBottom ? 'justify-end pb-12 md:pb-16' : 'justify-center',
+        )}
+      >
         <h1 className="typo-h1 uppercase">
           {firstLine && (
             <span className="block font-extralight italic">{firstLine}</span>
