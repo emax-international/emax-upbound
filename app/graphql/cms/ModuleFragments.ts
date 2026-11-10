@@ -8,6 +8,10 @@ export const HERO_WITH_CTA_FRAGMENT = `#graphql
     title: field(key: "title") {
       value
     }
+    # Landing page hero only: "center" (default) or "bottom"
+    textPosition: field(key: "text_position") {
+      value
+    }
     description: field(key: "description") {
       value
     }

@@ -105,7 +105,8 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
         </div>
 
         {/* Table: scrolls sideways below lg; pt leaves room for header
-            images that rise above the table (e.g. the can) */}
+            images that rise above the table (e.g. the can); the image's
+            negative margin is smaller than pt, leaving a gap above it */}
         <div className="px-6 lg:px-0">
           <div
             ref={scrollRef}
@@ -144,7 +145,7 @@ function ComparisonTable({reference, buyNow}: ComparisonTableProps) {
                           <Image
                             data={cell.image}
                             width={240}
-                            className="block h-auto max-h-24 lg:max-h-36 w-auto max-w-full object-contain -mt-14 lg:-mt-20"
+                            className="block h-auto max-h-24 lg:max-h-36 w-auto max-w-full object-contain -mt-10 lg:-mt-16"
                           />
                         )}
                         {cell?.text && (
