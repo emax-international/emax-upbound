@@ -7,7 +7,7 @@ import type {
   FooterMenuCmsQuery,
   HeaderQuery,
 } from 'types/storefrontapi.generated';
-import logoSvg from '~/assets/logo.svg';
+import {Logo} from './icons/Logo';
 import ApplyPaySvg from '~/assets/payment/apple-pay.svg';
 import GooglePaySvg from '~/assets/payment/google-pay.svg';
 import MastercardSvg from '~/assets/payment/mastercard.svg';
@@ -36,12 +36,9 @@ export function Footer({
     <footer className="mt-auto px-6 py-8">
       <div className="flex flex-col md:flex-row gap-12">
         <div className="flex-1">
-          <Image
-            src={logoSvg}
-            alt="Logo"
-            sizes="50vw"
-            className="invert bg-transparent max-w-[150px] md:max-w-[280px] justify-self-center md:justify-self-start"
-            draggable={false}
+          {/* Same wordmark as the header; same width as the old footer logo */}
+          <Logo
+            className="block text-black w-[150px] md:w-[280px] h-auto justify-self-center md:justify-self-start"
           />
         </div>
         <div className="flex-1">
