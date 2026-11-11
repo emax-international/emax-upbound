@@ -13,10 +13,38 @@ const COOLDOWN_MINUTES = 10;
 const MIN_ITEMS = 6;
 
 type SetBannerOpened = React.Dispatch<React.SetStateAction<boolean>>;
+/** Default colours, used when the entries set none */
 type BannerVariant = 'mint' | 'dark';
 
+/** Custom colours (any CSS colour, e.g. "#caf68c") */
+export type BannerColors = {background?: string; text?: string};
+
 /** Messages a route shows instead of the Global Banner entries. */
-export type RouteBanner = {messages: string[]; variant?: BannerVariant};
+export type RouteBanner = {
+  messages: string[];
+  variant?: BannerVariant;
+  colors?: BannerColors;
+};
+
+/** A global_banner entry's colour fields (Shopify "Color" type) */
+type BannerColorFields =
+  | {
+      backgroundColor?: {value?: string | null} | null;
+      textColor?: {value?: string | null} | null;
+    }
+  | null
+  | undefined;
+
+/** The bar takes its colours from the first entry that sets them. */
+export function bannerColors(entries: BannerColorFields[]): BannerColors {
+  return {
+    background:
+      entries.find((e) => e?.backgroundColor?.value)?.backgroundColor?.value ??
+      undefined,
+    text:
+      entries.find((e) => e?.textColor?.value)?.textColor?.value ?? undefined,
+  };
+}
 
 function Banner({
   bannerPromise,
@@ -40,6 +68,7 @@ function Banner({
       <BannerBar
         messages={routeBanner.messages}
         variant={routeBanner.variant}
+        colors={routeBanner.colors}
         setIsBannerOpened={setIsBannerOpened}
       />
     );
@@ -52,17 +81,19 @@ function Banner({
       <Await resolve={bannerPromise}>
         {(data) => {
           // Every Global Banner entry with "display" on becomes one message
-          const messages =
-            data?.globalBanners?.nodes
-              .filter((banner) => banner.display?.value === 'true')
-              .map((banner) => banner.content?.value)
-              .filter((content): content is string => !!content) ?? [];
+          const shown =
+            data?.globalBanners?.nodes.filter(
+              (banner) =>
+                banner.display?.value === 'true' && !!banner.content?.value,
+            ) ?? [];
+          const messages = shown.map((banner) => banner.content?.value ?? '');
 
           if (messages.length === 0) return null;
 
           return (
             <BannerBar
               messages={messages}
+              colors={bannerColors(shown)}
               setIsBannerOpened={setIsBannerOpened}
               onClose={() => {
                 // The cooldown only starts when the user closes the banner
@@ -80,11 +111,13 @@ function Banner({
 function BannerBar({
   messages,
   variant = 'mint',
+  colors: customColors,
   setIsBannerOpened,
   onClose,
 }: {
   messages: string[];
   variant?: BannerVariant;
+  colors?: BannerColors;
   setIsBannerOpened: SetBannerOpened;
   /** Shows the close button when set */
   onClose?: () => void;
@@ -96,25 +129,28 @@ function BannerBar({
   }, [setIsBannerOpened]);
 
   const colors = variant === 'dark' ? 'bg-black text-white' : 'bg-mint';
+  // Inline styles override the variant classes when the CMS sets a colour
+  const style: React.CSSProperties = {
+    backgroundColor: customColors?.background,
+    color: customColors?.text,
+  };
 
   return (
     <div className="sticky top-0 z-10">
       <div
+        style={style}
         className={cn(
-          'relative flex items-center overflow-hidden',
-          // Dark bar is a fixed 50px on all screens (the header offsets match
-          // via PageLayout's `tallBanner`)
-          variant === 'dark'
-            ? 'h-[50px]'
-            : 'max-h-[50px] md:max-h-[28px] py-3 md:py-1.5',
+          // A fixed 50px on all screens (Header and PageLayout offsets match)
+          'relative flex items-center overflow-hidden h-[50px]',
           colors,
         )}
       >
-        <Marquee messages={messages} variant={variant} />
+        <Marquee messages={messages} />
         {onClose && (
           <button
             type="button"
             className={cn('absolute right-0 h-full px-2 cursor-pointer', colors)}
+            style={style}
             onClick={onClose}
             aria-label="Close promotional banner"
           >
@@ -127,11 +163,11 @@ function BannerBar({
 }
 
 /**
- * Dark variant: "FREE SHIPPING (West Malaysia only)" → bold text with the
- * bracketed part smaller and regular.
+ * "FREE SHIPPING (West Malaysia only)" → uppercase text with the bracketed
+ * part smaller and in normal case.
  */
-function Message({message, variant}: {message: string; variant: BannerVariant}) {
-  const match = variant === 'dark' ? message.match(/^(.*?)\s*(\(.*\))$/) : null;
+function Message({message}: {message: string}) {
+  const match = message.match(/^(.*?)\s*(\(.*\))$/);
   if (!match) return <>{message}</>;
   return (
     <>
@@ -141,13 +177,7 @@ function Message({message, variant}: {message: string; variant: BannerVariant}) 
   );
 }
 
-function Marquee({
-  messages,
-  variant,
-}: {
-  messages: string[];
-  variant: BannerVariant;
-}) {
+function Marquee({messages}: {messages: string[]}) {
   const repeat = Math.max(1, Math.ceil(MIN_ITEMS / messages.length));
   const items = Array.from({length: repeat}, () => messages).flat();
 
@@ -156,7 +186,7 @@ function Marquee({
     <div className="flex shrink-0" aria-hidden={hidden}>
       {items.map((message, index) => (
         <p key={index} className="typo-caption px-8 whitespace-nowrap">
-          <Message message={message} variant={variant} />
+          <Message message={message} />
         </p>
       ))}
     </div>

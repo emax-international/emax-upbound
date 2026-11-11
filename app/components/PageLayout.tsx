@@ -3,7 +3,6 @@ import { Await, Link, NavLink, useFetcher, useMatches } from 'react-router';
 import type {
   CartApiQueryFragment,
   FooterMenuCmsQuery,
-  FooterQuery,
   GlobalBannerCmsQuery,
   GlobalNewsletterPopupCmsQuery,
   HeaderQuery,
@@ -97,7 +96,6 @@ export function PageLayout({
           publicStoreDomain={publicStoreDomain}
           isBannerOpened={isBannerOpened}
           hideMenu={hideMenu}
-          tallBanner={!!routeBanner}
         />
       )}
       <main className="relative">
@@ -107,7 +105,8 @@ export function PageLayout({
           end
           className={cn(
             'hidden lg:block fixed left-[50%] translate-x-[-50%] z-10 mix-blend-exclusion',
-            !isBannerOpened ? 'top-4' : routeBanner ? 'top-[66px]' : 'top-11',
+            // 16px below the 50px banner
+            !isBannerOpened ? 'top-4' : 'top-[66px]',
           )}
         >
           <Logo
