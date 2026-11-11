@@ -66,12 +66,16 @@ export const LANDING_PAGE_FRAGMENT = `#graphql
       reference {
         ... on Metaobject {
           content: field(key: "content") { value }
+          backgroundColor: field(key: "background_color") { value }
+          textColor: field(key: "text_color") { value }
         }
       }
       references(first: 10) {
         nodes {
           ... on Metaobject {
             content: field(key: "content") { value }
+            backgroundColor: field(key: "background_color") { value }
+            textColor: field(key: "text_color") { value }
           }
         }
       }

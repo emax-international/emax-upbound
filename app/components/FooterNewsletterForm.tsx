@@ -18,7 +18,7 @@ export default function FooterNewsletterForm() {
       <div>
         <p className="typo-body-l">Join the Upbound Club</p>
         <p>
-          Get FREE shipping on your first order (West Malaysia only). Plus, be the first to know about our events, partnerships, and next product drop.
+          Get FREE shipping on orders of RM30 or more (West Malaysia only). Plus, be the first to know about our events, partnerships, and next product drop.
         </p>
       </div>
 

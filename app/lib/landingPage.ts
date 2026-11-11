@@ -1,7 +1,7 @@
 import {getSelectedProductOptions} from '@shopify/hydrogen';
 import type {AppLoadContext} from '@shopify/remix-oxygen';
 import type {LandingPageFragment} from 'types/storefrontapi.generated';
-import type {RouteBanner} from '~/components/cms/Banner';
+import {bannerColors, type RouteBanner} from '~/components/cms/Banner';
 import type {RouteHandle} from '~/components/PageLayout';
 import {LANDING_PAGE_CMS_QUERY} from '~/graphql/cms/LandingPageQuery';
 
@@ -62,7 +62,9 @@ export function landingBanner(
   const messages = nodes
     .map((node) => node?.content?.value)
     .filter((content): content is string => !!content);
-  return messages.length > 0 ? {messages, variant: 'dark'} : null;
+  return messages.length > 0
+    ? {messages, variant: 'dark', colors: bannerColors(nodes)}
+    : null;
 }
 
 /**

@@ -10,6 +10,13 @@ export const GLOBAL_BANNER_CMS_QUERY = `#graphql
         content: field(key: "content") {
           value
         }
+        # Optional colour fields (Shopify "Color" type); empty = default mint bar
+        backgroundColor: field(key: "background_color") {
+          value
+        }
+        textColor: field(key: "text_color") {
+          value
+        }
       }
     }
   }

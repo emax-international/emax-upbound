@@ -152,7 +152,8 @@ function loadDeferredData({ context }: LoaderFunctionArgs) {
 
   const globalBanner = storefront
     .query(GLOBAL_BANNER_CMS_QUERY, {
-      cache: storefront.CacheLong(),
+      // Short cache so banner edits in Shopify admin show up quickly
+      cache: storefront.CacheShort(),
     })
     .catch((error) => {
       // Log query errors, but don't throw them so the page can still render
