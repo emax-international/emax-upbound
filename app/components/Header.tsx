@@ -24,8 +24,6 @@ export type HeaderProps = {
   isBannerOpened: boolean;
   /** Logo + cart only, e.g. on landing pages */
   hideMenu?: boolean;
-  /** The open banner is the 50px-on-all-screens bar (route banner) */
-  tallBanner?: boolean;
 };
 
 type Viewport = 'desktop' | 'mobile';
@@ -37,15 +35,15 @@ export function Header({
   publicStoreDomain,
   isBannerOpened,
   hideMenu,
-  tallBanner,
 }: HeaderProps) {
-  const {shop, menu} = header;
+  const {menu} = header;
 
   return (
     <header
       className={cn(
         'header',
-        isBannerOpened && (tallBanner ? 'mt-[50px]' : 'mt-10 md:mt-7'),
+        // The banner is a fixed 50px on all screens
+        isBannerOpened && 'mt-[50px]',
       )}
     >
       {/* Mobile Header */}
@@ -87,11 +85,7 @@ export function Header({
           className={cn(
             'fixed right-0 z-10',
             // Below the mobile header bar; level with the logo on desktop
-            !isBannerOpened
-              ? 'top-20 lg:top-4'
-              : tallBanner
-                ? 'top-[122px] lg:top-[66px]'
-                : 'top-28 md:top-24 lg:top-11',
+            !isBannerOpened ? 'top-20 lg:top-4' : 'top-[122px] lg:top-[66px]',
           )}
         >
           <CartToggle cart={cart} variant="tab" />
