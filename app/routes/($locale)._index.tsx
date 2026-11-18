@@ -1,197 +1,87 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, type MetaFunction} from 'react-router';
-import ModuleRenderer from '~/components/cms/ModuleRenderer';
-import {HOME_PAGE_CMS_QUERY} from '~/graphql/cms/HomePageQuery';
+import {Suspense} from 'react';
+import {Await, useLoaderData, type MetaFunction} from 'react-router';
+import {
+  HOME_PAGE_ARTICLES_QUERY,
+  NEW_HOME_PAGE_QUERY,
+} from '~/graphql/cms/NewHomePageQuery';
+import HomeHero from '~/components/home/HomeHero';
+import InfoCard from '~/components/home/InfoCard';
+import ProductCards from '~/components/home/ProductCards';
+import PeopleCarousel from '~/components/home/PeopleCarousel';
+import MediaCarousel from '~/components/cms/MediaCarousel';
+import ClubFooter, {footerLogoOf} from '~/components/cms/ClubFooter';
+import type {RouteHandle} from '~/components/PageLayout';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Upbound | Home'}];
 };
 
-export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
-}
+/** The "Join the Upbound Club" footer replaces the site footer when set. */
+export const handle: RouteHandle = {
+  hideFooter: (data) =>
+    !!(data as {newHomePage?: {footer?: {reference?: unknown} | null} | null})
+      ?.newHomePage?.footer?.reference,
+};
 
 /**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
+ * The homepage, built from the `homepage` metaobject entry "new-homepage":
+ * hero, "Hydrate up" product cards, brands carousel, info card (founder),
+ * "The People Who Choose Upbound" and the Upbound Club footer.
  */
-async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const [
-    {homePage},
-    // {collections}
-  ] = await Promise.all([
-    // context.storefront.query(FEATURED_COLLECTION_QUERY),
-    context.storefront.query(HOME_PAGE_CMS_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+export async function loader({context}: LoaderFunctionArgs) {
+  const {newHomePage} = await context.storefront.query(NEW_HOME_PAGE_QUERY);
 
-  return {
-    // featuredCollection: collections.nodes[0],
-    homePage,
-  };
-}
+  // "The People Who Choose Upbound" is below the fold: started here (it
+  // needs the article ids) but not awaited, so it streams in after.
+  const articleIds = (newHomePage?.blog?.references?.nodes ?? []).flatMap(
+    (node) => ('id' in node && node.id ? [node.id] : []),
+  );
+  const articles =
+    articleIds.length > 0
+      ? context.storefront
+          .query(HOME_PAGE_ARTICLES_QUERY, {variables: {ids: articleIds}})
+          .then(({nodes}) =>
+            nodes.flatMap((node) => (node && 'handle' in node ? [node] : [])),
+          )
+          .catch((error) => {
+            console.error(error);
+            return [];
+          })
+      : Promise.resolve([]);
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  // const recommendedProducts = context.storefront
-  //   .query(RECOMMENDED_PRODUCTS_QUERY)
-  //   .catch((error) => {
-  //     // Log query errors, but don't throw them so the page can still render
-  //     console.error(error);
-  //     return null;
-  //   });
-
-  // return {
-  //   recommendedProducts,
-  // };
-  return {};
+  return {newHomePage, articles};
 }
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
-  const {homePage} = data;
+  const {newHomePage} = data;
+  const footer = newHomePage?.footer?.reference;
 
   return (
     <div className="home">
-      <ModuleRenderer modules={homePage?.modules?.references?.nodes ?? []} />
+      {newHomePage?.hero?.reference && (
+        <HomeHero reference={newHomePage.hero.reference} />
+      )}
+      <ProductCards cards={newHomePage?.productList?.references?.nodes ?? []} />
+      {newHomePage?.gallery?.reference && (
+        <MediaCarousel reference={newHomePage.gallery.reference} />
+      )}
+      {newHomePage?.info?.reference && (
+        <InfoCard reference={newHomePage.info.reference} />
+      )}
+      <Suspense fallback={null}>
+        <Await resolve={data.articles}>
+          {(articles) => <PeopleCarousel articles={articles} />}
+        </Await>
+      </Suspense>
+      {footer && (
+        <ClubFooter
+          content={footer}
+          image={footer.backgroundImage?.reference?.image}
+          logo={footerLogoOf(footer.logo?.reference)}
+        />
+      )}
     </div>
   );
 }
-
-const Section = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => (
-  <section className="mb-10">
-    <h2 className="mb-4 text-lg font-semibold">{title}</h2>
-    <div className="flex flex-wrap gap-3 items-start">{children}</div>
-  </section>
-);
-
-// function FeaturedCollection({
-//   collection,
-// }: {
-//   collection: FeaturedCollectionFragment;
-// }) {
-//   if (!collection) return null;
-//   const image = collection?.image;
-//   return (
-//     <Link
-//       className="featured-collection"
-//       to={`/collections/${collection.handle}`}
-//     >
-//       {image && (
-//         <div className="featured-collection-image">
-//           <Image data={image} sizes="100vw" />
-//         </div>
-//       )}
-//       <h1>{collection.title}</h1>
-//     </Link>
-//   );
-// }
-
-// function RecommendedProducts({
-//   products,
-// }: {
-//   products: Promise<RecommendedProductsQuery | null>;
-// }) {
-//   return (
-//     <div className="recommended-products">
-//       <h2>Recommended Products</h2>
-//       <Suspense fallback={<div>Loading...</div>}>
-//         <Await resolve={products}>
-//           {(response) => (
-//             <div className="recommended-products-grid">
-//               {response
-//                 ? response.products.nodes.map((product) => (
-//                     <ProductItem key={product.id} product={product} />
-//                   ))
-//                 : null}
-//             </div>
-//           )}
-//         </Await>
-//       </Suspense>
-//       <br />
-//     </div>
-//   );
-// }
-
-// const FEATURED_COLLECTION_QUERY = `#graphql
-//   fragment FeaturedCollection on Collection {
-//     id
-//     title
-//     image {
-//       id
-//       url
-//       altText
-//       width
-//       height
-//     }
-//     handle
-//   }
-//   query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-//     @inContext(country: $country, language: $language) {
-//     collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-//       nodes {
-//         ...FeaturedCollection
-//       }
-//     }
-//   }
-// ` as const;
-
-// const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-//   fragment RecommendedProduct on Product {
-//     id
-//     title
-//     handle
-//     priceRange {
-//       minVariantPrice {
-//         amount
-//         currencyCode
-//       }
-//     }
-//     compareAtPriceRange {
-//       minVariantPrice {
-//         amount
-//         currencyCode
-//       }
-//       maxVariantPrice {
-//         amount
-//         currencyCode
-//       }
-//     }
-//     selectedOrFirstAvailableVariant(ignoreUnknownOptions: true) {
-//       id
-//       availableForSale
-//     }
-//     productType
-//     featuredImage {
-//       id
-//       url
-//       altText
-//       width
-//       height
-//     }
-//   }
-//   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-//     @inContext(country: $country, language: $language) {
-//     products(first: 4, sortKey: UPDATED_AT, reverse: true) {
-//       nodes {
-//         ...RecommendedProduct
-//       }
-//     }
-//   }
-// ` as const;

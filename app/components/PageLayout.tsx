@@ -1,5 +1,5 @@
 import { Suspense, useId, useState, useEffect } from 'react';
-import { Await, Link, NavLink, useFetcher, useMatches } from 'react-router';
+import { Await, Link, useFetcher, useMatches } from 'react-router';
 import type {
   CartApiQueryFragment,
   FooterMenuCmsQuery,
@@ -17,10 +17,8 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import { SearchResultsPredictive } from '~/components/SearchResultsPredictive';
-import { cn } from '~/lib/utils';
 import Banner, {type RouteBanner} from './cms/Banner';
 import NewsletterPopup from './cms/NewsletterPopup';
-import Logo from './icons/Logo';
 
 /** What a route can set in its `handle` export to change the layout. */
 export interface RouteHandle {
@@ -99,22 +97,7 @@ export function PageLayout({
         />
       )}
       <main className="relative">
-        <NavLink
-          prefetch="intent"
-          to="/"
-          end
-          className={cn(
-            'hidden lg:block fixed left-[50%] translate-x-[-50%] z-10 mix-blend-exclusion',
-            // 16px below the 50px banner
-            !isBannerOpened ? 'top-4' : 'top-[66px]',
-          )}
-        >
-          <Logo
-            width={194}
-            height={42}
-            className="text-white w-[194px] h-[42px]"
-          />
-        </NavLink>
+        {/* The logo is part of the header bar */}
         {children}
         <NewsletterPopup globalNewsletterPopupPromise={globalNewsletterPopup} />
       </main>

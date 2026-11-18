@@ -207,8 +207,9 @@ function MediaCarousel({reference, className}: MediaCarouselProps) {
   );
 }
 
-/** Arrow buttons at the edges with navigation dots in the middle. */
-function CarouselNav({className}: {className?: string}) {
+/** Arrow buttons at the edges with navigation dots in the middle.
+ * Must be rendered inside a <Carousel>. */
+export function CarouselNav({className}: {className?: string}) {
   const {api, scrollPrev, scrollNext, canScrollPrev, canScrollNext} =
     useCarousel();
   const [snaps, setSnaps] = useState<number[]>([]);

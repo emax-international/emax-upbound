@@ -10,6 +10,24 @@ import TextField from './TextField';
 
 const DEFAULT_INSTAGRAM_URL = 'https://www.instagram.com/stayupbound/';
 
+/** The footer logo file: an image, or an SVG stored as a generic file. */
+export function footerLogoOf(
+  reference:
+    | {image?: {url: string; altText?: string | null} | null}
+    | {url?: string | null; alt?: string | null}
+    | null
+    | undefined,
+) {
+  if (!reference) return null;
+  if ('image' in reference && reference.image) {
+    return {url: reference.image.url, alt: reference.image.altText};
+  }
+  if ('url' in reference && reference.url) {
+    return {url: reference.url, alt: reference.alt};
+  }
+  return null;
+}
+
 /**
  * Landing-page footer: "Join the Upbound Club" newsletter signup on a dark
  * image banner. Posts to the same endpoint as the site footer's form.
