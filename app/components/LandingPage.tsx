@@ -4,7 +4,7 @@ import MediaCarousel from '~/components/cms/MediaCarousel';
 import HeroAccordion from '~/components/cms/HeroAccordion';
 import ComparisonTable from '~/components/cms/ComparisonTable';
 import LandingProduct from '~/components/cms/LandingProduct';
-import ClubFooter from '~/components/cms/ClubFooter';
+import ClubFooter, {footerLogoOf} from '~/components/cms/ClubFooter';
 import LandingHero from '~/components/cms/LandingHero';
 import {isAbVariant} from '~/lib/abTestingPage';
 import {AbPageContext, pushAbEvent, saveAbContext} from '~/lib/abTracking';
@@ -107,22 +107,4 @@ export default function LandingPage({
       </div>
     </AbPageContext.Provider>
   );
-}
-
-/** The footer logo file: an image, or an SVG stored as a generic file. */
-function footerLogoOf(
-  reference:
-    | {image?: {url: string; altText?: string | null} | null}
-    | {url?: string | null; alt?: string | null}
-    | null
-    | undefined,
-) {
-  if (!reference) return null;
-  if ('image' in reference && reference.image) {
-    return {url: reference.image.url, alt: reference.image.altText};
-  }
-  if ('url' in reference && reference.url) {
-    return {url: reference.url, alt: reference.alt};
-  }
-  return null;
 }
