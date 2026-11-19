@@ -1,7 +1,7 @@
-import { Image } from '@shopify/hydrogen';
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
-import type { ProductCardFragment } from 'types/storefrontapi.generated';
+import {Image} from '@shopify/hydrogen';
+import {useEffect, useRef, useState} from 'react';
+import {Link} from 'react-router';
+import type {ProductCardFragment} from 'types/storefrontapi.generated';
 import {CarouselNav} from '~/components/cms/MediaCarousel';
 import TextField from '~/components/cms/TextField';
 import {
@@ -9,21 +9,26 @@ import {
   CarouselContent,
   CarouselItem,
 } from '~/components/ui/carousel';
-import { cn } from '~/lib/utils';
+import {cn} from '~/lib/utils';
 
 /**
  * "Hydrate up" section: one card per `product_card` entry, in the order set
- * on the homepage entry. Desktop: cards side by side. Mobile: carousel.
+ * on the homepage entry. Desktop: cards side by side. Mobile, per the
+ * homepage's `mobile_product_layout`: "Stacked" lists the cards one under
+ * another; anything else (or empty) is a carousel.
  */
 export default function ProductCards({
   title = 'Hydrate up',
   cards,
+  mobileLayout,
 }: {
   title?: string;
   cards: ProductCardFragment[];
+  mobileLayout?: string | null;
 }) {
   const items = cards.filter((card) => card.product?.reference);
   if (items.length === 0) return null;
+  const stacked = mobileLayout?.trim().toLowerCase() === 'stacked';
 
   return (
     <section className="bg-white py-15 md:py-25 lg:px-10 xl:px-16">
@@ -31,32 +36,43 @@ export default function ProductCards({
         <h1 className="typo-h1 font-medium md:font-medium text-center md:text-left mb-6 md:mb-10">
           {title}
         </h1>
-        {/* Mobile: one card at a time with space at the sides, arrows +
-            dots below (same as the other carousels). From md up the
-            carousel is switched off and the cards sit side by side. */}
-        <Carousel
-          opts={{
-            align: 'center',
-            loop: false,
-            breakpoints: {'(min-width: 768px)': {active: false}},
-          }}
-          className="px-8 md:px-0"
-        >
-          <CarouselContent className="md:grid md:grid-cols-2 md:gap-6 md:ml-0">
+        {stacked ? (
+          // Mobile: one card under another; md+: side by side
+          <ul className="grid gap-12 px-8 md:px-0 md:grid-cols-2 md:gap-6">
             {items.map((card) => (
-              <CarouselItem key={card.id} className="md:pl-0">
+              <li key={card.id}>
                 <ProductCard card={card} />
-              </CarouselItem>
+              </li>
             ))}
-          </CarouselContent>
-          {items.length > 1 && <CarouselNav className="md:hidden" />}
-        </Carousel>
+          </ul>
+        ) : (
+          /* Mobile: one card at a time with space at the sides, arrows +
+            dots below (same as the other carousels). From md up the
+            carousel is switched off and the cards sit side by side. */
+          <Carousel
+            opts={{
+              align: 'center',
+              loop: false,
+              breakpoints: {'(min-width: 768px)': {active: false}},
+            }}
+            className="px-8 md:px-0"
+          >
+            <CarouselContent className="md:grid md:grid-cols-2 md:gap-6 md:ml-0">
+              {items.map((card) => (
+                <CarouselItem key={card.id} className="md:pl-0">
+                  <ProductCard card={card} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {items.length > 1 && <CarouselNav className="md:hidden" />}
+          </Carousel>
+        )}
       </div>
     </section>
   );
 }
 
-function ProductCard({ card }: { card: ProductCardFragment }) {
+function ProductCard({card}: {card: ProductCardFragment}) {
   const product = card.product?.reference;
   if (!product) return null;
 
@@ -76,7 +92,9 @@ function ProductCard({ card }: { card: ProductCardFragment }) {
   // The frame takes the first image's own shape (no cropping)
   const first = images[0];
   const frameRatio =
-    first?.width && first?.height ? `${first.width} / ${first.height}` : '4 / 3';
+    first?.width && first?.height
+      ? `${first.width} / ${first.height}`
+      : '4 / 3';
 
   return (
     <article className="group flex flex-col h-full">
@@ -84,7 +102,7 @@ function ProductCard({ card }: { card: ProductCardFragment }) {
         to={url}
         prefetch="intent"
         className="relative block overflow-hidden rounded-2xl bg-neutral-100"
-        style={{ aspectRatio: frameRatio }}
+        style={{aspectRatio: frameRatio}}
       >
         <CardImages images={images} />
         {label && (
@@ -92,7 +110,7 @@ function ProductCard({ card }: { card: ProductCardFragment }) {
             className="absolute top-4 left-4 md:top-6 md:left-6 rounded-full bg-mint px-4 py-1.5 md:px-6 md:py-2 text-sm md:text-lg font-semibold uppercase tracking-wide text-black"
             style={
               card.labelColor?.value
-                ? { backgroundColor: card.labelColor.value }
+                ? {backgroundColor: card.labelColor.value}
                 : undefined
             }
           >
@@ -109,7 +127,9 @@ function ProductCard({ card }: { card: ProductCardFragment }) {
           </Link>
         </h2>
         {card.description?.value && (
-          <h3 className="font-medium md:font-medium text-sm md:text-base [&_p]:text-sm md:[&_p]:text-base mt-3">{card.description.value}</h3>
+          <h3 className="font-medium md:font-medium text-sm md:text-base [&_p]:text-sm md:[&_p]:text-base mt-3">
+            {card.description.value}
+          </h3>
         )}
         {/* Rich text, usually a bullet list */}
         <TextField
@@ -124,7 +144,7 @@ function ProductCard({ card }: { card: ProductCardFragment }) {
         {/* mt-auto pins the button to the bottom so the buttons line up
             across cards whatever the text length (cards share the row
             height); pt-8 keeps the gap above it */}
-        <div className="mt-auto pt-8">
+        <div className="mt-auto pt-8 text-center md:text-left">
           <Link
             to={url}
             prefetch="intent"
@@ -150,7 +170,7 @@ const SLIDE_INTERVAL_MS = 3000;
  * - Touch (no hover): cycles through all images while the card is the one
  *   on screen (swiped into view and the section scrolled into view).
  */
-function CardImages({ images }: { images: NonNullable<CardImage>[] }) {
+function CardImages({images}: {images: NonNullable<CardImage>[]}) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [inView, setInView] = useState(false);
@@ -169,7 +189,7 @@ function CardImages({ images }: { images: NonNullable<CardImage>[] }) {
 
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.6 },
+      {threshold: 0.6},
     );
     observer.observe(element);
     return () => observer.disconnect();

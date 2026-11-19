@@ -72,7 +72,7 @@ function HeroTitle({text}: {text: string}) {
           // typo-h1's font and letter spacing, at the hero title's size
           <strong
             key={index}
-            className="[font-family:var(--font-whyte)]  tracking-(--text-h1-mobile--letter-spacing) md:tracking-(--text-h1-desktop--letter-spacing)"
+            className="font-whyte tracking-(--text-h1-mobile--letter-spacing) md:tracking-(--text-h1-desktop--letter-spacing)"
           >
             {part}
           </strong>

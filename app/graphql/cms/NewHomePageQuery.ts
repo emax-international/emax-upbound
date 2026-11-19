@@ -26,6 +26,10 @@ export const NEW_HOME_PAGE_QUERY = `#graphql
           }
         }
       }
+      # Mobile layout of the "Hydrate up" cards: "Carousel" (default) or "Stacked"
+      mobileProductLayout: field(key: "mobile_product_layout") {
+        value
+      }
       # "Hydrate up" cards (product_card entries)
       productList: field(key: "product_list") {
         references(first: 6) {

@@ -1,5 +1,5 @@
 import { Suspense, useId, useState, useEffect } from 'react';
-import { Await, Link, useFetcher, useMatches } from 'react-router';
+import { Await, Link, NavLink, useFetcher, useMatches } from 'react-router';
 import type {
   CartApiQueryFragment,
   FooterMenuCmsQuery,
@@ -11,6 +11,10 @@ import { Aside, useAside } from '~/components/Aside';
 import { CartMain } from '~/components/CartMain';
 import { Footer } from '~/components/Footer';
 import { Header } from '~/components/Header';
+import { HeaderBar } from '~/components/HeaderBar';
+import { HEADER_DESIGN } from '~/lib/siteDesign';
+import { cn } from '~/lib/utils';
+import Logo from './icons/Logo';
 import type { CartDiscountOption } from '~/graphql/admin/CartDiscountsQuery';
 import {
   SEARCH_ENDPOINT,
@@ -86,18 +90,48 @@ export function PageLayout({
         routeBanner={routeBanner}
         setIsBannerOpened={setIsBannerOpened}
       />
-      {header && (
-        <Header
-          header={header}
-          cart={cart}
-          isLoggedIn={isLoggedIn}
-          publicStoreDomain={publicStoreDomain}
-          isBannerOpened={isBannerOpened}
-          hideMenu={hideMenu}
-        />
-      )}
+      {/* Header design is chosen in ~/lib/siteDesign */}
+      {header &&
+        (HEADER_DESIGN === 'bar' ? (
+          <HeaderBar
+            header={header}
+            cart={cart}
+            isLoggedIn={isLoggedIn}
+            publicStoreDomain={publicStoreDomain}
+            isBannerOpened={isBannerOpened}
+            hideMenu={hideMenu}
+          />
+        ) : (
+          <Header
+            header={header}
+            cart={cart}
+            isLoggedIn={isLoggedIn}
+            publicStoreDomain={publicStoreDomain}
+            isBannerOpened={isBannerOpened}
+            hideMenu={hideMenu}
+          />
+        ))}
       <main className="relative">
-        {/* The logo is part of the header bar */}
+        {/* Classic header: the desktop logo floats over the page (the bar
+            design has it inside the bar) */}
+        {HEADER_DESIGN === 'classic' && (
+          <NavLink
+            prefetch="intent"
+            to="/"
+            end
+            className={cn(
+              'hidden lg:block fixed left-[50%] translate-x-[-50%] z-10 mix-blend-exclusion',
+              // 16px below the 50px banner
+              !isBannerOpened ? 'top-4' : 'top-[66px]',
+            )}
+          >
+            <Logo
+              width={194}
+              height={42}
+              className="text-white w-[194px] h-[42px]"
+            />
+          </NavLink>
+        )}
         {children}
         <NewsletterPopup globalNewsletterPopupPromise={globalNewsletterPopup} />
       </main>

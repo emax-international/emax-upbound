@@ -6,6 +6,8 @@ import {
   NEW_HOME_PAGE_QUERY,
 } from '~/graphql/cms/NewHomePageQuery';
 import HomeHero from '~/components/home/HomeHero';
+import HomeHeroClassic from '~/components/home/HomeHeroClassic';
+import {HOME_HERO_DESIGN} from '~/lib/siteDesign';
 import InfoCard from '~/components/home/InfoCard';
 import ProductCards from '~/components/home/ProductCards';
 import PeopleCarousel from '~/components/home/PeopleCarousel';
@@ -60,10 +62,17 @@ export default function Homepage() {
 
   return (
     <div className="home">
-      {newHomePage?.hero?.reference && (
-        <HomeHero reference={newHomePage.hero.reference} />
-      )}
-      <ProductCards cards={newHomePage?.productList?.references?.nodes ?? []} />
+      {/* Hero design is chosen in ~/lib/siteDesign */}
+      {newHomePage?.hero?.reference &&
+        (HOME_HERO_DESIGN === 'text' ? (
+          <HomeHero reference={newHomePage.hero.reference} />
+        ) : (
+          <HomeHeroClassic reference={newHomePage.hero.reference} />
+        ))}
+      <ProductCards
+        cards={newHomePage?.productList?.references?.nodes ?? []}
+        mobileLayout={newHomePage?.mobileProductLayout?.value}
+      />
       {newHomePage?.gallery?.reference && (
         <MediaCarousel reference={newHomePage.gallery.reference} />
       )}
