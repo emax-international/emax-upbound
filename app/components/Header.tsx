@@ -3,10 +3,9 @@ import {
   useAnalytics,
   useOptimisticCart,
 } from '@shopify/hydrogen';
-import LocationIcon from './icons/LocationIcon';
-import UserIcon from './icons/UserIcon';
+import {Menu} from 'lucide-react';
 import {AnimatePresence, motion} from 'motion/react';
-import {Suspense, useEffect, useState} from 'react';
+import {Fragment, Suspense, useEffect, useState} from 'react';
 import {Await, NavLink, useAsyncValue, useLocation} from 'react-router';
 import type {
   CartApiQueryFragment,
@@ -15,6 +14,7 @@ import type {
 import {useAside} from '~/components/Aside';
 import {cn} from '~/lib/utils';
 import Logo from './icons/Logo';
+import {Button} from './ui/button';
 
 export type HeaderProps = {
   header: HeaderQuery;
@@ -26,15 +26,8 @@ export type HeaderProps = {
   hideMenu?: boolean;
 };
 
-type MenuItem = {id: string; title: string; url: string};
+type Viewport = 'desktop' | 'mobile';
 
-/**
- * Site header: a black rounded bar floating over the page.
- * - Desktop: menu links (left), logo (centre), Find Us / account / cart (right)
- * - Mobile: menu toggle (left), logo (centre), Find Us / account / cart
- *   (right); the menu opens inside the bar
- * With `hideMenu` only the logo and cart show.
- */
 export function Header({
   header,
   isLoggedIn,
@@ -43,8 +36,7 @@ export function Header({
   isBannerOpened,
   hideMenu,
 }: HeaderProps) {
-  const items = menuItems(header, publicStoreDomain);
-  const location = useLocation();
+  const {menu} = header;
 
   return (
     <header
@@ -54,73 +46,214 @@ export function Header({
         isBannerOpened && 'mt-[50px]',
       )}
     >
+      {/* Mobile Header */}
       <div className="w-full lg:hidden">
-        <HeaderMobile items={items} isLoggedIn={isLoggedIn} cart={cart} hideMenu={hideMenu} />
+        <HeaderMobile
+          header={header}
+          isLoggedIn={isLoggedIn}
+          cart={cart}
+          publicStoreDomain={publicStoreDomain}
+          isBannerOpened={isBannerOpened}
+          hideMenu={hideMenu}
+        />
       </div>
 
-      <div className="hidden lg:grid w-full grid-cols-[1fr_auto_1fr] items-center h-16 px-4 rounded-xl bg-black text-white">
-        <nav className="flex items-center gap-2" aria-label="Main">
-          {!hideMenu &&
-            items.map((item) => {
-              const active = isSectionActive(item.url, location.pathname);
-              return (
-                <NavLink
-                  key={item.id}
-                  to={item.url}
-                  prefetch="intent"
-                  aria-current={active ? 'page' : undefined}
-                  className={cn(
-                    // Selected: mint outlined pill with mint text
-                    'rounded-full border px-5 py-2 text-lg leading-none transition-colors',
-                    active
-                      ? 'border-mint text-mint font-medium'
-                      : 'border-transparent text-white hover:border-white/40',
-                  )}
-                >
-                  {item.title}
-                </NavLink>
-              );
-            })}
-        </nav>
+      {/* Desktop Header */}
+      <div className="hidden lg:flex w-full justify-between items-center">
+        {hideMenu ? (
+          <div />
+        ) : (
+          <HeaderMenu
+            menu={menu}
+            viewport="desktop"
+            primaryDomainUrl={header.shop.primaryDomain.url}
+            publicStoreDomain={publicStoreDomain}
+          />
+        )}
+        {/* placeholder for the logo since logo is outside */}
+        <div className="w-[120px]" />
+        {hideMenu ? (
+          <div />
+        ) : (
+          <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+        )}
+      </div>
 
-        <HomeLogo className="w-[160px] h-[35px]" />
-
-        <div className="flex items-center justify-end gap-5">
-          {!hideMenu && (
-            <>
-              <FindUsLink className="text-[15px]" iconClassName="h-6 w-auto" />
-              <AccountLink isLoggedIn={isLoggedIn} iconClassName="h-6 w-auto" />
-            </>
+      {/* Without the menu, the cart is a bag tab pinned to the right edge */}
+      {hideMenu && (
+        <div
+          className={cn(
+            'fixed right-0 z-10',
+            // Below the mobile header bar; level with the logo on desktop
+            !isBannerOpened ? 'top-20 lg:top-4' : 'top-[122px] lg:top-[66px]',
           )}
-          <CartToggle cart={cart} iconClassName="size-6" />
+        >
+          <CartToggle cart={cart} variant="tab" />
         </div>
-      </div>
+      )}
     </header>
   );
 }
 
-function HeaderMobile({
-  items,
+export function HeaderMenu({
+  menu,
+  primaryDomainUrl,
+  viewport,
+  publicStoreDomain,
+  isLoggedIn,
+}: {
+  menu: HeaderProps['header']['menu'];
+  primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
+  viewport: Viewport;
+  publicStoreDomain: HeaderProps['publicStoreDomain'];
+  isLoggedIn?: HeaderProps['isLoggedIn'];
+}) {
+  const {close} = useAside();
+
+  // Use Tailwind classes based on viewport
+  const navClassName =
+    viewport === 'desktop'
+      ? 'hidden lg:flex items-center gap-1'
+      : 'flex flex-col gap-4 lg:hidden items-center';
+
+  return (
+    <nav className={navClassName} role="navigation">
+      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+        if (!item.url) return null;
+
+        // if the url is internal, we strip the domain
+        const url =
+          item.url.includes('myshopify.com') ||
+          item.url.includes(publicStoreDomain) ||
+          item.url.includes(primaryDomainUrl)
+            ? new URL(item.url).pathname
+            : item.url;
+        return (
+          <Fragment key={item.id}>
+            <NavLink
+              className="header-menu-item"
+              end
+              onClick={close}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+            >
+              {viewport === 'desktop' ? (
+                <Button size="sm" variant="glass-default">
+                  {item.title}
+                </Button>
+              ) : (
+                <Button size="lg" variant="link">
+                  <p className="typo-display-l capitalize">{item.title}</p>
+                </Button>
+              )}
+            </NavLink>
+            {viewport === 'mobile' && item.title.toLowerCase() === 'shop' && (
+              <NavLink
+                className="header-menu-item"
+                end
+                onClick={close}
+                prefetch="intent"
+                style={activeLinkStyle}
+                to="/account"
+              >
+                <Button size="lg" variant="link">
+                  <p className="typo-display-l capitalize">
+                    <Suspense fallback="Sign in">
+                      <Await resolve={isLoggedIn} errorElement="Sign in">
+                        {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
+                      </Await>
+                    </Suspense>
+                  </p>
+                </Button>
+              </NavLink>
+            )}
+          </Fragment>
+        );
+      })}
+      {viewport === 'mobile' && (
+        <NavLink
+          className="header-menu-item"
+          end
+          onClick={close}
+          prefetch="intent"
+          style={activeLinkStyle}
+          to="/store-locator"
+        >
+          <Button size="lg" variant="link">
+            <p className="typo-display-l capitalize">Find Us</p>
+          </Button>
+        </NavLink>
+      )}
+    </nav>
+  );
+}
+
+function HeaderCtas({
   isLoggedIn,
   cart,
+}: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
+  return (
+    <nav className="flex items-center gap-1" role="navigation">
+      {/* <HeaderSearch viewport="desktop" /> */}
+      <NavLink
+        prefetch="intent"
+        to="/store-locator"
+        style={activeLinkStyle}
+        className="hidden lg:block"
+      >
+        <Button size="sm" variant="glass-default">
+          Find Us
+        </Button>
+      </NavLink>
+      <span className="hidden lg:block text-black/30" aria-hidden="true">
+        |
+      </span>
+      <NavLink
+        prefetch="intent"
+        to="/account"
+        style={activeLinkStyle}
+        className="hidden lg:block"
+      >
+        <Button size="sm" variant="glass-default">
+          <Suspense fallback="Sign in">
+            <Await resolve={isLoggedIn} errorElement="Sign in">
+              {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
+            </Await>
+          </Suspense>
+        </Button>
+      </NavLink>
+      <CartToggle cart={cart} />
+    </nav>
+  );
+}
+
+export function HeaderMobile({
+  header,
+  isLoggedIn,
+  cart,
+  publicStoreDomain,
+  isBannerOpened,
   hideMenu,
-}: {
-  items: MenuItem[];
-  isLoggedIn: HeaderProps['isLoggedIn'];
-  cart: HeaderProps['cart'];
-  hideMenu?: boolean;
-}) {
+}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
 
-  // Close the menu when the route changes
+  // Close menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsSearchOpen(false);
   }, [location.pathname]);
+
+  // reset search state whenever menu closed
+  useEffect(() => {
+    if (!isMenuOpen) setIsSearchOpen(false);
+  }, [isMenuOpen]);
 
   return (
     <div className="relative">
-      {/* Blurs the page behind the open menu; tap to close */}
+      {/* background blur overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -133,70 +266,91 @@ function HeaderMobile({
           />
         )}
       </AnimatePresence>
-
-      <div className="relative rounded-xl bg-black text-white px-4">
-        {/* Three columns (equal sides) keep the logo centred without the
-            icons ever running under it */}
-        <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-3 h-16">
-          <div>
-            {!hideMenu && (
-              <button
-                type="button"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-expanded={isMenuOpen}
-                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-                className="relative z-10 -ml-1 p-1"
-              >
-                <MenuIcon open={isMenuOpen} />
-              </button>
-            )}
-          </div>
-
-          <HomeLogo className="block w-[112px] h-[25px] sm:w-[132px] sm:h-[29px]" />
-
-          <div className="relative z-10 flex items-center justify-end gap-3.5">
-            {!hideMenu && (
-              <>
-                {/* Phones: pin only ("Find Us" stays for screen readers) */}
-                <FindUsLink
-                  className="text-xs"
-                  iconClassName="h-5 w-auto"
-                  labelClassName="max-sm:sr-only"
-                />
-                <AccountLink isLoggedIn={isLoggedIn} iconClassName="h-5 w-auto" />
-              </>
-            )}
-            <CartToggle cart={cart} iconClassName="size-5" />
-          </div>
+      <div className="p-2 rounded-xl bg-mid-grey/40 backdrop-blur-2xl">
+        {/* Mobile menu toggle button */}
+        <div className="flex justify-between items-center relative">
+          {hideMenu ? (
+            <div />
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="!px-2"
+            >
+              <Menu size={14} />
+            </Button>
+          )}
+          <NavLink
+            prefetch="intent"
+            to="/"
+            end
+            className={cn(isBannerOpened ? 'top-11' : 'top-4')}
+          >
+            <Logo
+              width={152}
+              height={33}
+              className="text-white absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
+            />
+          </NavLink>
+          {hideMenu ? <div className="h-8" /> : <CartToggle cart={cart} />}
         </div>
-
         <AnimatePresence>
           {isMenuOpen && (
-            <motion.nav
-              aria-label="Main"
+            <motion.div
               initial={{opacity: 0, height: 0}}
-              animate={{opacity: 1, height: 'auto'}}
-              exit={{opacity: 0, height: 0}}
-              transition={{duration: 0.3, ease: 'easeOut'}}
-              className="overflow-hidden"
+              animate={{
+                opacity: 1,
+                height: '80dvh',
+              }}
+              exit={{
+                opacity: 0,
+                height: 0,
+              }}
+              transition={{
+                type: 'spring',
+                damping: 15,
+                duration: 0.3,
+              }}
+              className="flex flex-col items-center justify-center max-h-[650px]"
             >
-              <ul className="flex flex-col items-center gap-6 pt-8 pb-12">
-                {items.map((item) => (
-                  <li key={item.id}>
-                    <MobileMenuLink to={item.url}>{item.title}</MobileMenuLink>
-                  </li>
-                ))}
-                <li>
-                  <MobileMenuLink to="/account">
-                    <Suspense fallback="Sign in">
-                      <Await resolve={isLoggedIn} errorElement="Sign in">
-                        {(loggedIn) => (loggedIn ? 'Account' : 'Sign in')}
-                      </Await>
-                    </Suspense>
-                  </MobileMenuLink>
-                </li>
-              </ul>
-            </motion.nav>
+              <AnimatePresence>
+                {!isSearchOpen && (
+                  <motion.div
+                    initial={{opacity: 0, height: 0, y: 0}}
+                    animate={{
+                      opacity: 1,
+                      height: 'auto',
+                      // y: 24,
+                    }}
+                    exit={{opacity: 0, height: 0, y: 0}}
+                  >
+                    <HeaderMenu
+                      menu={header.menu}
+                      viewport="mobile"
+                      primaryDomainUrl={header.shop.primaryDomain.url}
+                      publicStoreDomain={publicStoreDomain}
+                      isLoggedIn={isLoggedIn}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <motion.div
+                animate={{
+                  y: isSearchOpen ? 24 : 40,
+                  transition: {
+                    type: 'spring',
+                    damping: 12,
+                    duration: 0.3,
+                  },
+                }}
+              >
+                {/* <HeaderSearch
+                viewport="mobile"
+                onSearchOpenChange={setIsSearchOpen}
+              /> */}
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -204,160 +358,113 @@ function HeaderMobile({
   );
 }
 
-function MobileMenuLink({
-  to,
-  children,
-}: {
-  to: string;
-  children: React.ReactNode;
-}) {
-  const {pathname} = useLocation();
-  const active = isSectionActive(to, pathname);
-  return (
-    <NavLink
-      to={to}
-      prefetch="intent"
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'typo-display-l capitalize transition-colors',
-        active ? 'text-mint' : 'text-white hover:text-mint',
-      )}
-    >
-      {children}
-    </NavLink>
-  );
-}
-
-function HomeLogo({className}: {className?: string}) {
-  return (
-    <NavLink to="/" end prefetch="intent" aria-label="Upbound home" className={className}>
-      <Logo width={160} height={35} className="w-full h-full text-white" />
-    </NavLink>
-  );
-}
-
-function FindUsLink({
-  className,
-  iconClassName,
-  labelClassName,
-}: {
-  className?: string;
-  iconClassName?: string;
-  /** e.g. "max-sm:sr-only" to show only the pin on small screens */
-  labelClassName?: string;
-}) {
-  return (
-    <NavLink
-      to="/store-locator"
-      prefetch="intent"
-      className={({isActive}) =>
-        cn(
-          'flex items-center gap-1.5 leading-none transition-colors hover:text-mint',
-          isActive && 'text-mint',
-          className,
-        )
-      }
-    >
-      <LocationIcon className={iconClassName} />
-      <span className={labelClassName}>Find Us</span>
-    </NavLink>
-  );
-}
-
-function AccountLink({
-  isLoggedIn,
-  iconClassName,
-}: {
-  isLoggedIn: HeaderProps['isLoggedIn'];
-  iconClassName?: string;
-}) {
-  return (
-    <NavLink
-      to="/account"
-      prefetch="intent"
-      className={({isActive}) =>
-        cn('transition-colors hover:text-mint', isActive && 'text-mint')
-      }
-    >
-      <UserIcon className={iconClassName} />
-      <span className="sr-only">
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(loggedIn) => (loggedIn ? 'Account' : 'Sign in')}
-          </Await>
-        </Suspense>
-      </span>
-    </NavLink>
-  );
-}
-
-/** Three thin lines that turn into an X while the menu is open. */
-function MenuIcon({open}: {open: boolean}) {
-  const line =
-    'absolute left-0 h-px w-full bg-current transition-transform duration-300';
-  return (
-    <span className="relative block w-6 h-4" aria-hidden>
-      <span
-        className={cn(line, 'top-0', open && 'top-1/2 rotate-45')}
-      />
-      <span
-        className={cn(
-          line,
-          'top-1/2 transition-opacity',
-          open && 'opacity-0',
-        )}
-      />
-      <span
-        className={cn(line, 'top-full', open && 'top-1/2 -rotate-45')}
-      />
-    </span>
-  );
-}
+type CartVariant = 'default' | 'tab';
 
 function CartBadge({
   count,
-  iconClassName,
+  variant = 'default',
 }: {
   count: number | null;
-  iconClassName?: string;
+  variant?: CartVariant;
 }) {
   const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
 
+  if (variant === 'tab') {
+    // Bag tab pinned to the right edge (landing pages without the menu)
+    return (
+      <a
+        href="/cart"
+        onClick={(e) => {
+          e.preventDefault();
+          open('cart');
+          publish('cart_viewed', {
+            cart,
+            prevCart,
+            shop,
+            url: window.location.href || '',
+          } as CartViewPayload);
+        }}
+        aria-label={count ? `Cart (${count} items)` : 'Cart'}
+        className="relative flex items-center pl-5 pr-4 py-3 lg:pl-6 lg:pr-5 lg:py-4 rounded-l-full bg-mid-grey/40 backdrop-blur-2xl text-white"
+      >
+        <BagIcon className="size-6 lg:size-7" />
+        {(count ?? 0) > 0 && (
+          <span className="absolute top-1.5 left-3 flex items-center justify-center rounded-full typo-caption text-mint size-[18px] bg-black">
+            {count}
+          </span>
+        )}
+      </a>
+    );
+  }
+
   return (
-    <a
-      href="/cart"
-      onClick={(e) => {
-        e.preventDefault();
-        open('cart');
-        publish('cart_viewed', {
-          cart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        } as CartViewPayload);
-      }}
-      aria-label={count ? `Cart (${count} items)` : 'Cart'}
-      className="relative block transition-colors hover:text-mint"
-    >
-      <BagIcon className={iconClassName} />
-      {(count ?? 0) > 0 && (
-        <span className="absolute -top-1.5 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-mint text-black text-[10px] font-semibold leading-none">
-          {count}
-        </span>
-      )}
-    </a>
+    <>
+      {/* mobile */}
+      <a
+        href="/cart"
+        onClick={(e) => {
+          e.preventDefault();
+          open('cart');
+          publish('cart_viewed', {
+            cart,
+            prevCart,
+            shop,
+            url: window.location.href || '',
+          } as CartViewPayload);
+        }}
+        className="relative block lg:hidden mr-2"
+      >
+        <Button
+          size="sm"
+          variant="link"
+          className="flex p-0 items-center typo-caption-responsive-uppercase leading-none h-fit"
+        >
+          Cart
+          {(count ?? 0) > 0 && (
+            <div className="flex items-center justify-center rounded-full text-mint size-[18px] bg-black">
+              {count}
+            </div>
+          )}
+        </Button>
+      </a>
+
+      {/* desktop */}
+      <a
+        href="/cart"
+        onClick={(e) => {
+          e.preventDefault();
+          open('cart');
+          publish('cart_viewed', {
+            cart,
+            prevCart,
+            shop,
+            url: window.location.href || '',
+          } as CartViewPayload);
+        }}
+        className="relative hidden lg:block"
+      >
+        <Button size="sm" variant="glass-default">
+          Cart
+        </Button>
+        {(count ?? 0) > 0 && (
+          <div className="absolute flex items-center justify-center rounded-full typo-caption text-mint -top-2 right-0 w-[18px] h-[18px] bg-black">
+            {count}
+          </div>
+        )}
+      </a>
+    </>
   );
 }
 
 function CartToggle({
   cart,
-  iconClassName,
-}: Pick<HeaderProps, 'cart'> & {iconClassName?: string}) {
+  variant,
+}: Pick<HeaderProps, 'cart'> & {variant?: CartVariant}) {
   return (
-    <Suspense fallback={<CartBadge count={null} iconClassName={iconClassName} />}>
+    <Suspense fallback={<CartBadge count={null} variant={variant} />}>
       <Await resolve={cart}>
-        <CartBanner iconClassName={iconClassName} />
+        <CartBanner variant={variant} />
       </Await>
     </Suspense>
   );
@@ -370,7 +477,7 @@ function BagIcon({className}: {className?: string}) {
       viewBox="0 0 697 754"
       fill="none"
       stroke="currentColor"
-      strokeWidth={40}
+      strokeWidth={24}
       aria-hidden="true"
       className={className}
     >
@@ -387,55 +494,15 @@ function BagIcon({className}: {className?: string}) {
   );
 }
 
-function CartBanner({iconClassName}: {iconClassName?: string}) {
+function CartBanner({variant}: {variant?: CartVariant}) {
   const originalCart = useAsyncValue() as CartApiQueryFragment | null;
   const cart = useOptimisticCart(originalCart);
   const count = cart?.lines?.nodes
     ? cart.lines.nodes
-        .filter(
-          (l) =>
-            !l.attributes?.some(
-              (a) => a.key === '_is_free_gift' && a.value === 'true',
-            ),
-        )
+        .filter((l) => !l.attributes?.some((a) => a.key === '_is_free_gift' && a.value === 'true'))
         .reduce((sum, l) => sum + l.quantity, 0)
     : 0;
-  return <CartBadge count={count} iconClassName={iconClassName} />;
-}
-
-/**
- * Whether a menu link is the section the visitor is in: its own page or any
- * page under it (e.g. Community on /community/<article>). A link to a
- * collection (Shop → /collections/all) also covers every collection and
- * product page. Ignores a locale prefix like /en-my.
- */
-function isSectionActive(url: string, pathname: string) {
-  if (!url.startsWith('/')) return false;
-  const path = pathname.replace(/^\/[a-z]{2}-[a-z]{2}(?=\/|$)/i, '') || '/';
-  const target = url.replace(/\/+$/, '') || '/';
-  if (target === '/') return path === '/';
-  if (target.startsWith('/collections')) {
-    return path.startsWith('/collections') || path.startsWith('/products');
-  }
-  return path === target || path.startsWith(`${target}/`);
-}
-
-/** The header menu's links, with the shop's own domain stripped. */
-function menuItems(
-  header: HeaderQuery,
-  publicStoreDomain: string,
-): MenuItem[] {
-  const primaryDomainUrl = header.shop.primaryDomain.url;
-  return (header.menu || FALLBACK_HEADER_MENU).items.flatMap((item) => {
-    if (!item.url) return [];
-    const url =
-      item.url.includes('myshopify.com') ||
-      item.url.includes(publicStoreDomain) ||
-      item.url.includes(primaryDomainUrl)
-        ? new URL(item.url).pathname
-        : item.url;
-    return [{id: item.id, title: item.title, url}];
-  });
+  return <CartBadge count={count} variant={variant} />;
 }
 
 const FALLBACK_HEADER_MENU = {
@@ -479,3 +546,16 @@ const FALLBACK_HEADER_MENU = {
     },
   ],
 };
+
+function activeLinkStyle({
+  isActive,
+  isPending,
+}: {
+  isActive: boolean;
+  isPending: boolean;
+}) {
+  return {
+    fontWeight: isActive ? 'bold' : undefined,
+    color: isPending ? 'grey' : 'black',
+  };
+}

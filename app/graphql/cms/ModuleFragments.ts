@@ -39,6 +39,19 @@ export const HERO_WITH_CTA_FRAGMENT = `#graphql
         }
       }
     }
+    # Optional iPad-size image (768–1023px); used by the homepage hero
+    tabletImage: field(key: "ipad_image") {
+      reference {
+        ... on MediaImage {
+          image {
+            height
+            width
+            url
+            altText
+          }
+        }
+      }
+    }
     cta: field(key: "cta") {
       reference {
         ... on Metaobject {
